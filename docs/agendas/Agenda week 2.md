@@ -41,6 +41,7 @@ In italics, you will find some additional explanations of the agenda points. You
 *Your TA will visit you in the second half of the lab session. Note down all questions that you have so that you can ask them then.*
 
 - Is there anything we should change about how we fill in this template?
+- What are the requirements for testing?
 
 # Question round
 *If there are any questions, now is the time to ask them.*
