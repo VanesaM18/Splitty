@@ -68,6 +68,7 @@ public class ServerUtils {
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.post(Entity.entity(p, APPLICATION_JSON), Participant.class);
+	}
 
 	public Admin addAdmin(Admin admin) {
 		return ClientBuilder.newClient(new ClientConfig()) //
