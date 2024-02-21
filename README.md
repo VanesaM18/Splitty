@@ -1,3 +1,5 @@
-# OOPP Template Project
+# Splitty
 
-This repository contains the template for the OOPP project. Please extend this README.md with instructions on how to run your project.
+## Run instructions
+1. Start the server using ./gradlew bootRun
+2. Start the client in a seperate terminal using ./gradlew run, while the server is running
