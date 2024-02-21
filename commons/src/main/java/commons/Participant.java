@@ -25,6 +25,10 @@ public class Participant {
         this.bic = bic;
     }
 
+    public Participant() {
+        // for object mapper
+    }
+
     public String getName() {
         return name;
     }

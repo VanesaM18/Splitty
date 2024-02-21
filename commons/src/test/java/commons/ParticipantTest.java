@@ -14,4 +14,5 @@ class ParticipantTest {
         assertEquals("NL1234567890123456", p.getIban());
         assertEquals("ABCDEFGH", p.getBic());
     }
+
 }
