@@ -1,10 +1,6 @@
 package commons;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-
-import java.nio.charset.StandardCharsets;
 
 import jakarta.persistence.Id;
 import org.apache.commons.lang3.builder.EqualsBuilder;
