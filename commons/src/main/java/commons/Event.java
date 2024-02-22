@@ -7,6 +7,7 @@ import jakarta.persistence.ManyToMany;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 
 
@@ -19,6 +20,7 @@ public class Event {
 
     private String name;
 
+    private static final int INVITE_CODE_LENGTH = 6;
     private String inviteCode;
 
     // TODO: Should we use LocalDateTime, or does ZonedDateTime or OffsetDateTime make more sense?
@@ -75,8 +77,8 @@ public class Event {
         return inviteCode;
     }
 
-    public void setInviteCode(String invoteCode) {
-        this.inviteCode = invoteCode;
+    public void setInviteCode(String inviteCode) {
+        this.inviteCode = inviteCode;
     }
 
     @Override
@@ -92,4 +94,10 @@ public class Event {
         return Objects.hash(id, getName(), getInviteCode(), getDateTime(), getParticipants());
     }
 
+    public void generateInviteCode() {
+        CodeGenerator generator = new CodeGenerator(new Random());
+        String code = generator.generateCode(INVITE_CODE_LENGTH);
+
+        setInviteCode(code);
+    }
 }
