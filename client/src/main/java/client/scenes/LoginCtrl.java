@@ -26,7 +26,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 
-public class AddAdminCtrl {
+public class LoginCtrl {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
@@ -37,23 +37,19 @@ public class AddAdminCtrl {
     @FXML
     private TextField password;
 
-    @FXML
-    private TextField email;
-
     @Inject
-    public AddAdminCtrl(ServerUtils server, MainCtrl mainCtrl) {
+    public LoginCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
     }
 
     public void cancel() {
         clearFields();
-        mainCtrl.showOverview();
     }
 
-    public void ok() {
+    public void logIn() {
         try {
-            server.addAdmin(getAdmin());
+            server.loginAdmin(getAdmin());
         } catch (WebApplicationException e) {
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initModality(Modality.APPLICATION_MODAL);
@@ -67,19 +63,18 @@ public class AddAdminCtrl {
     }
 
     private Admin getAdmin() {
-        return new Admin(username.getText(), password.getText(), email.getText());
+        return new Admin(username.getText(), password.getText(), "");
     }
 
-    private void clearFields() {
+    public void clearFields() {
         username.clear();
-        email.clear();
         password.clear();
     }
 
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
             case ENTER:
-                ok();
+                logIn();
                 break;
             case ESCAPE:
                 cancel();

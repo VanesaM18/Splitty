@@ -70,11 +70,11 @@ public class ServerUtils {
 			.post(Entity.entity(admin, APPLICATION_JSON), Admin.class);
 	}
 
-	public Admin loginAdmin(Admin admin) {
+	public String loginAdmin(Admin admin) {
 		return ClientBuilder.newClient(new ClientConfig()) //
 			.target(SERVER).path("api/admin/login") //
 			.request(APPLICATION_JSON) //
 			.accept(APPLICATION_JSON) //
-			.post(Entity.entity(admin, APPLICATION_JSON), Admin.class);
+			.post(Entity.entity(admin, APPLICATION_JSON), String.class);
 	}
 }
