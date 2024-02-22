@@ -63,15 +63,15 @@ public class AdminController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<Admin> login(@RequestBody Admin admin) {
+    public ResponseEntity<String> login(@RequestBody Admin admin) {
         if (admin.username.isEmpty() || !repo.existsById(admin.username)) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("Missing credentials");
         }
         Admin exist = repo.findById(admin.username).orElse(null);
         if (exist != null && exist.password.equals(admin.password)) {
-            return ResponseEntity.ok(admin);
+            return ResponseEntity.ok().body("Login successfully");
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest().body("Invalid credentials");
     }
 
     private static boolean isNullOrEmpty(String s) {

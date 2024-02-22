@@ -26,6 +26,15 @@ public class Admin {
         this.email = email;
     }
 
+    public String getUsername() {
+        return this.username;
+    }
+    public String getEmail() {
+        return this.email;
+    }
+    public String getPassword() {
+        return this.password;
+    }
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);

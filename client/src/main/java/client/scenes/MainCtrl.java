@@ -32,8 +32,11 @@ public class MainCtrl {
     private AddParticipantsCtrl participantsCtrl;
     private Scene participants;
 
+    private LoginCtrl loginCtrl;
+    private Scene login;
+
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-            Pair<AddQuoteCtrl, Parent> add, Pair<AddParticipantsCtrl, Parent> participant) {
+            Pair<AddQuoteCtrl, Parent> add, Pair<AddParticipantsCtrl, Parent> participant, Pair<LoginCtrl, Parent> login) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -41,10 +44,15 @@ public class MainCtrl {
         this.addCtrl = add.getKey();
         this.add = new Scene(add.getValue());
 
+        this.loginCtrl = login.getKey();
+        this.login = new Scene(login.getValue());
+
+        showLogin();
+
         this.participantsCtrl = participant.getKey();
         this.participants = new Scene(participant.getValue());
 
-        showOverview();
+        // showOverview();
         primaryStage.show();
     }
 
@@ -52,6 +60,12 @@ public class MainCtrl {
         primaryStage.setTitle("Quotes: Overview");
         primaryStage.setScene(overview);
         overviewCtrl.refresh();
+    }
+
+    public void showLogin() {
+        primaryStage.setTitle("Login: Admin");
+        primaryStage.setScene(login);
+        loginCtrl.clearFields();
     }
 
     public void showAdd() {
