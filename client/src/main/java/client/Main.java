@@ -20,11 +20,8 @@ import static com.google.inject.Guice.createInjector;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-<<<<<<< client/src/main/java/client/Main.java
 import client.scenes.LoginCtrl;
-=======
 import client.scenes.AddParticipantsCtrl;
->>>>>>> client/src/main/java/client/Main.java
 import com.google.inject.Injector;
 
 import client.scenes.AddQuoteCtrl;
@@ -44,13 +41,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-
         var overview = FXML.load(QuoteOverviewCtrl.class, "client", "scenes", "QuoteOverview.fxml");
         var add = FXML.load(AddQuoteCtrl.class, "client", "scenes", "AddQuote.fxml");
         var loginAdmin = FXML.load(LoginCtrl.class, "client", "scenes", "LoginView.fxml");
-
-        var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage, overview, add, loginAdmin);
 
         var participants = FXML.load(AddParticipantsCtrl.class, "client", "scenes", "AddParticipants.fxml");
 
