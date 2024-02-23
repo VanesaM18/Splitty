@@ -14,13 +14,11 @@ import java.util.Set;
 @Entity
 public class Event {
 
+    private static final int INVITE_CODE_LENGTH = 6;
     @Id
     @GeneratedValue
     private Long id;
-
     private String name;
-
-    private static final int INVITE_CODE_LENGTH = 6;
     private String inviteCode;
 
     // TODO: Should we use LocalDateTime, or does ZonedDateTime or OffsetDateTime make more sense?
@@ -81,6 +79,13 @@ public class Event {
         this.inviteCode = inviteCode;
     }
 
+    public void generateInviteCode() {
+        CodeGenerator generator = new CodeGenerator(new Random());
+        String code = generator.generateCode(INVITE_CODE_LENGTH);
+
+        setInviteCode(code);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -94,10 +99,4 @@ public class Event {
         return Objects.hash(id, getName(), getInviteCode(), getDateTime(), getParticipants());
     }
 
-    public void generateInviteCode() {
-        CodeGenerator generator = new CodeGenerator(new Random());
-        String code = generator.generateCode(INVITE_CODE_LENGTH);
-
-        setInviteCode(code);
-    }
 }
