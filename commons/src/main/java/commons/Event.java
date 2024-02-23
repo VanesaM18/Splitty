@@ -20,8 +20,6 @@ public class Event {
     private Long id;
     private String name;
     private String inviteCode;
-
-    // TODO: Should we use LocalDateTime, or does ZonedDateTime or OffsetDateTime make more sense?
     private LocalDateTime dateTime;
 
     @ManyToMany
