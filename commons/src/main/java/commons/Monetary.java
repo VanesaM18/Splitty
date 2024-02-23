@@ -2,6 +2,8 @@ package commons;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
+import java.util.Arrays;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -21,8 +23,8 @@ public class Monetary {
         return this.value % 100;
     }
 
-    public static Monetary add(Monetary valueA, Monetary valueB) {
-        return new Monetary(valueA.value + valueB.value);
+    public static Monetary add(Monetary... monetaries) {
+        return new Monetary(Arrays.stream(monetaries).mapToLong(mon -> mon.value).sum());
     }
 
     @Override
