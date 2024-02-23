@@ -46,19 +46,6 @@ public class Main extends Application {
         launch();
     }
 
-    private void loadView(Locale locale) {
-        try {
-
-            //FXML.setResources(ResourceBundle.getBundle("bundles.MyBundle", locale));
-           // Pane pane = (BorderPane) FXML.load(this.getClass().getResource("MyView.fxml").openStream());
-            // replace the content
-            StackPane content = (StackPane) ((VBox) stage.getScene().getRoot()).getChildren().get(1);
-            content.getChildren().clear();
-            content.getChildren().add(pane);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
 
     @Override
     public void start(Stage primaryStage) throws IOException {
