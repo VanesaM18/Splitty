@@ -20,7 +20,7 @@ import static com.google.inject.Guice.createInjector;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.Optional;
 
 import client.scenes.LoginCtrl;
 import client.scenes.AddParticipantsCtrl;
@@ -30,16 +30,13 @@ import client.scenes.AddQuoteCtrl;
 import client.scenes.MainCtrl;
 import client.scenes.QuoteOverviewCtrl;
 import javafx.application.Application;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 
     private static final Injector INJECTOR = createInjector(new MyModule());
     private static final MyFXML FXML = new MyFXML(INJECTOR);
+    private static Main instance;
     private Stage stage;
 
     public static void main(String[] args) throws URISyntaxException, IOException {
@@ -49,6 +46,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+        instance = this;
         this.stage = primaryStage;
         var overview = FXML.load(QuoteOverviewCtrl.class, "client", "scenes", "QuoteOverview.fxml");
         var add = FXML.load(AddQuoteCtrl.class, "client", "scenes", "AddQuote.fxml");
@@ -59,6 +57,11 @@ public class Main extends Application {
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         mainCtrl.initialize(primaryStage, overview, add, participants, loginAdmin);
     }
+
+    public static Optional<Main> getInstance () {
+        return Optional.of(instance);
+    }
+
 
     public void updateLocale(Locale locale) throws IOException {
         var overview = FXML.load(QuoteOverviewCtrl.class, locale, "client", "scenes", "QuoteOverview.fxml");

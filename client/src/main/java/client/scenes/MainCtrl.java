@@ -46,7 +46,6 @@ public class MainCtrl {
 
         this.loginCtrl = login.getKey();
         this.login = new Scene(login.getValue());
-
         showLogin();
 
         this.participantsCtrl = participant.getKey();
