@@ -51,7 +51,23 @@ public class MonetaryTest {
     public void testMajor() {
         var monetary = new Monetary(1234, "EUR");
 
-        assertEquals(monetary.getMajor(), 12);
+        assertEquals(12, monetary.getMajor());
+    }
+
+    @Test
+    public void testAddition() {
+        var monetary1 = new Monetary(1202, "EUR");
+        var monetary2 = new Monetary(5205, "EUR");
+        Monetary sum = Monetary.add(monetary1, monetary2);
+
+        assertEquals(1202 + 5205, sum.getInternalValue());
+    }
+
+    @Test
+    public void testAdditionOfDifferentCurrenciesThrows() {
+        var eur = new Monetary(1, "EUR");
+        var usd = new Monetary(1, "USD");
+        assertThrows(IllegalArgumentException.class, () -> Monetary.add(eur, usd));
     }
 
     @Test

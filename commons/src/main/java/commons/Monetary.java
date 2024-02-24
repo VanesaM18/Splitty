@@ -69,8 +69,30 @@ public class Monetary {
         return this.value % this.fractionDivider;
     }
 
-    public static Monetary add(Monetary... monetaries) {
-        return new Monetary(Arrays.stream(monetaries).mapToLong(mon -> mon.value).sum());
+    /**
+     * Add up different monetary values
+     * 
+     * All of the monetary values must be of the same currency; Currency conversion
+     * is not implemented in this method.
+     *
+     * @param monetaries the monetary values to add up
+     * @return the sum of all the values
+     * @throws IllegalArgumentException if no monetary values are passed, or if they
+     *                                  are not the same currency
+     */
+    public static Monetary add(Monetary... monetaries) throws IllegalArgumentException {
+        if (monetaries.length <= 1) {
+            throw new IllegalArgumentException("Must have at least one monetary value as an argument");
+        }
+        Currency curr = monetaries[0].getCurrency();
+
+        long sum = Arrays.stream(monetaries).peek(mon -> {
+            if (mon.getCurrency() != curr) {
+                throw new IllegalArgumentException("All monetaries must have the same currency");
+            }
+        }).mapToLong(mon -> mon.value).sum();
+
+        return new Monetary(sum, curr);
     }
 
     @Override
