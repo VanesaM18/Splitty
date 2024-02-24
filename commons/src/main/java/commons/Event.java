@@ -5,9 +5,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Random;
 import java.util.Set;
 
 
@@ -78,7 +78,7 @@ public class Event {
     }
 
     public void generateInviteCode() {
-        CodeGenerator generator = new CodeGenerator(new Random());
+        CodeGenerator generator = new CodeGenerator(new SecureRandom());
         String code = generator.generateCode(INVITE_CODE_LENGTH);
 
         setInviteCode(code);

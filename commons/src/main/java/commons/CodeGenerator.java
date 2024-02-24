@@ -1,6 +1,6 @@
 package commons;
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 /**
  * This class provides a method for the generation of a random alphanumeric string of a given length.
@@ -9,9 +9,9 @@ public class CodeGenerator {
 
     private final static String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-    private final Random random;
+    private final SecureRandom random;
 
-    public CodeGenerator(Random random) {
+    public CodeGenerator(SecureRandom random) {
         this.random = random;
     }
 
