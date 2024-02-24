@@ -3,6 +3,7 @@ package commons;
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 import java.util.Arrays;
+import java.util.Currency;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -14,15 +15,29 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  */
 public class Monetary {
     private long value;
-    private String unit;
+    private Currency currency;
+    // 10^(currency fraction digits)
+    private long fractionDivider;
 
     public Monetary(long value) {
         this(value, "EUR");
     }
 
-    public Monetary(long value, String unit) {
+    /**
+     * Construct a new Monetary type with a custom currency. The internal value
+     * is stored in the minor unit (in case of EUR, this would be cents)
+     *
+     * @param value    The internal value to set.
+     * @param currency The currency to use
+     * @throws IllegalArgumentException
+     */
+    public Monetary(long value, Currency currency) {
         this.value = value;
-        this.unit = unit;
+        this.setCurrency(currency);
+    }
+
+    public Monetary(long value, String currency) throws IllegalArgumentException {
+        this(value, Currency.getInstance(currency));
     }
 
     public long getInternalValue() {
@@ -34,20 +49,24 @@ public class Monetary {
      * 
      * @return the monetary unit (ISO 4217)
      */
-    public String getUnit() {
-        return this.unit;
+    public Currency getCurrency() {
+        return this.currency;
+    }
+
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
+        this.fractionDivider = 1;
+        for (int i = 0; i < this.currency.getDefaultFractionDigits(); i++) {
+            this.fractionDivider *= 10;
+        }
     }
 
     public long getMajor() {
-        // TODO: Right now we only support currencies with 2 digits after the decimal
-        // separator
-        return this.value / 100;
+        return this.value / this.fractionDivider;
     }
 
     public long getMinor() {
-        // TODO: Right now we only support currencies with 2 digits after the decimal
-        // separator
-        return this.value % 100;
+        return this.value % this.fractionDivider;
     }
 
     public static Monetary add(Monetary... monetaries) {
