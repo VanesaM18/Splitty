@@ -70,6 +70,12 @@ Communication is key, and if someone doesn't understand the full picture that ca
 
    - *Transparency*
 We value transparency, because, as stated previously, we want everybody to be on the same page. Whether we are having personal problems or have critique, we should not be afraid to tell our teammates. This means making sure that we are open to critique and trying to understand each other before jumping to conclusions.
+
+- Assignment description
+    - In this project, our team will actively enhance and apply object-oriented programming skills to develop a client-server prototype application. The primary objective will be to create a scalable application as a base platform that allows the required technologies to be further implemented. The importance of addressing it as a foundational platform should enable us to construct on the basic requirements by utilising based design patterns, resulting in an application that can be further extended and improved.
+	- Nonetheless, the project places a strong emphasis on developing effective teamwork, promoting an environment of open communication where each of us can evolve within our framework, where our diverse perspectives can contribute to the growth of the project and of each other's abilities.
+	- Beyond the technical aspects, the team will aspire to not only meet the target points of the functional and non-functional requirements of the final application, but to make of this experience an opportunity to learn in the scope of our future personal and professional career.
+
 - Target or ambition level
    - Our target grade for this project is 7.75, which we collectively agreed upon after considering each member's desired grade. Recognizing that some of us aim to pass while others aspire for a perfect score of 10, we found 7.75 to be a reasonable compromise that aligns with our collective goals. This target grade corresponds to a 'Good' assessment rating for most of the evaluation criteria.
    - Our goal, however, is not only to meet the criteria for a 'Good' assessment but also to maximize the project's  and ours potentials. We believe that focusing on the essentials will lay a solid foundation for success. However, we also acknowledge the potential for improvement and enhancement. Therefore, if time permits, we plan to incorporate additional features and optimizations to elevate our project to a higher level. By aiming for an 'Excellent' assessment rating across multiple components and adding supplementary features, we aim to exceed our initial target and potentially achieve a grade of 9 or higher, provided that our efforts proceed smoothly and effectively.
@@ -128,6 +134,14 @@ Our commitment to great work and one another is what sets us apart. In addition 
   - If a member has poor attitude towards the rest of the group, similar to a member being tardy a discussion with said member will take place. If this attitude is not corrected in sufficient time and with enough effort, a TA will be informed of this member's behaviour and other steps in compliance with the seriousness of the situation will be enforced.
 
   - In case of any disagreements about the project in the group, each member in the group should try and explain their standpoint and why they believe it to be correct. The team should try to come to a unanimous decision and if not a vote will be taken, if the voting outcome is equal the designated chairs vote will count double. In the event that the team still seems to be dissatisfied a TA will be invoked to further help to decide if the decision is smart or not and serve as a third unbiased party in the disagreement.
+
+- Decision-making
+    - The team underscores the significance of collaborative leadership and inclusive participation by emphasising team voting and chair decisions as the primary means of resolving conflicts.
+	- Prioritising fairness and equality, each member has an equal and influential role in the decision-making process. This commitment ensures an environment where diverse perspectives are valued and contribute to a positive team dynamic. The team chair acts as a neutral arbiter to ensure a fair resolution and to make sure that the decision activities remain objective.
+	- Additionally, the chair serves as the final decision making authority, aiming to prioritise the project progress. As the last resort, the involvement of the Teaching Assistant will be purely in the scope of guidance, such that the team fosters addressing and resolving issues independently.
+	- Decisions are promptly made to avoid unnecessary delays, this way the team stays on track and achieves its objectives within set timelines. Moreover, encouraging open dialogue allows each team member to express concerns and collaboratively reach compromises.
+	- Lastly, the team will make sure that the collaborative dynamic will be optimised over time by periodically reviewing the past decision making processes. 
+
 
 - Dealing with consequences
   - Similar to what was said prior in the behaviour section about disagreements, for conflicts in the group similar actions will be taken. Considering the fact that a conflict can be more than just a disagreement, we will elaborate on different types of conflicts and how the team as a whole should deal with them.
