@@ -81,6 +81,9 @@ public class MainCtrl {
         primaryStage.show();
     }
 
+    /**
+     * Prepares and displays the settings
+     */
     public void showSettings() {
         primaryStage.setTitle("Settings");
         primaryStage.setScene(settings);

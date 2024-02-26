@@ -15,13 +15,6 @@
  */
 package client;
 
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import com.google.inject.Injector;
 
 import javafx.fxml.FXMLLoader;
@@ -30,6 +23,13 @@ import javafx.util.Builder;
 import javafx.util.BuilderFactory;
 import javafx.util.Callback;
 import javafx.util.Pair;
+
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class MyFXML {
 
@@ -44,11 +44,26 @@ public class MyFXML {
     }
 
 
+    /**
+     * Loads a FXML file specified by the given class and path parts with localization support
+     *
+     * @param c The class of the controller associated with the FXML file.
+     * @param locale The locale to use for loading resource bundles.
+     * @param parts The parts of the path to the FXML file
+     * @param <T> The type of the controller class.
+     * @return The loaded component
+     * @throws RuntimeException if the FXML file cannot be loaded.
+     */
     public <T> Pair<T, Parent> load(Class<T> c, Locale locale, String... parts) {
         try {
-            var loader = new FXMLLoader(getLocation(parts), null, null, new MyFactory(),
-                                        StandardCharsets.UTF_8);
-            loader.setResources(getBundle(locale));
+            var loader =
+                    new FXMLLoader(
+                            getLocation(parts),
+                            null,
+                            null,
+                            new MyFactory(),
+                            StandardCharsets.UTF_8);
+            loader.setResources(ResourceBundle.getBundle("bundles.Splitty", locale));
             Parent parent = loader.load();
             T ctrl = loader.getController();
             return new Pair<>(ctrl, parent);
@@ -56,6 +71,7 @@ public class MyFXML {
             throw new RuntimeException(e);
         }
     }
+
 
     private ResourceBundle getBundle(Locale locale) {
         var bundle = ResourceBundle.getBundle("bundles.Splitty", locale);

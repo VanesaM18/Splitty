@@ -10,10 +10,20 @@ import java.util.List;
 public class ClassPathScanner {
     private final String packageName;
 
+    /**
+     * constructs a new ClassPathScanner object
+     * @param packageName name of the package
+     */
     public ClassPathScanner(String packageName) {
         this.packageName = packageName;
     }
 
+    /**
+     * Gets classes present
+     * @return the list of classes present
+     * @throws ClassNotFoundException
+     * @throws IOException
+     */
     public List<Class<?>> getClasses() throws ClassNotFoundException, IOException {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         String path = packageName.replace('.', '/');
@@ -33,7 +43,15 @@ public class ClassPathScanner {
         return classes;
     }
 
-    private List<Class<?>> findClasses(File directory, String packageName) throws ClassNotFoundException {
+    /**
+     * Finds the existent classes in a package
+     * @param directory directory
+     * @param packageName package name
+     * @return list of found classes found in the provided package
+     * @throws ClassNotFoundException
+     */
+    private List<Class<?>> findClasses(File directory, String packageName)
+            throws ClassNotFoundException {
         List<Class<?>> classes = new ArrayList<>();
         if (!directory.exists()) {
             return classes;
@@ -54,7 +72,7 @@ public class ClassPathScanner {
                                 packageName
                                         + '.'
                                         + file.getName()
-                                        .substring(0, file.getName().length() - 6)));
+                                                .substring(0, file.getName().length() - 6)));
             }
         }
 

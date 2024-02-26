@@ -15,11 +15,6 @@
  */
 package client;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Locale;
-import java.util.Optional;
-
 import static com.google.inject.Guice.createInjector;
 
 import client.scenes.AddParticipantsCtrl;
@@ -27,11 +22,17 @@ import client.scenes.AddQuoteCtrl;
 import client.scenes.LoginCtrl;
 import client.scenes.MainCtrl;
 import client.scenes.QuoteOverviewCtrl;
+import client.scenes.SettingsCtrl;
 
 import com.google.inject.Injector;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Locale;
+import java.util.Optional;
 
 public class Main extends Application {
 
@@ -81,11 +82,19 @@ public class Main extends Application {
      */
     public void start(Locale locale) throws IOException {
         var settings = FXML.load(SettingsCtrl.class, locale, "client", "scenes", "Settings.fxml");
-        var overview = FXML.load(QuoteOverviewCtrl.class, locale, "client", "scenes", "QuoteOverview.fxml");
+        var overview =
+                FXML.load(
+                        QuoteOverviewCtrl.class, locale, "client", "scenes", "QuoteOverview.fxml");
         var add = FXML.load(AddQuoteCtrl.class, locale, "client", "scenes", "AddQuote.fxml");
         var loginAdmin = FXML.load(LoginCtrl.class, locale, "client", "scenes", "LoginView.fxml");
 
-        var participants = FXML.load(AddParticipantsCtrl.class, locale, "client", "scenes", "AddParticipants.fxml");
+        var participants =
+                FXML.load(
+                        AddParticipantsCtrl.class,
+                        locale,
+                        "client",
+                        "scenes",
+                        "AddParticipants.fxml");
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         mainCtrl.initialize(this.stage, settings, overview, add, participants, loginAdmin);

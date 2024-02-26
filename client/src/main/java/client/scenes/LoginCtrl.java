@@ -15,11 +15,14 @@
  */
 package client.scenes;
 
+import client.utils.ServerUtils;
+
 import com.google.inject.Inject;
 
-import client.utils.ServerUtils;
 import commons.Admin;
+
 import jakarta.ws.rs.WebApplicationException;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
@@ -101,6 +104,9 @@ public class LoginCtrl {
         }
     }
 
+    /**
+     * Shows the settings page
+     */
     public void openSettings () {
         mainCtrl.showSettings();
     }
