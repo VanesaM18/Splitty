@@ -1,13 +1,6 @@
 package client.utils.language.implementations;
 
-import client.Main;
-import client.utils.language.Language;
 import client.utils.language.LanguageTemplate;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.control.Button;
-import java.io.IOException;
-import java.util.Locale;
 
 public class English extends LanguageTemplate {
 

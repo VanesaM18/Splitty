@@ -4,7 +4,6 @@ import client.utils.ServerUtils;
 import client.utils.language.LanguageProcessor;
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
 public class SettingsCtrl {
