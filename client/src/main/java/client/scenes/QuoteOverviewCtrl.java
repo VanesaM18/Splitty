@@ -39,10 +39,14 @@ public class QuoteOverviewCtrl implements Initializable {
 
     private ObservableList<Quote> data;
 
-    @FXML private TableView<Quote> table;
-    @FXML private TableColumn<Quote, String> colFirstName;
-    @FXML private TableColumn<Quote, String> colLastName;
-    @FXML private TableColumn<Quote, String> colQuote;
+    @FXML
+    private TableView<Quote> table;
+    @FXML
+    private TableColumn<Quote, String> colFirstName;
+    @FXML
+    private TableColumn<Quote, String> colLastName;
+    @FXML
+    private TableColumn<Quote, String> colQuote;
 
     @Inject
     public QuoteOverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
@@ -53,9 +57,9 @@ public class QuoteOverviewCtrl implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         colFirstName.setCellValueFactory(
-                q -> new SimpleStringProperty(q.getValue().getPerson().firstName));
+                q -> new SimpleStringProperty(q.getValue().getPerson().getFirstName()));
         colLastName.setCellValueFactory(
-                q -> new SimpleStringProperty(q.getValue().getPerson().lastName));
+                q -> new SimpleStringProperty(q.getValue().getPerson().getLastName()));
         colQuote.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().getQuote()));
     }
 

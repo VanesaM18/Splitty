@@ -11,9 +11,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @Entity
 public class Admin {
-    @Id public String username;
-    public String password;
-    public String email;
+    @Id
+    private String username;
+    private String password;
+    private String email;
 
     private Admin() {
         // for object mapper

@@ -39,7 +39,7 @@ public class AdminController {
         this.repo = repo;
     }
 
-    @GetMapping(path = {"", "/"})
+    @GetMapping(path = { "", "/" })
     public List<Admin> getAll() {
         return repo.findAll();
     }
@@ -52,12 +52,12 @@ public class AdminController {
         return ResponseEntity.ok(repo.findById(username).get());
     }
 
-    @PostMapping(path = {"", "/"})
+    @PostMapping(path = { "", "/" })
     public ResponseEntity<Admin> add(@RequestBody Admin admin) {
 
-        if (admin.username == null
-                || repo.existsById(admin.username)
-                || isNullOrEmpty(admin.email)) {
+        if (admin.getUsername() == null
+                || repo.existsById(admin.getUsername())
+                || isNullOrEmpty(admin.getEmail())) {
             return ResponseEntity.badRequest().build();
         }
 
@@ -67,11 +67,11 @@ public class AdminController {
 
     @PostMapping("login")
     public ResponseEntity<String> login(@RequestBody Admin admin) {
-        if (admin.username.isEmpty() || !repo.existsById(admin.username)) {
+        if (admin.getUsername().isEmpty() || !repo.existsById(admin.getUsername())) {
             return ResponseEntity.badRequest().body("Missing credentials");
         }
-        Admin exist = repo.findById(admin.username).orElse(null);
-        if (exist != null && exist.password.equals(admin.password)) {
+        Admin exist = repo.findById(admin.getUsername()).orElse(null);
+        if (exist != null && exist.getPassword().equals(admin.getPassword())) {
             return ResponseEntity.ok().body("Login successfully");
         }
         return ResponseEntity.badRequest().body("Invalid credentials");
