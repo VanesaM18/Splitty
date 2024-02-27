@@ -37,50 +37,95 @@ public class Person {
 
     private String lastName;
 
+    /**
+     * Creates a person who can publish quotes.
+     * @param firstName The first name of the person.
+     * @param lastName The last name of the person.
+     */
     public Person(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
     }
 
-    @SuppressWarnings("unused")
-    private Person() {
+    /**
+     * Creates a person.
+     * Used for object mapping.
+     */
+    public Person() {
         // for object mapper
     }
 
+    /**
+     * Retrieves the ID associated with this person.
+     * @return the person's ID.
+     */
     public long getId() {
         return id;
     }
 
+    /**
+     * Sets the ID associated with this person.
+     * @param id The new id to be set.
+     */
     public void setId(long id) {
         this.id = id;
     }
 
+    /**
+     * Retrieves the first name associated with this person.
+     * @return the person's first name.
+     */
     public String getFirstName() {
         return firstName;
     }
 
+    /**
+     * Sets the first name associated with this quote.
+     * @param firstName The new first name to be set.
+     */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
+    /**
+     * Retrieves the last name associated with this person.
+     * @return the person's last name.
+     */
     public String getLastName() {
         return lastName;
     }
 
+    /**
+     * Sets the last name associated with this quote.
+     * @param lastName The new last name to be set.
+     */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
+    /**
+     * Checks if another object is exactly the same as this one.
+     * @param obj Object that needs to be checked.
+     * @return Weather the given object is equal to this one.
+     */
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
 
+    /**
+     * Computes a hash code for this object.
+     * @return A hash code value for this object.
+     */
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
+    /**
+     * Turns the person into a string.
+     * @return String representation of the object.
+     */
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);

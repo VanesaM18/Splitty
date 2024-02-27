@@ -37,16 +37,31 @@ public class QuoteController {
     private final Random random;
     private final QuoteRepository repo;
 
+    /**
+     * Constructs a QuoteController with the specified random generator and quote repository.
+     * @param random An instance of Random for generating random values.
+     * @param repo An instance of QuoteRepository for accessing quote data.
+     */
     public QuoteController(Random random, QuoteRepository repo) {
         this.random = random;
         this.repo = repo;
     }
 
+    /**
+     * Retrieves all quotes.
+     * @return A list of Quote objects representing all quotes.
+     */
     @GetMapping(path = { "", "/" })
     public List<Quote> getAll() {
         return repo.findAll();
     }
 
+    /**
+     * Retrieves a quote by its ID.
+     * @param id The ID of the quote to retrieve.
+     * @return ResponseEntity containing the retrieved Quote if found,
+     * or a bad request response if the ID is invalid or the quote does not exist.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Quote> getById(@PathVariable("id") long id) {
         if (id < 0 || !repo.existsById(id)) {
@@ -55,6 +70,14 @@ public class QuoteController {
         return ResponseEntity.ok(repo.findById(id).get());
     }
 
+    /**
+     * Adds a new quote.
+     *
+     * @param quote The Quote object to add.
+     *
+     * @return ResponseEntity containing the added Quote if successful,
+     * or a bad request response if the quote data is invalid.
+     */
     @PostMapping(path = { "", "/" })
     public ResponseEntity<Quote> add(@RequestBody Quote quote) {
 
@@ -69,10 +92,20 @@ public class QuoteController {
         return ResponseEntity.ok(saved);
     }
 
+    /**
+     * Checks if a string is null or empty.
+     * @param s The string to check.
+     * @return True if the string is null or empty, otherwise false.
+     */
     private static boolean isNullOrEmpty(String s) {
         return s == null || s.isEmpty();
     }
 
+    /**
+     * Retrieves a random quote.
+     * @return ResponseEntity containing a randomly selected Quote object if available,
+     * or a bad request response if there are no quotes in the repository.
+     */
     @GetMapping("rnd")
     public ResponseEntity<Quote> getRandom() {
         var quotes = repo.findAll();

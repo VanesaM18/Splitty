@@ -42,17 +42,29 @@ public class AddQuoteCtrl {
 
     @FXML private TextField quote;
 
+    /**
+     * Controller responsible for handling the quote overview functionality.
+     * @param server An instance of ServerUtils for server-related operations.
+     * @param mainCtrl An instance of MainCtrl for coordinating with the main controller.
+     */
     @Inject
     public AddQuoteCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
     }
 
+    /**
+     * Cancels the process of adding a new quote.
+     */
     public void cancel() {
         clearFields();
         mainCtrl.showOverview();
     }
 
+    /**
+     * Adds the quote to the server if the input is valid.
+     * Throws an error if the request is bad.
+     */
     public void ok() {
         try {
             server.addQuote(getQuote());
@@ -69,18 +81,29 @@ public class AddQuoteCtrl {
         mainCtrl.showOverview();
     }
 
+    /**
+     * Creates a quote from the text fields.
+     * @return the created quote.
+     */
     private Quote getQuote() {
         var p = new Person(firstName.getText(), lastName.getText());
         var q = quote.getText();
         return new Quote(p, q);
     }
 
+    /**
+     * Clears the text fields.
+     */
     private void clearFields() {
         firstName.clear();
         lastName.clear();
         quote.clear();
     }
 
+    /**
+     * Event handler for pressing a key.
+     * @param e the key that is pressed
+     */
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
             case ENTER:

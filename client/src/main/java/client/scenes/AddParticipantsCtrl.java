@@ -56,7 +56,7 @@ public class AddParticipantsCtrl {
     }
 
     /**
-     * Adds the participant if the input is valid.
+     * Adds the participant to the server if the input is valid.
      * Throws an error if the request is bad.
      */
     public void ok() {
