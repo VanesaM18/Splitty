@@ -35,6 +35,19 @@ public class MainCtrl {
     private LoginCtrl loginCtrl;
     private Scene login;
 
+    /**
+     * Initializes the app with the specified primary stage and scenes for various controllers.
+     *
+     * @param primaryStage The primary stage of the application.
+     *
+     * @param overview A Pair containing the QuoteOverviewCtrl and its corresponding Parent scene.
+     *
+     * @param add A Pair containing the AddQuoteCtrl and its corresponding Parent scene.
+     *
+     * @param participant A Pair containing the AddParticipantsCtrl and its corresponding scene.
+     *
+     * @param login A Pair containing the LoginCtrl and its corresponding Parent scene.
+     */
     public void initialize(
             Stage primaryStage,
             Pair<QuoteOverviewCtrl, Parent> overview,
@@ -59,24 +72,47 @@ public class MainCtrl {
         primaryStage.show();
     }
 
+    /**
+     * Displays the overview of quotes.
+     * This method sets the title of the primary stage to "Quotes: Overview",
+     * sets the scene to the overview scene
+     * and refreshes the content of the overview controller.
+     */
     public void showOverview() {
         primaryStage.setTitle("Quotes: Overview");
         primaryStage.setScene(overview);
         overviewCtrl.refresh();
     }
 
+    /**
+     * Displays the login view.
+     * This method sets the title of the primary stage to "Login: Admin"
+     * and sets the scene to the login scene.
+     */
     public void showLogin() {
         primaryStage.setTitle("Login: Admin");
         primaryStage.setScene(login);
         loginCtrl.clearFields();
     }
 
+    /**
+     * Displays the window for adding a new quote.
+     * This method sets the title of the primary stage to "Quotes: Adding Quote",
+     * sets the scene to the add scene
+     * and sets a key pressed event handler for the add controller.
+     */
     public void showAdd() {
         primaryStage.setTitle("Quotes: Adding Quote");
         primaryStage.setScene(add);
         add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
     }
 
+    /**
+     * Displays the window for adding a new participant.
+     * This method sets the title of the primary stage to "Add/Edit Participants",
+     * sets the scene to the participants scene
+     * and sets a key pressed event handler for the participant's controller.
+     */
     public void showParticipants() {
         primaryStage.setTitle("Add/Edit Participants");
         primaryStage.setScene(participants);
