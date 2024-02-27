@@ -26,17 +26,28 @@ public class AddParticipantsCtrl {
 
     @FXML private TextField bic;
 
+    /**
+     * Controller responsible for handling the addition of participants functionality.
+     * @param server An instance of ServerUtils for server-related operations.
+     * @param mainCtrl An instance of MainCtrl for coordinating with the main controller.
+     */
     @Inject
     public AddParticipantsCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
     }
 
+    /**
+     * Aborts the process of adding a new participant.
+     */
     public void abort() {
         clearFields();
         mainCtrl.showOverview();
     }
 
+    /**
+     * Clears the text fields.
+     */
     private void clearFields() {
         name.clear();
         email.clear();
@@ -44,6 +55,10 @@ public class AddParticipantsCtrl {
         bic.clear();
     }
 
+    /**
+     * Adds the participant if the input is valid.
+     * Throws an error if the request is bad.
+     */
     public void ok() {
         try {
             server.addParticipant(getParticipant());
@@ -60,12 +75,20 @@ public class AddParticipantsCtrl {
         mainCtrl.showOverview();
     }
 
+    /**
+     * Creates a participant from the text fields.
+     * @return the created participant.
+     */
     private Participant getParticipant() {
         Participant p =
                 new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
         return p;
     }
 
+    /**
+     * Event handler for pressing a key.
+     * @param e the key that is pressed
+     */
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
             case ENTER:
