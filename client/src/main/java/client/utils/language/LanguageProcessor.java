@@ -28,8 +28,7 @@ public class LanguageProcessor {
                         constructor.setAccessible(true);
                         T instance = (T) constructor.newInstance();
                         implementations.add(instance);
-                    } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
-                             | InvocationTargetException e) {
+                    } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                         e.printStackTrace();
                     }
                 }

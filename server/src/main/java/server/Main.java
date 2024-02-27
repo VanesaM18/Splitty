@@ -15,30 +15,15 @@
  */
 package server;
 
-import commons.Admin;
-import commons.PasswordGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.context.ConfigurableApplicationContext;
-import server.database.AdminRepository;
 
 @SpringBootApplication
 @EntityScan(basePackages = { "commons", "server" })
 public class Main {
 
     public static void main(String[] args) {
-        ConfigurableApplicationContext context = SpringApplication.run(Main.class, args);
-        AdminRepository repo = context.getBean(AdminRepository.class);
-
-        PasswordGenerator generator = new PasswordGenerator(8);
-        String username = "admin";
-        String password = generator.generate();
-        if (repo.existsById(username)) {
-            repo.deleteById(username);
-        }
-        repo.save(new Admin(username, password, ""));
-        System.out.println("Connect to the admin overview with the following credentials:\n - username: "
-            + username + "\n - password: " + password + "\n");
+        SpringApplication.run(Main.class, args);
     }
 }

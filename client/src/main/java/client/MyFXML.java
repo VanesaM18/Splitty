@@ -39,12 +39,9 @@ public class MyFXML {
         this.injector = injector;
     }
 
-
-    public <T> Pair<T, Parent> load(Class<T> c, Locale locale, String... parts) {
+    public <T> Pair<T, Parent> load(Class<T> c, String... parts) {
         try {
-            var loader = new FXMLLoader(getLocation(parts), null, null, new MyFactory(),
-                                        StandardCharsets.UTF_8);
-            loader.setResources(getBundle(locale));
+            var loader = new FXMLLoader(getLocation(parts), null, null, new MyFactory(), StandardCharsets.UTF_8);
             Parent parent = loader.load();
             T ctrl = loader.getController();
             return new Pair<>(ctrl, parent);
@@ -53,9 +50,16 @@ public class MyFXML {
         }
     }
 
-    private ResourceBundle getBundle(Locale locale) {
-        var bundle = ResourceBundle.getBundle("bundles.Splitty", locale);
-        return bundle;
+    public <T> Pair<T, Parent> load(Class<T> c, Locale locale, String... parts) {
+        try {
+            var loader = new FXMLLoader(getLocation(parts), null, null, new MyFactory(), StandardCharsets.UTF_8);
+            loader.setResources(ResourceBundle.getBundle("resources.bundles.Splitty", locale));
+            Parent parent = loader.load();
+            T ctrl = loader.getController();
+            return new Pair<>(ctrl, parent);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private URL getLocation(String... parts) {
