@@ -12,6 +12,12 @@ public class CodeGenerator {
 
     private final SecureRandom random;
 
+    /**
+     * Create a new CodeGenerator.
+     * This classes uses the supplied SecureRandom to generate random alphanumeric codes.
+     *
+     * @param random the RNG to use for code generation.
+     */
     public CodeGenerator(SecureRandom random) {
         this.random = random;
     }
