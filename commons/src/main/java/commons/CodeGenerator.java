@@ -3,11 +3,12 @@ package commons;
 import java.security.SecureRandom;
 
 /**
- * This class provides a method for the generation of a random alphanumeric string of a given length.
+ * This class provides a method for the generation of a random alphanumeric string of a given
+ * length.
  */
 public class CodeGenerator {
 
-    private final static String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     private final SecureRandom random;
 
@@ -35,5 +36,4 @@ public class CodeGenerator {
 
         return result.toString();
     }
-
 }

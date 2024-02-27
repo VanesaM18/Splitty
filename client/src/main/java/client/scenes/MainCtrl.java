@@ -35,8 +35,12 @@ public class MainCtrl {
     private LoginCtrl loginCtrl;
     private Scene login;
 
-    public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-            Pair<AddQuoteCtrl, Parent> add, Pair<AddParticipantsCtrl, Parent> participant, Pair<LoginCtrl, Parent> login) {
+    public void initialize(
+            Stage primaryStage,
+            Pair<QuoteOverviewCtrl, Parent> overview,
+            Pair<AddQuoteCtrl, Parent> add,
+            Pair<AddParticipantsCtrl, Parent> participant,
+            Pair<LoginCtrl, Parent> login) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());

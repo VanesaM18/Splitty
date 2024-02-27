@@ -15,7 +15,7 @@
  */
 package server.api;
 
-import java.util.List;
+import commons.Admin;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,8 +25,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import commons.Admin;
 import server.database.AdminRepository;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -38,7 +39,7 @@ public class AdminController {
         this.repo = repo;
     }
 
-    @GetMapping(path = { "", "/" })
+    @GetMapping(path = {"", "/"})
     public List<Admin> getAll() {
         return repo.findAll();
     }
@@ -51,10 +52,12 @@ public class AdminController {
         return ResponseEntity.ok(repo.findById(username).get());
     }
 
-    @PostMapping(path = { "", "/" })
+    @PostMapping(path = {"", "/"})
     public ResponseEntity<Admin> add(@RequestBody Admin admin) {
 
-        if (admin.username == null || repo.existsById(admin.username) || isNullOrEmpty(admin.email)) {
+        if (admin.username == null
+                || repo.existsById(admin.username)
+                || isNullOrEmpty(admin.email)) {
             return ResponseEntity.badRequest().build();
         }
 

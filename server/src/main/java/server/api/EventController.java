@@ -1,8 +1,10 @@
 package server.api;
 
 import commons.Event;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import server.database.EventRepository;
 
 import java.util.List;
@@ -17,7 +19,7 @@ public class EventController {
         this.repo = repo;
     }
 
-    @GetMapping(path = { "", "/" })
+    @GetMapping(path = {"", "/"})
     public List<Event> getAll() {
         return repo.findAll();
     }
@@ -39,11 +41,12 @@ public class EventController {
         return ResponseEntity.ok(repo.findFirstByInviteCodeEqualsIgnoreCase(code));
     }
 
-    @PostMapping(path = { "", "/" })
+    @PostMapping(path = {"", "/"})
     public ResponseEntity<Event> add(@RequestBody Event event) {
         // NOTE: The participant list must be empty, people can only be added to an event by using
         // the invite code.
-        if (isNullOrEmpty(event.getName()) || event.getDateTime() == null
+        if (isNullOrEmpty(event.getName())
+                || event.getDateTime() == null
                 || (event.getParticipants() != null && !event.getParticipants().isEmpty())) {
             return ResponseEntity.badRequest().build();
         }
@@ -58,5 +61,4 @@ public class EventController {
     private static boolean isNullOrEmpty(String s) {
         return s == null || s.isEmpty();
     }
-
 }

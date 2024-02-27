@@ -13,9 +13,10 @@ public class Participant {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+
     private String name;
     private String email;
-    private  String iban;
+    private String iban;
     private String bic;
 
     public Participant(String name, String email, String iban, String bic) {
@@ -66,7 +67,10 @@ public class Participant {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Participant that = (Participant) o;
-        return Objects.equals(name, that.name) && Objects.equals(email, that.email) && Objects.equals(iban, that.iban) && Objects.equals(bic, that.bic);
+        return Objects.equals(name, that.name)
+                && Objects.equals(email, that.email)
+                && Objects.equals(iban, that.iban)
+                && Objects.equals(bic, that.bic);
     }
 
     @Override
@@ -76,11 +80,19 @@ public class Participant {
 
     @Override
     public String toString() {
-        return "Participant{" +
-                "name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", iban='" + iban + '\'' +
-                ", bic='" + bic + '\'' +
-                '}';
+        return "Participant{"
+                + "name='"
+                + name
+                + '\''
+                + ", email='"
+                + email
+                + '\''
+                + ", iban='"
+                + iban
+                + '\''
+                + ", bic='"
+                + bic
+                + '\''
+                + '}';
     }
 }

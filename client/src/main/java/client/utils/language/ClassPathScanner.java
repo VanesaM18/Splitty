@@ -33,7 +33,8 @@ public class ClassPathScanner {
         return classes;
     }
 
-    private List<Class<?>> findClasses(File directory, String packageName) throws ClassNotFoundException {
+    private List<Class<?>> findClasses(File directory, String packageName)
+            throws ClassNotFoundException {
         List<Class<?>> classes = new ArrayList<>();
         if (!directory.exists()) {
             return classes;
@@ -49,7 +50,12 @@ public class ClassPathScanner {
                 assert !file.getName().contains(".");
                 classes.addAll(findClasses(file, packageName + "." + file.getName()));
             } else if (file.getName().endsWith(".class")) {
-                classes.add(Class.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6)));
+                classes.add(
+                        Class.forName(
+                                packageName
+                                        + '.'
+                                        + file.getName()
+                                                .substring(0, file.getName().length() - 6)));
             }
         }
 

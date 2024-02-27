@@ -10,22 +10,23 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
 
-
 @Entity
 public class Event {
 
     private static final int INVITE_CODE_LENGTH = 6;
-    @Id
-    @GeneratedValue
-    private Long id;
+    @Id @GeneratedValue private Long id;
     private String name;
     private String inviteCode;
     private LocalDateTime dateTime;
 
-    @ManyToMany
-    private Set<Participant> participants;
+    @ManyToMany private Set<Participant> participants;
 
-    public Event(Long id, String name, String inviteCode, LocalDateTime dateTime, Set<Participant> participants) {
+    public Event(
+            Long id,
+            String name,
+            String inviteCode,
+            LocalDateTime dateTime,
+            Set<Participant> participants) {
         this.id = id;
         this.name = name;
         this.inviteCode = inviteCode;
@@ -89,12 +90,15 @@ public class Event {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Event event = (Event) o;
-        return Objects.equals(id, event.id) && Objects.equals(getName(), event.getName()) && Objects.equals(getInviteCode(), event.getInviteCode()) && Objects.equals(getDateTime(), event.getDateTime()) && Objects.equals(getParticipants(), event.getParticipants());
+        return Objects.equals(id, event.id)
+                && Objects.equals(getName(), event.getName())
+                && Objects.equals(getInviteCode(), event.getInviteCode())
+                && Objects.equals(getDateTime(), event.getDateTime())
+                && Objects.equals(getParticipants(), event.getParticipants());
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, getName(), getInviteCode(), getDateTime(), getParticipants());
     }
-
 }

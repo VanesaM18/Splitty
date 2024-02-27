@@ -1,11 +1,11 @@
 package commons;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.security.SecureRandom;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class CodeGeneratorTest {
 
@@ -13,7 +13,7 @@ class CodeGeneratorTest {
 
     @BeforeEach
     void setup() {
-        SecureRandom random = new SecureRandom(new byte[]{1, 2});
+        SecureRandom random = new SecureRandom(new byte[] {1, 2});
         generator = new CodeGenerator(random);
     }
 
@@ -46,12 +46,13 @@ class CodeGeneratorTest {
 
     @Test
     void generateCode_multipleCalls_codesAreDifferent() {
-        // NOTE: The generator is created using a SecureRandom object with a set seed to prevent this test from failing
+        // NOTE: The generator is created using a SecureRandom object with a set seed to prevent
+        // this
+        // test from failing
         // sometimes in some insanely rare circumstances.
         String code1 = generator.generateCode(12);
         String code2 = generator.generateCode(12);
 
         assertNotEquals(code1, code2);
     }
-
 }

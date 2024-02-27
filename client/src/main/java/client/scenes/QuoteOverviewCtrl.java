@@ -15,13 +15,12 @@
  */
 package client.scenes;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+import client.utils.ServerUtils;
 
 import com.google.inject.Inject;
 
-import client.utils.ServerUtils;
 import commons.Quote;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -30,6 +29,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 public class QuoteOverviewCtrl implements Initializable {
 
     private final ServerUtils server;
@@ -37,14 +39,10 @@ public class QuoteOverviewCtrl implements Initializable {
 
     private ObservableList<Quote> data;
 
-    @FXML
-    private TableView<Quote> table;
-    @FXML
-    private TableColumn<Quote, String> colFirstName;
-    @FXML
-    private TableColumn<Quote, String> colLastName;
-    @FXML
-    private TableColumn<Quote, String> colQuote;
+    @FXML private TableView<Quote> table;
+    @FXML private TableColumn<Quote, String> colFirstName;
+    @FXML private TableColumn<Quote, String> colLastName;
+    @FXML private TableColumn<Quote, String> colQuote;
 
     @Inject
     public QuoteOverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
@@ -54,9 +52,11 @@ public class QuoteOverviewCtrl implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        colFirstName.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().person.firstName));
-        colLastName.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().person.lastName));
-        colQuote.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().quote));
+        colFirstName.setCellValueFactory(
+                q -> new SimpleStringProperty(q.getValue().getPerson().firstName));
+        colLastName.setCellValueFactory(
+                q -> new SimpleStringProperty(q.getValue().getPerson().lastName));
+        colQuote.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().getQuote()));
     }
 
     public void addQuote() {

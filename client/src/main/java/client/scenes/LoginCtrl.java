@@ -15,11 +15,14 @@
  */
 package client.scenes;
 
+import client.utils.ServerUtils;
+
 import com.google.inject.Inject;
 
-import client.utils.ServerUtils;
 import commons.Admin;
+
 import jakarta.ws.rs.WebApplicationException;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
@@ -31,11 +34,9 @@ public class LoginCtrl {
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
 
-    @FXML
-    private TextField username;
+    @FXML private TextField username;
 
-    @FXML
-    private TextField password;
+    @FXML private TextField password;
 
     @Inject
     public LoginCtrl(ServerUtils server, MainCtrl mainCtrl) {
