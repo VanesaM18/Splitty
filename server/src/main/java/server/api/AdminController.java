@@ -35,15 +35,30 @@ public class AdminController {
 
     private final AdminRepository repo;
 
+    /**
+     * Create a new admin controller.
+     * This controller contains all api endpoints that have to do with admin.
+     *
+     * @param repo The repository used for creating, reading, updating and deleting admin.
+     */
     public AdminController(AdminRepository repo) {
         this.repo = repo;
     }
 
+    /**
+     * Gets all admin rows in our database
+     * @return the list of admins
+     */
     @GetMapping(path = { "", "/" })
     public List<Admin> getAll() {
         return repo.findAll();
     }
 
+    /**
+     * Gets if it exists an admin by its username
+     * @param username the username requested
+     * @return the record with the specific username
+     */
     @GetMapping("/{username}")
     public ResponseEntity<Admin> getByUsername(@PathVariable("username") String username) {
         if (username.isEmpty() || !repo.existsById(username)) {
@@ -51,7 +66,11 @@ public class AdminController {
         }
         return ResponseEntity.ok(repo.findById(username).get());
     }
-
+    /**
+     * Adds and admin account if the username it's not taken already
+     * @param admin the admin to be added
+     * @return the added admin
+     */
     @PostMapping(path = { "", "/" })
     public ResponseEntity<Admin> add(@RequestBody Admin admin) {
 
@@ -64,7 +83,11 @@ public class AdminController {
         Admin saved = repo.save(admin);
         return ResponseEntity.ok(saved);
     }
-
+    /**
+     * Checks if the admin account exists such that it can connect
+     * @param admin the admin credentials
+     * @return if the login was successful or not
+     */
     @PostMapping("login")
     public ResponseEntity<String> login(@RequestBody Admin admin) {
         if (admin.getUsername().isEmpty() || !repo.existsById(admin.getUsername())) {
@@ -76,7 +99,9 @@ public class AdminController {
         }
         return ResponseEntity.badRequest().body("Invalid credentials");
     }
-
+    /**
+     *  Checks if a string is null or empty
+     */
     private static boolean isNullOrEmpty(String s) {
         return s == null || s.isEmpty();
     }

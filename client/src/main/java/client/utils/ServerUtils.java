@@ -38,6 +38,11 @@ public class ServerUtils {
 
     private static final String SERVER = "http://localhost:8080/";
 
+    /**
+     * Get quotes the hard way
+     * @throws IOException
+     * @throws URISyntaxException
+     */
     public void getQuotesTheHardWay() throws IOException, URISyntaxException {
         var url = new URI("http://localhost:8080/api/quotes").toURL();
         var is = url.openConnection().getInputStream();
@@ -48,6 +53,10 @@ public class ServerUtils {
         }
     }
 
+    /**
+     * Get all the quotes stored in the database
+     * @return all the quotes
+     */
     public List<Quote> getQuotes() {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(SERVER)
@@ -57,6 +66,11 @@ public class ServerUtils {
                 .get(new GenericType<List<Quote>>() {});
     }
 
+    /**
+     * Add a quote
+     * @param quote to be added
+     * @return the added quote
+     */
     public Quote addQuote(Quote quote) {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(SERVER)
@@ -66,6 +80,11 @@ public class ServerUtils {
                 .post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
     }
 
+    /**
+     * Adds a participant
+     * @param p the participant to be added
+     * @return the added participant
+     */
     public Participant addParticipant(Participant p) {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(SERVER)
@@ -75,6 +94,11 @@ public class ServerUtils {
                 .post(Entity.entity(p, APPLICATION_JSON), Participant.class);
     }
 
+    /**
+     * Adds an admin
+     * @param admin to be added
+     * @return the added admin
+     */
     public Admin addAdmin(Admin admin) {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(SERVER)
@@ -84,6 +108,11 @@ public class ServerUtils {
                 .post(Entity.entity(admin, APPLICATION_JSON), Admin.class);
     }
 
+    /**
+     * For login
+     * @param admin credentials to be logged in with
+     * @return if was successful or not
+     */
     public String loginAdmin(Admin admin) {
         return ClientBuilder.newClient(new ClientConfig()) //
                 .target(SERVER)

@@ -40,10 +40,24 @@ public class Main extends Application {
     private static Main instance;
     private Stage stage;
 
+    /**
+     * The main of our client
+     * @param args to be passed to the client
+     * @throws URISyntaxException if anything happens related to URI
+     * @throws IOException if anything happens related to IO
+     */
     public static void main(String[] args) throws URISyntaxException, IOException {
         launch();
     }
 
+    /**
+     * It starts the client
+     * @param primaryStage the primary stage for this application, onto which
+     * the application scene can be set.
+     * Applications may create other stages, if needed, but they will not be
+     * primary stages.
+     * @throws IOException any IO related error
+     */
     @Override
     public void start(Stage primaryStage) throws IOException {
         instance = this;
@@ -59,10 +73,19 @@ public class Main extends Application {
         mainCtrl.initialize(primaryStage, overview, add, participants, loginAdmin);
     }
 
+    /**
+     * Returns an instance of our main
+     * @return the main instance
+     */
     public static Optional<Main> getInstance() {
         return Optional.of(instance);
     }
 
+    /**
+     * Updates the language of our application
+     * @param locale our language package
+     * @throws IOException any IO error related
+     */
     public void updateLocale(Locale locale) throws IOException {
         var overview =
                 FXML.load(

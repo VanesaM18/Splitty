@@ -38,16 +38,27 @@ public class LoginCtrl {
 
     @FXML private TextField password;
 
+    /**
+     * Controller responsible for handling the login view functionality.
+     * @param server An instance of ServerUtils for server-related operations.
+     * @param mainCtrl An instance of MainCtrl for coordinating with the main controller.
+     */
     @Inject
     public LoginCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
     }
 
+    /**
+     * Clears the login fields when user closes the admin view, so they are not saved
+     */
     public void cancel() {
         clearFields();
     }
 
+    /**
+     * Tries to log in with the credentials provided by the user in the UI
+     */
     public void logIn() {
         try {
             server.loginAdmin(getAdmin());
@@ -63,15 +74,23 @@ public class LoginCtrl {
         mainCtrl.showOverview();
     }
 
+    /**
+     * Create an Admin instance with the credentials provided by the user
+     */
     private Admin getAdmin() {
         return new Admin(username.getText(), password.getText(), "");
     }
-
+    /**
+     * Clears the fields
+     */
     public void clearFields() {
         username.clear();
         password.clear();
     }
-
+    /**
+     * Event handler for pressing a key.
+     * @param e the key that is pressed
+     */
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
             case ENTER:

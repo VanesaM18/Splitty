@@ -10,6 +10,9 @@ public class PasswordHasher {
     */
     private final MessageDigest encrypt;
 
+    /**
+     * Creates a class used for password hashing
+     */
     public PasswordHasher() {
         try {
             this.encrypt = MessageDigest.getInstance("SHA-256");
@@ -18,6 +21,11 @@ public class PasswordHasher {
         }
     }
 
+    /**
+     * Encrypts a password
+     * @param password the password to be encrypted
+     * @return the encrypted password
+     */
     public String compute(String password) {
         byte[] encodedHash = encrypt.digest(password.getBytes(StandardCharsets.UTF_8));
         StringBuilder encrypted = new StringBuilder(2 * encodedHash.length);

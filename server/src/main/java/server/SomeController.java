@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/")
 public class SomeController {
 
+    /**
+     * Used for testing purposes for now
+     * @return the text to be displayed
+     */
     @GetMapping("/")
     @ResponseBody
     public String index() {

@@ -26,6 +26,10 @@ import com.google.inject.Scopes;
 
 public class MyModule implements Module {
 
+    /**
+     * It injects our view controllers
+     * @param binder used for injecting
+     */
     @Override
     public void configure(Binder binder) {
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);

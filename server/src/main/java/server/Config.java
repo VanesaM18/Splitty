@@ -23,6 +23,10 @@ import java.util.Random;
 @Configuration
 public class Config {
 
+    /**
+     * Inject Random module into our spring app
+     * @return the random module
+     */
     @Bean
     public Random getRandom() {
         return new Random();

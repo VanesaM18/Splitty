@@ -15,7 +15,7 @@ public class EventController {
 
     /**
      * Create a new event controller.
-     * This controller contaisn all api endpoints that have to do with events.
+     * This controller contains all api endpoints that have to do with events.
      *
      * @param repo The repository used for creating, reading, updating and deleting events.
      */

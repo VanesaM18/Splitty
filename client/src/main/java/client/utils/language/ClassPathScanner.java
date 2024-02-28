@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ClassPathScanner {
     private final String packageName;
-
+    
     public ClassPathScanner(String packageName) {
         this.packageName = packageName;
     }

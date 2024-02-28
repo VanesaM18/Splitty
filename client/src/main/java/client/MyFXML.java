@@ -35,10 +35,23 @@ public class MyFXML {
 
     private Injector injector;
 
+    /**
+     * Creates a class which injects our UI components
+     * @param injector the injector used for injecting
+     */
     public MyFXML(Injector injector) {
         this.injector = injector;
     }
 
+    /**
+     * Loads a FXML file specified by the given class and path parts
+     *
+     * @param c The class of the controller associated with the FXML file
+     * @param parts The parts of the path to the FXML file
+     * @param <T> The type of the controller class.
+     * @return The loaded class
+     * @throws RuntimeException if the FXML file cannot be loaded.
+     */
     public <T> Pair<T, Parent> load(Class<T> c, String... parts) {
         try {
             var loader =
@@ -55,7 +68,16 @@ public class MyFXML {
             throw new RuntimeException(e);
         }
     }
-
+    /**
+     * Loads a FXML file specified by the given class and path parts with localization support
+     *
+     * @param c The class of the controller associated with the FXML file.
+     * @param locale The locale to use for loading resource bundles.
+     * @param parts The parts of the path to the FXML file
+     * @param <T> The type of the controller class.
+     * @return The loaded component
+     * @throws RuntimeException if the FXML file cannot be loaded.
+     */
     public <T> Pair<T, Parent> load(Class<T> c, Locale locale, String... parts) {
         try {
             var loader =
@@ -74,6 +96,12 @@ public class MyFXML {
         }
     }
 
+    /**
+     * Constructs the URL for the location of the FXML file based on the given path parts.
+     *
+     * @param parts The parts of the path
+     * @return The URL pointing to the location of the FXML file.
+     */
     private URL getLocation(String... parts) {
         var path = Path.of("", parts).toString();
         return MyFXML.class.getClassLoader().getResource(path);

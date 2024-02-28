@@ -23,6 +23,10 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 @EntityScan(basePackages = {"commons", "server"})
 public class Main {
 
+    /**
+     * The main of our server
+     * @param args to be passed to our app
+     */
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
     }
