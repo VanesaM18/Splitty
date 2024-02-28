@@ -81,14 +81,19 @@ public class Monetary {
     }
 
     /**
-     * gets the major
+     * gets the major value
      *
-     * @return the major
+     * @return the major value
      */
     public long getMajor() {
         return this.value / this.fractionDivider;
     }
 
+    /**
+     * get the minor value
+     *
+     * @return the minor value
+     */
     public long getMinor() {
         return this.value % this.fractionDivider;
     }
