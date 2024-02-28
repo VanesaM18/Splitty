@@ -83,4 +83,8 @@ public class LoginCtrl {
                 break;
         }
     }
+
+    public void openSettings () {
+        mainCtrl.showSettings();
+    }
 }
