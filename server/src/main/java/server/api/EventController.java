@@ -23,6 +23,11 @@ public class EventController {
         this.repo = repo;
     }
 
+    /**
+     * API Endpoint for getting a list of all events.
+     *
+     * @return a list of all events.
+     */
     @GetMapping(path = {"", "/"})
     public List<Event> getAll() {
         return repo.findAll();
