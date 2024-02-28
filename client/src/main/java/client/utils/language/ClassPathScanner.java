@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ClassPathScanner {
     private final String packageName;
-    
+
     public ClassPathScanner(String packageName) {
         this.packageName = packageName;
     }
@@ -33,8 +33,7 @@ public class ClassPathScanner {
         return classes;
     }
 
-    private List<Class<?>> findClasses(File directory, String packageName)
-            throws ClassNotFoundException {
+    private List<Class<?>> findClasses(File directory, String packageName) throws ClassNotFoundException {
         List<Class<?>> classes = new ArrayList<>();
         if (!directory.exists()) {
             return classes;
@@ -55,7 +54,7 @@ public class ClassPathScanner {
                                 packageName
                                         + '.'
                                         + file.getName()
-                                                .substring(0, file.getName().length() - 6)));
+                                        .substring(0, file.getName().length() - 6)));
             }
         }
 

@@ -4,7 +4,6 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -23,18 +22,14 @@ public class LanguageProcessor {
             List<Class<?>> classes = classPathScanner.getClasses();
 
             for (Class<?> clazz : classes) {
-                if (interfaceClass.isAssignableFrom(clazz)
-                        && !clazz.isInterface()
-                        && !clazz.isEnum()) {
+                if (interfaceClass.isAssignableFrom(clazz) && !clazz.isInterface() && !clazz.isEnum()) {
                     try {
                         Constructor<?> constructor = clazz.getDeclaredConstructor();
                         constructor.setAccessible(true);
                         T instance = (T) constructor.newInstance();
                         implementations.add(instance);
-                    } catch (InstantiationException
-                            | IllegalAccessException
-                            | NoSuchMethodException
-                            | InvocationTargetException e) {
+                    } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
+                             | InvocationTargetException e) {
                         e.printStackTrace();
                     }
                 }
@@ -46,7 +41,7 @@ public class LanguageProcessor {
         return implementations;
     }
 
-    public static VBox getButtons() {
+    public static VBox getButtons () {
         VBox root = new VBox(20);
         HBox bbox = new HBox(toArray(getInterfaceImplementations()));
         root.getChildren().add(bbox);
@@ -55,7 +50,7 @@ public class LanguageProcessor {
     }
 
     public static Button[] toArray(List<Language> languages) {
-        var n = languages.size();
+        var  n = languages.size();
         Button[] array = new Button[n];
         int i = 0;
         for (Language language : languages) {
@@ -64,4 +59,5 @@ public class LanguageProcessor {
         }
         return array;
     }
+
 }

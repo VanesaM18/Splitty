@@ -23,6 +23,8 @@ import javafx.util.Pair;
 public class MainCtrl {
 
     private Stage primaryStage;
+    private SettingsCtrl settingsCtrl;
+    private Scene settings;
 
     private QuoteOverviewCtrl overviewCtrl;
     private Scene overview;
@@ -40,6 +42,8 @@ public class MainCtrl {
      *
      * @param primaryStage The primary stage of the application.
      *
+     * @param settings A Pair containing the SettingsCtrl and its corresponding Parent scene.
+     *
      * @param overview A Pair containing the QuoteOverviewCtrl and its corresponding Parent scene.
      *
      * @param add A Pair containing the AddQuoteCtrl and its corresponding Parent scene.
@@ -50,11 +54,16 @@ public class MainCtrl {
      */
     public void initialize(
             Stage primaryStage,
+            Pair<SettingsCtrl, Parent> settings,
             Pair<QuoteOverviewCtrl, Parent> overview,
             Pair<AddQuoteCtrl, Parent> add,
             Pair<AddParticipantsCtrl, Parent> participant,
             Pair<LoginCtrl, Parent> login) {
         this.primaryStage = primaryStage;
+
+        this.settingsCtrl = settings.getKey();
+        this.settings = new Scene(settings.getValue());
+
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
 
@@ -70,6 +79,13 @@ public class MainCtrl {
 
         // showOverview();
         primaryStage.show();
+    }
+
+    public void showSettings() {
+        primaryStage.setTitle("Settings");
+        primaryStage.setScene(settings);
+        settingsCtrl.make();
+        settingsCtrl.refresh();
     }
 
     /**

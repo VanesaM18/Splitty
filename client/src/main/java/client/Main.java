@@ -15,6 +15,11 @@
  */
 package client;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Locale;
+import java.util.Optional;
+
 import static com.google.inject.Guice.createInjector;
 
 import client.scenes.AddParticipantsCtrl;
@@ -28,15 +33,11 @@ import com.google.inject.Injector;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Locale;
-import java.util.Optional;
-
 public class Main extends Application {
 
     private static final Injector INJECTOR = createInjector(new MyModule());
     private static final MyFXML FXML = new MyFXML(INJECTOR);
+    private static final Locale DEFAULT_LOCALE = Locale.of("en","EN");
     private static Main instance;
     private Stage stage;
 
@@ -62,15 +63,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws IOException {
         instance = this;
         this.stage = primaryStage;
-        var overview = FXML.load(QuoteOverviewCtrl.class, "client", "scenes", "QuoteOverview.fxml");
-        var add = FXML.load(AddQuoteCtrl.class, "client", "scenes", "AddQuote.fxml");
-        var loginAdmin = FXML.load(LoginCtrl.class, "client", "scenes", "LoginView.fxml");
-
-        var participants =
-                FXML.load(AddParticipantsCtrl.class, "client", "scenes", "AddParticipants.fxml");
-
-        var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage, overview, add, participants, loginAdmin);
+        this.start(DEFAULT_LOCALE);
     }
 
     /**
@@ -86,22 +79,15 @@ public class Main extends Application {
      * @param locale our language package
      * @throws IOException any IO error related
      */
-    public void updateLocale(Locale locale) throws IOException {
-        var overview =
-                FXML.load(
-                        QuoteOverviewCtrl.class, locale, "client", "scenes", "QuoteOverview.fxml");
+    public void start(Locale locale) throws IOException {
+        var settings = FXML.load(SettingsCtrl.class, locale, "client", "scenes", "Settings.fxml");
+        var overview = FXML.load(QuoteOverviewCtrl.class, locale, "client", "scenes", "QuoteOverview.fxml");
         var add = FXML.load(AddQuoteCtrl.class, locale, "client", "scenes", "AddQuote.fxml");
         var loginAdmin = FXML.load(LoginCtrl.class, locale, "client", "scenes", "LoginView.fxml");
 
-        var participants =
-                FXML.load(
-                        AddParticipantsCtrl.class,
-                        locale,
-                        "client",
-                        "scenes",
-                        "AddParticipants.fxml");
+        var participants = FXML.load(AddParticipantsCtrl.class, locale, "client", "scenes", "AddParticipants.fxml");
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(this.stage, overview, add, participants, loginAdmin);
+        mainCtrl.initialize(this.stage, settings, overview, add, participants, loginAdmin);
     }
 }
