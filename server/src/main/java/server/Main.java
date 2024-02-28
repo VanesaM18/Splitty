@@ -42,7 +42,8 @@ public class Main {
             repo.deleteById(username);
         }
         repo.save(new Admin(username, password, ""));
-        System.out.println("Connect to the admin overview with the following credentials:\n - username: "
+        System.out.println("Connect to the admin overview " +
+            "with the following credentials:\n - username: "
             + username + "\n - password: " + password + "\n");
     }
 }

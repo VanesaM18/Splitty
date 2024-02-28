@@ -82,6 +82,11 @@ public class AdminController {
         return ResponseEntity.ok(saved);
     }
 
+    /**
+     * Deletes an admin if is exits by username
+     * @param username the username to be deleted
+     * @return the status of the deletion
+     */
     @DeleteMapping("/{username}")
     public ResponseEntity<String> delete(@PathVariable("username") String username) {
         if (isNullOrEmpty(username) || !repo.existsById(username)) {
