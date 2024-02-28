@@ -1,0 +1,14 @@
+# Minutes meeting 3
+- Meet the knockout criteria each week, be careful about the number of lines
+- From TA
+  - Bigger commits, right now we did too many too small
+  - Consistent in naming (like agenda name)
+  - Be more precise and clear in code of conduct, like some parts to vague
+  - The draft of the code of conduct looks good overall
+- Add checkstyle from oop and check that the pipeline still doesn't fail
+- Transform the code of conduct in latex
+- Special milestone for basic requirements
+- For code of conduct we need to decide the consequence part to be proper defined
+- There are a lot of options for database, TA recommended the H2 with JPA
+- Admin overview log in it is fine
+- Meet more than once when workload increase

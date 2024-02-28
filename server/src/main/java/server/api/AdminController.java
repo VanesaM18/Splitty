@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -73,16 +74,23 @@ public class AdminController {
      */
     @PostMapping(path = { "", "/" })
     public ResponseEntity<Admin> add(@RequestBody Admin admin) {
-
-        if (admin.getUsername() == null
-                || repo.existsById(admin.getUsername())
-                || isNullOrEmpty(admin.getEmail())) {
+        if (admin.getUsername() == null || repo.existsById(admin.getUsername())) {
             return ResponseEntity.badRequest().build();
         }
 
         Admin saved = repo.save(admin);
         return ResponseEntity.ok(saved);
     }
+
+    @DeleteMapping("/{username}")
+    public ResponseEntity<String> delete(@PathVariable("username") String username) {
+        if (isNullOrEmpty(username) || !repo.existsById(username)) {
+            return ResponseEntity.badRequest().body("Can't delete the admin account");
+        }
+        repo.deleteById(username);
+        return ResponseEntity.ok().body("Deleted successfully");
+    }
+
     /**
      * Checks if the admin account exists such that it can connect
      * @param admin the admin credentials
