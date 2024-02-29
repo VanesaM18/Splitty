@@ -15,14 +15,18 @@
  */
 package server;
 
-import java.util.Random;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Random;
 
 @Configuration
 public class Config {
 
+    /**
+     * Inject Random module into our spring app
+     * @return the random module
+     */
     @Bean
     public Random getRandom() {
         return new Random();

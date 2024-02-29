@@ -18,9 +18,19 @@ public class PasswordGenerator {
             - to have at least length 8
             - to have at least one special character
     */
+
+    /**
+     * Creates a generator of password
+     * @param length the length of the password
+     */
     public PasswordGenerator(int length) {
         this.length = length;
     }
+
+    /**
+     * Generates a password
+     * @return the generated password
+     */
     public String generate() {
         StringBuilder create = new StringBuilder(this.length);
 

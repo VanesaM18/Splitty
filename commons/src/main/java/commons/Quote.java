@@ -17,10 +17,6 @@ package commons;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,39 +24,113 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 @Entity
 public class Quote {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	public long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
 
-	@OneToOne(cascade = CascadeType.PERSIST)
-	public Person person;
-	public String quote;
+    @OneToOne(cascade = CascadeType.PERSIST)
+    private Person person;
 
-	@SuppressWarnings("unused")
-	private Quote() {
-		// for object mappers
-	}
+    private String quote;
 
-	public Quote(Person person, String quote) {
-		this.person = person;
-		this.quote = quote;
-	}
+    /**
+     * Creates a quote.
+     * Used for object mapping.
+     */
+    public Quote() {
+        // for object mapper
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		return EqualsBuilder.reflectionEquals(this, obj);
-	}
+    /**
+     * Retrieves the ID associated with this quote.
+     * @return the quote's ID.
+     */
+    public long getId() {
+        return id;
+    }
 
-	@Override
-	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this);
-	}
+    /**
+     * Sets the ID associated with this quote.
+     * @param id The new id to be set.
+     */
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
-	}
+    /**
+     * Retrieves the person associated with this quote.
+     * @return the quote's publisher.
+     */
+    public Person getPerson() {
+        return person;
+    }
+
+    /**
+     * Sets the person associated with this quote.
+     * @param person The new publisher to be set.
+     */
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
+    /**
+     * Retrieves the String content of this quote.
+     * @return the quote's text.
+     */
+    public String getQuote() {
+        return quote;
+    }
+
+    /**
+     * Sets the content of this quote.
+     * @param quote The new text to be set.
+     */
+    public void setQuote(String quote) {
+        this.quote = quote;
+    }
+
+    /**
+     * Creates a quote written by a publisher.
+     * @param person Publisher of the quote.
+     * @param quote Content of the quote.
+     */
+    public Quote(Person person, String quote) {
+        this.person = person;
+        this.quote = quote;
+    }
+
+    /**
+     * Checks if another object is exactly the same as this one.
+     * @param obj Object that needs to be checked.
+     * @return Weather the given object is equal to this one.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    /**
+     * Computes a hash code for this object.
+     * @return A hash code value for this object.
+     */
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    /**
+     * Turns the quote into a string.
+     * @return String representation of the object.
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
+    }
 }

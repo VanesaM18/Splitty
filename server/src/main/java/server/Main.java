@@ -24,9 +24,13 @@ import org.springframework.context.ConfigurableApplicationContext;
 import server.database.AdminRepository;
 
 @SpringBootApplication
-@EntityScan(basePackages = { "commons", "server" })
+@EntityScan(basePackages = {"commons", "server"})
 public class Main {
 
+    /**
+     * The main of our server
+     * @param args to be passed to our app
+     */
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(Main.class, args);
         AdminRepository repo = context.getBean(AdminRepository.class);
@@ -38,7 +42,8 @@ public class Main {
             repo.deleteById(username);
         }
         repo.save(new Admin(username, password, ""));
-        System.out.println("Connect to the admin overview with the following credentials:\n - username: "
+        System.out.println("Connect to the admin overview " +
+            "with the following credentials:\n - username: "
             + username + "\n - password: " + password + "\n");
     }
 }

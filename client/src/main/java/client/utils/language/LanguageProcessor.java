@@ -12,6 +12,11 @@ import java.util.List;
 
 public class LanguageProcessor {
 
+    /**
+     * Inject the languages by using the ClassPathScanner
+     * @return list of language objects
+     * @param <T> wildcard standing for the common class for the injected objects
+     */
     public static <T> List<T> getInterfaceImplementations() {
         List<T> implementations = new ArrayList<>();
         var interfaceClass = Language.class;
@@ -22,14 +27,18 @@ public class LanguageProcessor {
             List<Class<?>> classes = classPathScanner.getClasses();
 
             for (Class<?> clazz : classes) {
-                if (interfaceClass.isAssignableFrom(clazz) && !clazz.isInterface() && !clazz.isEnum()) {
+                if (interfaceClass.isAssignableFrom(clazz)
+                        && !clazz.isInterface()
+                        && !clazz.isEnum()) {
                     try {
                         Constructor<?> constructor = clazz.getDeclaredConstructor();
                         constructor.setAccessible(true);
                         T instance = (T) constructor.newInstance();
                         implementations.add(instance);
-                    } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
-                             | InvocationTargetException e) {
+                    } catch (InstantiationException
+                            | IllegalAccessException
+                            | NoSuchMethodException
+                            | InvocationTargetException e) {
                         e.printStackTrace();
                     }
                 }
@@ -41,7 +50,11 @@ public class LanguageProcessor {
         return implementations;
     }
 
-    public static VBox getButtons () {
+    /**
+     * VBox for displaying the language buttons
+     * @return VBox populated with language buttons
+     */
+    public static VBox getButtons() {
         VBox root = new VBox(20);
         HBox bbox = new HBox(toArray(getInterfaceImplementations()));
         root.getChildren().add(bbox);
@@ -49,6 +62,12 @@ public class LanguageProcessor {
         return root;
     }
 
+    /**
+     * Helper method to transform the list of languages objects
+     * to an array of corresponding buttons.
+     * @param languages the list of languages
+     * @return button array
+     */
     public static Button[] toArray(List<Language> languages) {
         var  n = languages.size();
         Button[] array = new Button[n];

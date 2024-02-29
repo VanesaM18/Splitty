@@ -3,14 +3,21 @@ package commons;
 import java.security.SecureRandom;
 
 /**
- * This class provides a method for the generation of a random alphanumeric string of a given length.
+ * This class provides a method for the generation of a random alphanumeric string of a given
+ * length.
  */
 public class CodeGenerator {
 
-    private final static String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     private final SecureRandom random;
 
+    /**
+     * Create a new CodeGenerator.
+     * This classes uses the supplied SecureRandom to generate random alphanumeric codes.
+     *
+     * @param random the RNG to use for code generation.
+     */
     public CodeGenerator(SecureRandom random) {
         this.random = random;
     }
@@ -35,5 +42,4 @@ public class CodeGenerator {
 
         return result.toString();
     }
-
 }

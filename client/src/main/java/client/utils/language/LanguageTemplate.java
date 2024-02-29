@@ -9,6 +9,11 @@ import java.io.IOException;
 import java.util.Locale;
 
 public abstract class LanguageTemplate implements Language {
+
+    /**
+     * Activates the change of language
+     * @return button of the language
+     */
     public Button getButton() {
         Button button = new Button();
         button.setText(this.getText());

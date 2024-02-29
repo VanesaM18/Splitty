@@ -3,9 +3,9 @@ package commons;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Currency;
-
 import org.junit.jupiter.api.Test;
+
+import java.util.Currency;
 
 public class MonetaryTest {
 
@@ -34,10 +34,12 @@ public class MonetaryTest {
 
     @Test
     public void testCurrencyValidation() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            @SuppressWarnings("unused")
-            var monetary = new Monetary(42, "Non existant currency");
-        });
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    @SuppressWarnings("unused")
+                    var monetary = new Monetary(42, "Non existant currency");
+                });
     }
 
     @Test

@@ -15,13 +15,12 @@
  */
 package client.scenes;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+import client.utils.ServerUtils;
 
 import com.google.inject.Inject;
 
-import client.utils.ServerUtils;
 import commons.Quote;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,6 +28,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class QuoteOverviewCtrl implements Initializable {
 
@@ -46,29 +48,57 @@ public class QuoteOverviewCtrl implements Initializable {
     @FXML
     private TableColumn<Quote, String> colQuote;
 
+    /**
+     * Controller responsible for handling the quote overview functionality.
+     * @param server An instance of ServerUtils for server-related operations.
+     * @param mainCtrl An instance of MainCtrl for coordinating with the main controller.
+     */
     @Inject
     public QuoteOverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
     }
 
+    /**
+     * Initializes the controller after its root element has been completely processed.
+     * @param location
+     * The location used to resolve relative paths for the root object, or
+     * {@code null} if the location is not known.
+     *
+     * @param resources
+     * The resources used to localize the root object, or {@code null} if
+     * the root object was not localized.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        colFirstName.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().person.firstName));
-        colLastName.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().person.lastName));
-        colQuote.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().quote));
+        colFirstName.setCellValueFactory(
+                q -> new SimpleStringProperty(q.getValue().getPerson().getFirstName()));
+        colLastName.setCellValueFactory(
+                q -> new SimpleStringProperty(q.getValue().getPerson().getLastName()));
+        colQuote.setCellValueFactory(q -> new SimpleStringProperty(q.getValue().getQuote()));
     }
 
+    /**
+     * Method to add a new quote.
+     * This method triggers the display of the add quote window.
+     */
     public void addQuote() {
         mainCtrl.showAdd();
     }
 
+    /**
+     * Method to refresh the current view.
+     */
     public void refresh() {
         var quotes = server.getQuotes();
         data = FXCollections.observableList(quotes);
         table.setItems(data);
     }
 
+    /**
+     * Method to add a new participant.
+     * This method triggers the display of the add participant window.
+     */
     public void addParticipant() {
         mainCtrl.showParticipants();
     }

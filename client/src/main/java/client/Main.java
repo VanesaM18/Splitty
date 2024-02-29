@@ -17,16 +17,22 @@ package client;
 
 import static com.google.inject.Guice.createInjector;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Locale;
-import java.util.Optional;
+import client.scenes.AddParticipantsCtrl;
+import client.scenes.AddQuoteCtrl;
+import client.scenes.LoginCtrl;
+import client.scenes.MainCtrl;
+import client.scenes.QuoteOverviewCtrl;
+import client.scenes.SettingsCtrl;
 
-import client.scenes.*;
 import com.google.inject.Injector;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Locale;
+import java.util.Optional;
 
 public class Main extends Application {
 
@@ -36,11 +42,24 @@ public class Main extends Application {
     private static Main instance;
     private Stage stage;
 
+    /**
+     * The main of our client
+     * @param args to be passed to the client
+     * @throws URISyntaxException if anything happens related to URI
+     * @throws IOException if anything happens related to IO
+     */
     public static void main(String[] args) throws URISyntaxException, IOException {
         launch();
     }
 
-
+    /**
+     * It starts the client
+     * @param primaryStage the primary stage for this application, onto which
+     * the application scene can be set.
+     * Applications may create other stages, if needed, but they will not be
+     * primary stages.
+     * @throws IOException any IO related error
+     */
     @Override
     public void start(Stage primaryStage) throws IOException {
         instance = this;
@@ -48,18 +67,34 @@ public class Main extends Application {
         this.start(DEFAULT_LOCALE);
     }
 
-    public static Optional<Main> getInstance () {
+    /**
+     * Returns an instance of our main
+     * @return the main instance
+     */
+    public static Optional<Main> getInstance() {
         return Optional.of(instance);
     }
 
-
+    /**
+     * Updates the language of our application
+     * @param locale our language package
+     * @throws IOException any IO error related
+     */
     public void start(Locale locale) throws IOException {
         var settings = FXML.load(SettingsCtrl.class, locale, "client", "scenes", "Settings.fxml");
-        var overview = FXML.load(QuoteOverviewCtrl.class, locale, "client", "scenes", "QuoteOverview.fxml");
+        var overview =
+                FXML.load(
+                        QuoteOverviewCtrl.class, locale, "client", "scenes", "QuoteOverview.fxml");
         var add = FXML.load(AddQuoteCtrl.class, locale, "client", "scenes", "AddQuote.fxml");
         var loginAdmin = FXML.load(LoginCtrl.class, locale, "client", "scenes", "LoginView.fxml");
 
-        var participants = FXML.load(AddParticipantsCtrl.class, locale, "client", "scenes", "AddParticipants.fxml");
+        var participants =
+                FXML.load(
+                        AddParticipantsCtrl.class,
+                        locale,
+                        "client",
+                        "scenes",
+                        "AddParticipants.fxml");
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         mainCtrl.initialize(this.stage, settings, overview, add, participants, loginAdmin);

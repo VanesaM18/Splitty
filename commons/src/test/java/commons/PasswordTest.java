@@ -1,7 +1,8 @@
 package commons;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 public class PasswordTest {
     @Test
@@ -9,6 +10,7 @@ public class PasswordTest {
         PasswordHasher tst = new PasswordHasher();
         assertEquals(tst.compute("abi32hu32irn fgvbfd"), tst.compute("abi32hu32irn fgvbfd"));
     }
+
     @Test
     public void notEqualCase() {
         PasswordHasher tst = new PasswordHasher();
