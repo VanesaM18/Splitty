@@ -82,9 +82,9 @@ public class QuoteController {
     public ResponseEntity<Quote> add(@RequestBody Quote quote) {
 
         if (quote.getPerson() == null
-                || isNullOrEmpty(quote.getPerson().getFirstName())
-                || isNullOrEmpty(quote.getPerson().getFirstName())
-                || isNullOrEmpty(quote.getQuote())) {
+            || isNullOrEmpty(quote.getPerson().getFirstName())
+            || isNullOrEmpty(quote.getPerson().getFirstName())
+            || isNullOrEmpty(quote.getQuote())) {
             return ResponseEntity.badRequest().build();
         }
 

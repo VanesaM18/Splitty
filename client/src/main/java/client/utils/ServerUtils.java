@@ -15,97 +15,59 @@
  */
 package client.utils;
 
-import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-
+import client.MyWebSocketClient;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.inject.Inject;
 import commons.Admin;
-import commons.Participant;
+import commons.Event;
 import commons.Quote;
+import commons.Participant;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.GenericType;
-
-import org.glassfish.jersey.client.ClientConfig;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import commons.WebSocketMessage;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 public class ServerUtils {
-
-    private static final String SERVER = "http://localhost:8080/";
-
-    /**
-     * Get quotes the hard way
-     * @throws IOException
-     * @throws URISyntaxException
-     */
-    public void getQuotesTheHardWay() throws IOException, URISyntaxException {
-        var url = new URI("http://localhost:8080/api/quotes").toURL();
-        var is = url.openConnection().getInputStream();
-        var br = new BufferedReader(new InputStreamReader(is));
-        String line;
-        while ((line = br.readLine()) != null) {
-            System.out.println(line);
-        }
-    }
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final MyWebSocketClient webSocketClient;
 
     /**
-     * Get all the quotes stored in the database
-     * @return all the quotes
+     * Creates an instance of ServerUtils which is used for communicating with the server
+     * @param webSocketClient the websocket to communicate through
      */
-    public List<Quote> getQuotes() {
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER)
-                .path("api/quotes") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .get(new GenericType<List<Quote>>() {});
-    }
-
-    /**
-     * Add a quote
-     * @param quote to be added
-     * @return the added quote
-     */
-    public Quote addQuote(Quote quote) {
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER)
-                .path("api/quotes") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
+    @Inject
+    public ServerUtils(MyWebSocketClient webSocketClient) {
+        this.webSocketClient = webSocketClient;
     }
 
     /**
      * Adds a participant
      * @param p the participant to be added
-     * @return the added participant
      */
-    public Participant addParticipant(Participant p) {
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER)
-                .path("api/participants") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .post(Entity.entity(p, APPLICATION_JSON), Participant.class);
+    public void addParticipant(Participant p) {
+        WebSocketMessage request = new WebSocketMessage();
+        request.setEndpoint("api/participants");
+        request.setMethod("POST");
+        request.setData(p);
+        sendMessageWithoutResponse(request);
     }
 
     /**
      * Adds an admin
      * @param admin to be added
-     * @return the added admin
      */
-    public Admin addAdmin(Admin admin) {
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER)
-                .path("api/admin") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .post(Entity.entity(admin, APPLICATION_JSON), Admin.class);
+    public void addAdmin(Admin admin) {
+        WebSocketMessage request = new WebSocketMessage();
+        request.setEndpoint("api/admin");
+        request.setMethod("POST");
+        request.setData(admin);
+        sendMessageWithoutResponse(request);
     }
 
     /**
@@ -114,11 +76,105 @@ public class ServerUtils {
      * @return if was successful or not
      */
     public String loginAdmin(Admin admin) {
-        return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER)
-                .path("api/admin/login") //
-                .request(APPLICATION_JSON) //
-                .accept(APPLICATION_JSON) //
-                .post(Entity.entity(admin, APPLICATION_JSON), String.class);
+        try {
+            WebSocketMessage request = new WebSocketMessage();
+            request.setEndpoint("api/admin/login");
+            request.setMethod("POST");
+            request.setData(admin);
+            WebSocketMessage response = sendMessageWithResponse(request);
+            return objectMapper.convertValue(response.getData(), String.class);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
+
+    /**
+     * Gets an event by id
+     * @param id the id of the event
+     * @return the requested event
+     */
+    public Event getEventById(long id) {
+        try {
+            WebSocketMessage request = new WebSocketMessage();
+            request.setEndpoint("api/events/id");
+            request.setMethod("GET");
+            List<Object> parameters = new ArrayList<>();
+            parameters.add(id);
+            request.setParameters(parameters);
+            WebSocketMessage response = sendMessageWithResponse(request);
+            return objectMapper.convertValue(response.getData(), Event.class);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Get all the quotes stored in the database
+     * @return all the quotes
+     */
+    public List<Quote> getQuotes() {
+        try {
+            WebSocketMessage request = new WebSocketMessage();
+            request.setEndpoint("api/quotes");
+            request.setMethod("GET");
+
+            WebSocketMessage response = sendMessageWithResponse( request);
+            return objectMapper.convertValue(response.getData(),
+                new TypeReference<List<Quote>>() {});
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Add a quote
+     * @param quote to be added
+     */
+    public void addQuote(Quote quote) {
+        WebSocketMessage request = new WebSocketMessage();
+        request.setEndpoint("api/quotes");
+        request.setMethod("POST");
+        request.setData(quote);
+        sendMessageWithoutResponse(request);
+    }
+
+    /**
+     * Send a message to the server with awaiting response
+     * @param request the message body
+     * @return the response from the server
+     * @throws ExecutionException if the object mapper fails
+     * @throws InterruptedException if the connection is closed
+     */
+    private WebSocketMessage sendMessageWithResponse(WebSocketMessage request)
+        throws ExecutionException, InterruptedException {
+        String requestId = UUID.randomUUID().toString();
+        request.setId(requestId);
+        CompletableFuture<WebSocketMessage> future = webSocketClient.addPendingRequests(requestId);
+        try {
+            String message = objectMapper.writeValueAsString(request);
+            webSocketClient.send(message);
+        } catch (JsonProcessingException e) {
+            future.completeExceptionally(e);
+        }
+        return future.get();
+    }
+
+    /**
+     * Send a message to the server without awaiting response
+     * @param request the message body
+     */
+    private void sendMessageWithoutResponse(WebSocketMessage request) {
+        String requestId = UUID.randomUUID().toString();
+        request.setId(requestId);
+        try {
+            String message = objectMapper.writeValueAsString(request);
+            webSocketClient.send(message);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

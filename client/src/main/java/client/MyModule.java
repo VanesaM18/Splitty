@@ -15,14 +15,16 @@
  */
 package client;
 
-import client.scenes.AddQuoteCtrl;
 import client.scenes.LoginCtrl;
 import client.scenes.MainCtrl;
-import client.scenes.QuoteOverviewCtrl;
 
 import com.google.inject.Binder;
 import com.google.inject.Module;
+import com.google.inject.Provides;
 import com.google.inject.Scopes;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class MyModule implements Module {
 
@@ -33,8 +35,18 @@ public class MyModule implements Module {
     @Override
     public void configure(Binder binder) {
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
-        binder.bind(AddQuoteCtrl.class).in(Scopes.SINGLETON);
-        binder.bind(QuoteOverviewCtrl.class).in(Scopes.SINGLETON);
         binder.bind(LoginCtrl.class).in(Scopes.SINGLETON);
+    }
+
+    /**
+     * Instantiate the websocket dependency
+     * @return the instantiated websocket
+     * @throws URISyntaxException if the server address is wrong
+     */
+    @Provides
+    public MyWebSocketClient provideMyWebSocketClient() throws URISyntaxException {
+        ConfigLoader configLoader = new ConfigLoader();
+        String serverAddress = configLoader.getProperty("server.address");
+        return new MyWebSocketClient(new URI(serverAddress));
     }
 }

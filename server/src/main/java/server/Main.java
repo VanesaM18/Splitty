@@ -33,6 +33,7 @@ public class Main {
      */
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(Main.class, args);
+        ContextConfigurator.setApplicationContext(context);
         AdminRepository repo = context.getBean(AdminRepository.class);
 
         PasswordGenerator generator = new PasswordGenerator(8);

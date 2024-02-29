@@ -53,12 +53,12 @@ public class MainCtrl {
      * @param login A Pair containing the LoginCtrl and its corresponding Parent scene.
      */
     public void initialize(
-            Stage primaryStage,
-            Pair<SettingsCtrl, Parent> settings,
-            Pair<QuoteOverviewCtrl, Parent> overview,
-            Pair<AddQuoteCtrl, Parent> add,
-            Pair<AddParticipantsCtrl, Parent> participant,
-            Pair<LoginCtrl, Parent> login) {
+        Stage primaryStage,
+        Pair<SettingsCtrl, Parent> settings,
+        Pair<QuoteOverviewCtrl, Parent> overview,
+        Pair<AddQuoteCtrl, Parent> add,
+        Pair<AddParticipantsCtrl, Parent> participant,
+        Pair<LoginCtrl, Parent> login) {
         this.primaryStage = primaryStage;
 
         this.settingsCtrl = settings.getKey();

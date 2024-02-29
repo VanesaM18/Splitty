@@ -17,12 +17,7 @@ package client;
 
 import static com.google.inject.Guice.createInjector;
 
-import client.scenes.AddParticipantsCtrl;
-import client.scenes.AddQuoteCtrl;
-import client.scenes.LoginCtrl;
-import client.scenes.MainCtrl;
-import client.scenes.QuoteOverviewCtrl;
-import client.scenes.SettingsCtrl;
+import client.scenes.*;
 
 import com.google.inject.Injector;
 
@@ -83,20 +78,20 @@ public class Main extends Application {
     public void start(Locale locale) throws IOException {
         var settings = FXML.load(SettingsCtrl.class, locale, "client", "scenes", "Settings.fxml");
         var overview =
-                FXML.load(
-                        QuoteOverviewCtrl.class, locale, "client", "scenes", "QuoteOverview.fxml");
+            FXML.load(
+                QuoteOverviewCtrl.class, locale, "client", "scenes", "QuoteOverview.fxml");
         var add = FXML.load(AddQuoteCtrl.class, locale, "client", "scenes", "AddQuote.fxml");
         var loginAdmin = FXML.load(LoginCtrl.class, locale, "client", "scenes", "LoginView.fxml");
-
         var participants =
-                FXML.load(
-                        AddParticipantsCtrl.class,
-                        locale,
-                        "client",
-                        "scenes",
-                        "AddParticipants.fxml");
+            FXML.load(
+                AddParticipantsCtrl.class,
+                locale,
+                "client",
+                "scenes",
+                "AddParticipants.fxml");
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         mainCtrl.initialize(this.stage, settings, overview, add, participants, loginAdmin);
+
     }
 }
