@@ -69,13 +69,15 @@ public class ParticipantController {
      * @return ResponseEntity indicating the status of the update operation.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable("id") Long id, @RequestBody Participant updatedParticipant) {
+    public ResponseEntity<String> update(@PathVariable("id") Long id,
+                                         @RequestBody Participant updatedParticipant) {
         if (isNull(id) || !repo.existsById(id)) {
             return ResponseEntity.badRequest().body("Participant not found.");
         }
 
         // Validate the updated participant data
-        if (updatedParticipant == null || isNullOrEmpty(updatedParticipant.getName()) || isNullOrEmpty(updatedParticipant.getEmail())) {
+        if (updatedParticipant == null || isNullOrEmpty(updatedParticipant.getName())
+                || isNullOrEmpty(updatedParticipant.getEmail())) {
             return ResponseEntity.badRequest().body("Invalid participant data.");
         }
 
@@ -97,7 +99,8 @@ public class ParticipantController {
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating participant.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error updating participant.");
         }
     }
 
