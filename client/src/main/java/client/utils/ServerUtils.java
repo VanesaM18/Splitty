@@ -33,9 +33,15 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 public class ServerUtils {
-    private final ConcurrentHashMap<String, CompletableFuture<WebSocketMessage>> pendingRequests = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, CompletableFuture<WebSocketMessage>> pendingRequests
+        = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final MyWebSocketClient webSocketClient;
+
+    /**
+     * Creates an instance of ServerUtils which is used for communicating with the server
+     * @param webSocketClient the websocket to communicate through
+     */
     @Inject
     public ServerUtils(MyWebSocketClient webSocketClient) {
         this.webSocketClient = webSocketClient;
@@ -112,6 +118,12 @@ public class ServerUtils {
         }
         return null;
     }
+
+    /**
+     * Gets an event by id
+     * @param id the id of the event
+     * @return the requested event
+     */
     public Event getEventById(long id) {
         try {
             CompletableFuture<WebSocketMessage> future = new CompletableFuture<>();

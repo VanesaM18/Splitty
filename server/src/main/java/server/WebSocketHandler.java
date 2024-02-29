@@ -26,15 +26,33 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Autowired
     private EventController eventController;
 
+    /**
+     * Creates a class for handling the websocket connection
+     */
     public WebSocketHandler() {}
 
+    /**
+     * Handles requests from clients
+     * @param session the channel used to communicate
+     * @param message the message received through the channel
+     * @throws Exception if the message can't be parsed
+     */
     @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        WebSocketMessage request = objectMapper.readValue(message.getPayload(), WebSocketMessage.class);
+    protected void handleTextMessage(WebSocketSession session,
+                                     TextMessage message) throws Exception {
+        WebSocketMessage request = objectMapper.readValue(message.getPayload(),
+            WebSocketMessage.class);
         handleRequest(session, request);
     }
 
-    private void handleRequest(WebSocketSession session, WebSocketMessage request) throws Exception {
+    /**
+     * Handles the request
+     * @param session the channel used to communicate
+     * @param request the parsed request
+     * @throws Exception if the message can't be parsed
+     */
+    private void handleRequest(WebSocketSession session,
+                               WebSocketMessage request) throws Exception {
         String endPoint = request.getEndpoint();
         if (endPoint.contains("/admin")) {
             handleAdminApi(session, request);
@@ -43,7 +61,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    private void handleEventsApi(WebSocketSession session, WebSocketMessage request) throws Exception {
+    /**
+     * Handles the event specific to /api/event
+     * @param session the channel used to communicate
+     * @param request the parsed request
+     * @throws Exception if the message can't be parsed
+     */
+    private void handleEventsApi(WebSocketSession session,
+                                 WebSocketMessage request) throws Exception {
         switch (request.getEndpoint()) {
             case "api/events" -> {
                 if ("GET".equals(request.getMethod())) {
@@ -73,8 +98,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
             }
         }
     }
-
-    private void handleAdminApi(WebSocketSession session, WebSocketMessage request) throws Exception {
+    /**
+     * Handles the event specific to /api/admin
+     * @param session the channel used to communicate
+     * @param request the parsed request
+     * @throws Exception if the message can't be parsed
+     */
+    private void handleAdminApi(WebSocketSession session,
+                                WebSocketMessage request) throws Exception {
         switch (request.getEndpoint()) {
             case "api/admin" -> {
                 if ("POST".equals(request.getMethod())) {
@@ -92,7 +123,17 @@ public class WebSocketHandler extends TextWebSocketHandler {
             }
         }
     }
-    private void returnResult(WebSocketSession session, WebSocketMessage request, Object obj) throws Exception {
+
+    /**
+     * Returns through the same channel the requested resource (to be used only
+     * if it's expected to get a result, if not this call can be ignored)
+     * @param session the channel used to communicate
+     * @param request the parsed request
+     * @param obj the data to be sent back
+     * @throws Exception if the message can't be parsed
+     */
+    private void returnResult(WebSocketSession session,
+                              WebSocketMessage request, Object obj) throws Exception {
         WebSocketMessage messageBack = new WebSocketMessage();
         messageBack.setId(request.getId());
         messageBack.setData(obj);

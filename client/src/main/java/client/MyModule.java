@@ -37,6 +37,12 @@ public class MyModule implements Module {
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
         binder.bind(LoginCtrl.class).in(Scopes.SINGLETON);
     }
+
+    /**
+     * Instantiate the websocket dependency
+     * @return the instantiated websocket
+     * @throws URISyntaxException if the server address is wrong
+     */
     @Provides
     public MyWebSocketClient provideMyWebSocketClient() throws URISyntaxException {
         ConfigLoader configLoader = new ConfigLoader();

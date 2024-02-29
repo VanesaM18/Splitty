@@ -21,8 +21,6 @@ import com.google.inject.Inject;
 
 import commons.Admin;
 
-import jakarta.ws.rs.WebApplicationException;
-
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
