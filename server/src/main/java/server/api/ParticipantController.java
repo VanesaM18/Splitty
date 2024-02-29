@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.Participant;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.ParticipantRepository;
@@ -61,10 +62,57 @@ public class ParticipantController {
     }
 
     /**
+     * Updates a participant by their ID.
+     *
+     * @param id The ID of the participant to update.
+     * @param updatedParticipant The updated participant data.
+     * @return ResponseEntity indicating the status of the update operation.
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<String> update(@PathVariable("id") Long id, @RequestBody Participant updatedParticipant) {
+        if (isNull(id) || !repo.existsById(id)) {
+            return ResponseEntity.badRequest().body("Participant not found.");
+        }
+
+        // Validate the updated participant data
+        if (updatedParticipant == null || isNullOrEmpty(updatedParticipant.getName()) || isNullOrEmpty(updatedParticipant.getEmail())) {
+            return ResponseEntity.badRequest().body("Invalid participant data.");
+        }
+
+        // Update the id
+        updatedParticipant.setId(id);
+
+        // Update the participant
+        try {
+            Participant existingParticipant = repo.findById(id).orElse(null);
+            if (existingParticipant != null) {
+                // Update existing participant with new data
+                existingParticipant.setName(updatedParticipant.getName());
+                existingParticipant.setEmail(updatedParticipant.getEmail());
+
+                // Save the updated participant
+                repo.save(existingParticipant);
+                return ResponseEntity.ok().body("Participant updated successfully.");
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating participant.");
+        }
+    }
+
+    /**
      *  Checks if a Long is null.
      */
     private static boolean isNull(Long s) {
         return s == null;
+    }
+
+    /**
+     *  Checks if a string is null or empty
+     */
+    private static boolean isNullOrEmpty(String s) {
+        return s == null || s.isEmpty();
     }
 
 }

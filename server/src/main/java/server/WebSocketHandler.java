@@ -13,7 +13,6 @@ import server.api.AdminController;
 import server.api.EventController;
 import server.api.ParticipantController;
 import server.api.QuoteController;
-
 import java.util.List;
 
 @Component
@@ -183,6 +182,15 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 if ("DELETE".equals(request.getMethod())) {
                     long participantId = ((Participant) request.getData()).getId();
                     ResponseEntity<String> response = participantController.delete(participantId);
+                    this.returnResult(session, request, response.getBody());
+                }
+                if ("PUT".equals(request.getMethod())) {
+                    Participant[] participants = objectMapper.convertValue(
+                            request.getData(), Participant[].class);
+                    Participant oldParticipant = participants[1];
+                    Participant newParticipant = participants[0];
+                    ResponseEntity<String> response = participantController.update(
+                            oldParticipant.getId(), newParticipant);
                     this.returnResult(session, request, response.getBody());
                 }
             }
