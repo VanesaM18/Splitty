@@ -29,6 +29,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 
+import java.util.Objects;
+
 public class LoginCtrl {
 
     private final ServerUtils server;
@@ -60,18 +62,16 @@ public class LoginCtrl {
      * Tries to log in with the credentials provided by the user in the UI
      */
     public void logIn() {
-        try {
-            server.loginAdmin(getAdmin());
-        } catch (WebApplicationException e) {
+        String result = server.loginAdmin(getAdmin());
+        if (!Objects.equals(result, "Login successfully")) {
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
+            alert.setContentText(result);
             alert.showAndWait();
             return;
         }
-
+        // login successful redirect to where needed
         clearFields();
-        mainCtrl.showOverview();
     }
 
     /**
