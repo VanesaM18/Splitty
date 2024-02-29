@@ -1,9 +1,6 @@
 package server;
 
-import commons.Admin;
-import commons.Event;
-import commons.Quote;
-import commons.WebSocketMessage;
+import commons.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -14,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.websocket.server.ServerEndpoint;
 import server.api.AdminController;
 import server.api.EventController;
+import server.api.ParticipantController;
 import server.api.QuoteController;
 
 import java.util.List;
@@ -29,6 +27,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private EventController eventController;
     @Autowired
     private QuoteController quoteController;
+    @Autowired
+    private ParticipantController participantController;
 
     /**
      * Creates a class for handling the websocket connection
@@ -64,6 +64,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
             handleEventsApi(session, request);
         } else if (endPoint.contains("/quotes")) {
             handleQuotesApi(session, request);
+        } else if (endPoint.contains("/participants")) {
+            handleParticipantsApi (session, request);
         }
     }
     /**
@@ -153,6 +155,33 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     Admin admin = objectMapper.convertValue(request.getData(), Admin.class);
                     ResponseEntity<String> status = adminController.login(admin);
                     this.returnResult(session, request, status.getBody());
+                }
+            }
+        }
+    }
+
+    /**
+     * Handles the participants specific to /api/participants
+     * @param session the channel used to communicate
+     * @param request the parsed request
+     * @throws Exception if the message can't be parsed
+     */
+    private void handleParticipantsApi(WebSocketSession session,
+                                 WebSocketMessage request) throws Exception {
+        switch (request.getEndpoint()) {
+            case "api/participants" -> {
+                if ("GET".equals(request.getMethod())) {
+                    List<Participant> all = participantController.getAll();
+                    this.returnResult(session, request, all);
+                } else if ("POST".equals(request.getMethod())) {
+                    Participant p = objectMapper.convertValue(request.getData(), Participant.class);
+                    ResponseEntity<Participant> savedEvent = participantController.add(p);
+                    this.returnResult(session, request, savedEvent.getBody());
+                }
+            }
+            case "api/participants/id" -> {
+                if ("DELETE".equals(request.getMethod())) {
+                    // TO DO
                 }
             }
         }
