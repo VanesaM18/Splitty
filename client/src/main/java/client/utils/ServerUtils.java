@@ -59,6 +59,18 @@ public class ServerUtils {
     }
 
     /**
+     * Deletes a participant
+     * @param p the participant to be added
+     */
+    public void deleteParticipant(Participant p) {
+        WebSocketMessage request = new WebSocketMessage();
+        request.setEndpoint("api/participants/id");
+        request.setMethod("DELETE");
+        request.setData(p);
+        sendMessageWithoutResponse(request);
+    }
+
+    /**
      * Adds an admin
      * @param admin to be added
      */

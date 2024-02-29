@@ -4,8 +4,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.Objects;
+
+import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
 public class Participant {
@@ -42,6 +45,12 @@ public class Participant {
     }
 
     /**
+     * Retrieves the id associated with this participant.
+     * @return the participant's name.
+     */
+    public long getId() { return id; };
+
+    /**
      * Retrieves the name associated with this participant.
      * @return the participant's name.
      */
@@ -71,6 +80,14 @@ public class Participant {
      */
     public String getBic() {
         return bic;
+    }
+
+    /**
+     * Sets the id associated with this participant.
+     * @param id The new id to be set.
+     */
+    public void setId(long id) {
+        this.id = id;
     }
 
     /**
@@ -135,20 +152,5 @@ public class Participant {
      * @return String representation of the object.
      */
     @Override
-    public String toString() {
-        return "Participant{"
-                + "name='"
-                + name
-                + '\''
-                + ", email='"
-                + email
-                + '\''
-                + ", iban='"
-                + iban
-                + '\''
-                + ", bic='"
-                + bic
-                + '\''
-                + '}';
-    }
+    public String toString() { return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE); }
 }

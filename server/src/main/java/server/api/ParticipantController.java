@@ -38,7 +38,7 @@ public class ParticipantController {
      */
     @PostMapping(path = { "", "/" })
     public ResponseEntity<Participant> add(@RequestBody Participant participant) {
-        if (participant.getName() == null) {
+        if (participant.getName() == null || participant.getName().equals("")) {
             return ResponseEntity.badRequest().build();
         }
 

@@ -175,13 +175,15 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     this.returnResult(session, request, all);
                 } else if ("POST".equals(request.getMethod())) {
                     Participant p = objectMapper.convertValue(request.getData(), Participant.class);
-                    ResponseEntity<Participant> savedEvent = participantController.add(p);
-                    this.returnResult(session, request, savedEvent.getBody());
+                    ResponseEntity<Participant> response = participantController.add(p);
+                    this.returnResult(session, request, response.getBody());
                 }
             }
             case "api/participants/id" -> {
                 if ("DELETE".equals(request.getMethod())) {
-                    // TO DO
+                    long participantId = ((Participant) request.getData()).getId();
+                    ResponseEntity<String> response = participantController.delete(participantId);
+                    this.returnResult(session, request, response.getBody());
                 }
             }
         }
