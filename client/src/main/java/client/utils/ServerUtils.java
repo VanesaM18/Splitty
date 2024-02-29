@@ -28,15 +28,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 
 import commons.WebSocketMessage;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 public class ServerUtils {
-    private final ConcurrentHashMap<String, CompletableFuture<WebSocketMessage>> pendingRequests
-        = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final MyWebSocketClient webSocketClient;
 
@@ -47,7 +44,6 @@ public class ServerUtils {
     @Inject
     public ServerUtils(MyWebSocketClient webSocketClient) {
         this.webSocketClient = webSocketClient;
-        this.webSocketClient.setPendingRequests(pendingRequests);
     }
 
     /**
@@ -56,18 +52,10 @@ public class ServerUtils {
      */
     public void addParticipant(Participant p) {
         WebSocketMessage request = new WebSocketMessage();
-        String requestId = UUID.randomUUID().toString();
-        request.setId(requestId);
         request.setEndpoint("api/participants");
         request.setMethod("POST");
         request.setData(p);
-
-        try {
-            String message = objectMapper.writeValueAsString(request);
-            webSocketClient.send(message);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        sendMessageWithoutResponse(request);
     }
 
     /**
@@ -76,18 +64,10 @@ public class ServerUtils {
      */
     public void addAdmin(Admin admin) {
         WebSocketMessage request = new WebSocketMessage();
-        String requestId = UUID.randomUUID().toString();
-        request.setId(requestId);
         request.setEndpoint("api/admin");
         request.setMethod("POST");
         request.setData(admin);
-
-        try {
-            String message = objectMapper.writeValueAsString(request);
-            webSocketClient.send(message);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        sendMessageWithoutResponse(request);
     }
 
     /**
@@ -97,23 +77,11 @@ public class ServerUtils {
      */
     public String loginAdmin(Admin admin) {
         try {
-            CompletableFuture<WebSocketMessage> future = new CompletableFuture<>();
             WebSocketMessage request = new WebSocketMessage();
-            String requestId = UUID.randomUUID().toString();
-            request.setId(requestId);
             request.setEndpoint("api/admin/login");
             request.setMethod("POST");
             request.setData(admin);
-            pendingRequests.put(requestId, future);
-
-            try {
-                String message = objectMapper.writeValueAsString(request);
-                webSocketClient.send(message);
-            } catch (JsonProcessingException e) {
-                future.completeExceptionally(e);
-            }
-
-            WebSocketMessage response = future.get();
+            WebSocketMessage response = sendMessageWithResponse(request);
             return objectMapper.convertValue(response.getData(), String.class);
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
@@ -128,25 +96,13 @@ public class ServerUtils {
      */
     public Event getEventById(long id) {
         try {
-            CompletableFuture<WebSocketMessage> future = new CompletableFuture<>();
             WebSocketMessage request = new WebSocketMessage();
-            String requestId = UUID.randomUUID().toString();
-            request.setId(requestId);
             request.setEndpoint("api/events/id");
             request.setMethod("GET");
             List<Object> parameters = new ArrayList<>();
             parameters.add(id);
             request.setParameters(parameters);
-            pendingRequests.put(requestId, future);
-
-            try {
-                String message = objectMapper.writeValueAsString(request);
-                webSocketClient.send(message);
-            } catch (JsonProcessingException e) {
-                future.completeExceptionally(e);
-            }
-
-            WebSocketMessage response = future.get();
+            WebSocketMessage response = sendMessageWithResponse(request);
             return objectMapper.convertValue(response.getData(), Event.class);
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
@@ -160,22 +116,11 @@ public class ServerUtils {
      */
     public List<Quote> getQuotes() {
         try {
-            CompletableFuture<WebSocketMessage> future = new CompletableFuture<>();
             WebSocketMessage request = new WebSocketMessage();
-            String requestId = UUID.randomUUID().toString();
-            request.setId(requestId);
             request.setEndpoint("api/quotes");
             request.setMethod("GET");
-            pendingRequests.put(requestId, future);
 
-            try {
-                String message = objectMapper.writeValueAsString(request);
-                webSocketClient.send(message);
-            } catch (JsonProcessingException e) {
-                future.completeExceptionally(e);
-            }
-
-            WebSocketMessage response = future.get();
+            WebSocketMessage response = sendMessageWithResponse( request);
             return objectMapper.convertValue(response.getData(),
                 new TypeReference<List<Quote>>() {});
         } catch (ExecutionException | InterruptedException e) {
@@ -190,12 +135,40 @@ public class ServerUtils {
      */
     public void addQuote(Quote quote) {
         WebSocketMessage request = new WebSocketMessage();
-        String requestId = UUID.randomUUID().toString();
-        request.setId(requestId);
         request.setEndpoint("api/quotes");
         request.setMethod("POST");
         request.setData(quote);
+        sendMessageWithoutResponse(request);
+    }
 
+    /**
+     * Send a message to the server with awaiting response
+     * @param request the message body
+     * @return the response from the server
+     * @throws ExecutionException if the object mapper fails
+     * @throws InterruptedException if the connection is closed
+     */
+    private WebSocketMessage sendMessageWithResponse(WebSocketMessage request)
+        throws ExecutionException, InterruptedException {
+        String requestId = UUID.randomUUID().toString();
+        request.setId(requestId);
+        CompletableFuture<WebSocketMessage> future = webSocketClient.addPendingRequests(requestId);
+        try {
+            String message = objectMapper.writeValueAsString(request);
+            webSocketClient.send(message);
+        } catch (JsonProcessingException e) {
+            future.completeExceptionally(e);
+        }
+        return future.get();
+    }
+
+    /**
+     * Send a message to the server without awaiting response
+     * @param request the message body
+     */
+    private void sendMessageWithoutResponse(WebSocketMessage request) {
+        String requestId = UUID.randomUUID().toString();
+        request.setId(requestId);
         try {
             String message = objectMapper.writeValueAsString(request);
             webSocketClient.send(message);
@@ -203,4 +176,5 @@ public class ServerUtils {
             e.printStackTrace();
         }
     }
+
 }

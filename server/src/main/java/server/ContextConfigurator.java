@@ -1,4 +1,5 @@
 package server;
+
 import jakarta.websocket.server.ServerEndpointConfig;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;

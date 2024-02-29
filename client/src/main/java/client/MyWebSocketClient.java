@@ -47,6 +47,17 @@ public class MyWebSocketClient extends WebSocketClient {
     }
 
     /**
+     * Adds a request
+     * @param requestId the request id
+     * @return the future for the response
+     */
+    public CompletableFuture<WebSocketMessage> addPendingRequests(String requestId) {
+        CompletableFuture<WebSocketMessage> future = new CompletableFuture<>();
+        pendingRequests.put(requestId, future);
+        return future;
+    }
+
+    /**
      * Called when the connection is opened
      * @param handshake The handshake of the websocket instance
      */
