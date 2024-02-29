@@ -2,6 +2,7 @@ package server;
 
 import commons.Admin;
 import commons.Event;
+import commons.Quote;
 import commons.WebSocketMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.websocket.server.ServerEndpoint;
 import server.api.AdminController;
 import server.api.EventController;
+import server.api.QuoteController;
 
 import java.util.List;
 
@@ -25,6 +27,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private AdminController adminController;
     @Autowired
     private EventController eventController;
+    @Autowired
+    private QuoteController quoteController;
 
     /**
      * Creates a class for handling the websocket connection
@@ -58,9 +62,39 @@ public class WebSocketHandler extends TextWebSocketHandler {
             handleAdminApi(session, request);
         } else if (endPoint.contains("/events")) {
             handleEventsApi(session, request);
+        } else if (endPoint.contains("/quotes")) {
+            handleQuotesApi(session, request);
         }
     }
-
+    /**
+     * Handles the quotes specific to /api/quote
+     * @param session the channel used to communicate
+     * @param request the parsed request
+     * @throws Exception if the message can't be parsed
+     */
+    private void handleQuotesApi(WebSocketSession session,
+                                 WebSocketMessage request) throws Exception {
+        switch (request.getEndpoint()) {
+            case "api/quotes" -> {
+                if ("GET".equals(request.getMethod())) {
+                    List<Quote> all = quoteController.getAll();
+                    this.returnResult(session, request, all);
+                } else if ("POST".equals(request.getMethod())) {
+                    Quote quote = objectMapper.convertValue(request.getData(), Quote.class);
+                    ResponseEntity<Quote> savedEvent = quoteController.add(quote);
+                    this.returnResult(session, request, savedEvent.getBody());
+                }
+            }
+            case "api/quotes/id" -> {
+                if ("GET".equals(request.getMethod())) {
+                    List parameters = objectMapper.convertValue(request.getData(), List.class);
+                    long id = (long) parameters.get(0);
+                    ResponseEntity<Quote> quote = quoteController.getById(id);
+                    this.returnResult(session, request, quote.getBody());
+                }
+            }
+        }
+    }
     /**
      * Handles the event specific to /api/event
      * @param session the channel used to communicate

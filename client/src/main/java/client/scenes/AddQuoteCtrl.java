@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package client.scenes;
 
 import client.utils.ServerUtils;
 
 import com.google.inject.Inject;
 
-import commons.Admin;
+import commons.Person;
+import commons.Quote;
+
+import jakarta.ws.rs.WebApplicationException;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -27,65 +31,75 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 
-import java.util.Objects;
-
-public class LoginCtrl {
+public class AddQuoteCtrl {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
 
-    @FXML private TextField username;
+    @FXML private TextField firstName;
 
-    @FXML private TextField password;
+    @FXML private TextField lastName;
+
+    @FXML private TextField quote;
 
     /**
-     * Controller responsible for handling the login view functionality.
+     * Controller responsible for handling the quote overview functionality.
      * @param server An instance of ServerUtils for server-related operations.
      * @param mainCtrl An instance of MainCtrl for coordinating with the main controller.
      */
     @Inject
-    public LoginCtrl(ServerUtils server, MainCtrl mainCtrl) {
+    public AddQuoteCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
     }
 
     /**
-     * Clears the login fields when user closes the admin view, so they are not saved
+     * Cancels the process of adding a new quote.
      */
     public void cancel() {
-        clearFields();
-    }
-
-    /**
-     * Tries to log in with the credentials provided by the user in the UI
-     */
-    public void logIn() {
-        String result = server.loginAdmin(getAdmin());
-        if (!Objects.equals(result, "Login successfully")) {
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(result);
-            alert.showAndWait();
-            return;
-        }
-        // login successful redirect to where needed
         clearFields();
         mainCtrl.showOverview();
     }
 
     /**
-     * Create an Admin instance with the credentials provided by the user
+     * Adds the quote to the server if the input is valid.
+     * Throws an error if the request is bad.
      */
-    private Admin getAdmin() {
-        return new Admin(username.getText(), password.getText(), "");
+    public void ok() {
+        try {
+            server.addQuote(getQuote());
+        } catch (WebApplicationException e) {
+
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+            return;
+        }
+
+        clearFields();
+        mainCtrl.showOverview();
     }
+
     /**
-     * Clears the fields
+     * Creates a quote from the text fields.
+     * @return the created quote.
      */
-    public void clearFields() {
-        username.clear();
-        password.clear();
+    private Quote getQuote() {
+        var p = new Person(firstName.getText(), lastName.getText());
+        var q = quote.getText();
+        return new Quote(p, q);
     }
+
+    /**
+     * Clears the text fields.
+     */
+    private void clearFields() {
+        firstName.clear();
+        lastName.clear();
+        quote.clear();
+    }
+
     /**
      * Event handler for pressing a key.
      * @param e the key that is pressed
@@ -93,7 +107,7 @@ public class LoginCtrl {
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
             case ENTER:
-                logIn();
+                ok();
                 break;
             case ESCAPE:
                 cancel();
@@ -101,12 +115,5 @@ public class LoginCtrl {
             default:
                 break;
         }
-    }
-
-    /**
-     * Shows the settings page
-     */
-    public void openSettings () {
-        mainCtrl.showSettings();
     }
 }

@@ -20,8 +20,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.inject.Inject;
 import commons.Admin;
 import commons.Event;
+import commons.Quote;
 import commons.Participant;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -150,5 +152,55 @@ public class ServerUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Get all the quotes stored in the database
+     * @return all the quotes
+     */
+    public List<Quote> getQuotes() {
+        try {
+            CompletableFuture<WebSocketMessage> future = new CompletableFuture<>();
+            WebSocketMessage request = new WebSocketMessage();
+            String requestId = UUID.randomUUID().toString();
+            request.setId(requestId);
+            request.setEndpoint("api/quotes");
+            request.setMethod("GET");
+            pendingRequests.put(requestId, future);
+
+            try {
+                String message = objectMapper.writeValueAsString(request);
+                webSocketClient.send(message);
+            } catch (JsonProcessingException e) {
+                future.completeExceptionally(e);
+            }
+
+            WebSocketMessage response = future.get();
+            return objectMapper.convertValue(response.getData(),
+                new TypeReference<List<Quote>>() {});
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Add a quote
+     * @param quote to be added
+     */
+    public void addQuote(Quote quote) {
+        WebSocketMessage request = new WebSocketMessage();
+        String requestId = UUID.randomUUID().toString();
+        request.setId(requestId);
+        request.setEndpoint("api/quotes");
+        request.setMethod("POST");
+        request.setData(quote);
+
+        try {
+            String message = objectMapper.writeValueAsString(request);
+            webSocketClient.send(message);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -42,6 +42,7 @@ public class AddParticipantsCtrl {
      */
     public void abort() {
         clearFields();
+        mainCtrl.showOverview();
     }
 
     /**
@@ -71,6 +72,7 @@ public class AddParticipantsCtrl {
         }
 
         clearFields();
+        mainCtrl.showOverview();
     }
 
     /**
