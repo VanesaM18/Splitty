@@ -59,6 +59,18 @@ public class ServerUtils {
     }
 
     /**
+     * Gets a participant by their id.
+     * @param id the participant's id.
+     */
+    public void getParticipant(long id) {
+        WebSocketMessage request = new WebSocketMessage();
+        request.setEndpoint("api/participants/id");
+        request.setMethod("GET");
+        request.setData(id);
+        sendMessageWithoutResponse(request);
+    }
+
+    /**
      * Deletes a participant.
      * @param p the participant to be deleted.
      */

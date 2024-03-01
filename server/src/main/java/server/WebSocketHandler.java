@@ -179,21 +179,37 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 }
             }
             case "api/participants/id" -> {
-                if ("DELETE".equals(request.getMethod())) {
-                    long participantId = ((Participant) request.getData()).getId();
-                    ResponseEntity<String> response = participantController.delete(participantId);
-                    this.returnResult(session, request, response.getBody());
-                }
-                if ("PUT".equals(request.getMethod())) {
-                    Participant[] participants = objectMapper.convertValue(
-                            request.getData(), Participant[].class);
-                    Participant oldParticipant = participants[1];
-                    Participant newParticipant = participants[0];
-                    ResponseEntity<String> response = participantController.update(
-                            oldParticipant.getId(), newParticipant);
-                    this.returnResult(session, request, response.getBody());
-                }
+                handleParticipantsApiByID(session, request);
             }
+        }
+    }
+
+    /**
+     * Handles the participants specific to /api/participants/id
+     * @param session the channel used to communicate
+     * @param request the parsed request
+     * @throws Exception if the message can't be parsed
+     */
+    private void handleParticipantsApiByID(WebSocketSession session,
+                                           WebSocketMessage request) throws Exception {
+        if ("DELETE".equals(request.getMethod())) {
+            long participantId = ((Participant) request.getData()).getId();
+            ResponseEntity<String> response = participantController.delete(participantId);
+            this.returnResult(session, request, response.getBody());
+        }
+        else if ("PUT".equals(request.getMethod())) {
+            Participant[] participants = objectMapper.convertValue(
+                    request.getData(), Participant[].class);
+            Participant oldParticipant = participants[1];
+            Participant newParticipant = participants[0];
+            ResponseEntity<String> response = participantController.update(
+                    oldParticipant.getId(), newParticipant);
+            this.returnResult(session, request, response.getBody());
+        }
+        else if ("GET".equals(request.getMethod())) {
+            long id = (long) request.getData();
+            ResponseEntity<Participant> response = participantController.getById(id);
+            this.returnResult(session, request, response.getBody());
         }
     }
 

@@ -33,6 +33,20 @@ public class ParticipantController {
     }
 
     /**
+     * Retrieves a participant by their ID.
+     * @param id The ID of the participant to retrieve.
+     * @return ResponseEntity containing the retrieved participant if found,
+     * or a bad request response if the ID is invalid or the participant does not exist.
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<Participant> getById(@PathVariable("id") long id) {
+        if (id < 0 || !repo.existsById(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(repo.findById(id).get());
+    }
+
+    /**
      * Adds a participant.
      * @param participant the participant to be added
      * @return the added admin
