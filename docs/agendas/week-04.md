@@ -23,13 +23,13 @@ Agenda Items:
 - Approval of last minutes - Did everyone read the minutes from the previous meeting? (3 min)
 	- Confirm that everyone has read and approves the minutes from last meeting
 	- Check if there are any highlightes than need to be further emphasized or detailed 
-- Announcements by the TA (20 sec)
-	- Mention that the TA may make announcements if the timing allows after the main aspects of the agenda have been discussed
-- Presentation of the current state of the application to TA (15 min)
+- Announcements by the TA (5 min)
+	- The TA will make announcements and present any updates
+- Presentation of the current state of the application to TA (5 min)
 	- Run the application and make it available for the TA and all members to observe the process simultaneously
-	- Nominate at least 2 members, if there are no volunteers, to present the functionalities 
+	- Nominate at least 2 members, if there are no volunteers, to present the state of the application
 	- Request a short feedback from the TA (and allow the team to mention any specific details that they would like feedback for)
-- Talking Points: (Inform/ brainstorm/ decision-making/ discuss) (5 min)
+- Talking Points: (Inform/ brainstorm/ decision-making/ discuss) (10 min)
   - Review completed implementations so far 
   - Discuss which features/functionalities we should focus on for the upcoming (2) weeks and the importance of possible changes or code refactoring
 - Summarize action points: Who , what , when? (3 min)
