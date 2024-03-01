@@ -1,8 +1,13 @@
 package server.api;
 
+import commons.Admin;
 import commons.Event;
+import commons.PasswordHasher;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import server.BasicAuthParser;
+import server.database.AdminRepository;
 import server.database.EventRepository;
 
 import java.util.List;
@@ -12,15 +17,18 @@ import java.util.List;
 public class EventController {
 
     private final EventRepository repo;
+    private final AdminRepository adminRepository;
 
     /**
      * Create a new event controller.
      * This controller contains all api endpoints that have to do with events.
      *
      * @param repo The repository used for creating, reading, updating and deleting events.
+     * @param adminRepository The repository used for checking authentication.
      */
-    public EventController(EventRepository repo) {
+    public EventController(EventRepository repo, AdminRepository adminRepository) {
         this.repo = repo;
+        this.adminRepository = adminRepository;
     }
 
     /**
@@ -104,15 +112,34 @@ public class EventController {
      * Delete an event based on its ID.
      *
      * @param id The ID of the event to delete.
+     * @param auth The authorization header.
      * @return a 200 OK on success, or a 400 error page on failure.
      */
     @DeleteMapping(path = {"/{id}"})
-    public ResponseEntity<String> delete(@PathVariable("id") String id) {
+    public ResponseEntity<String> delete(
+            @PathVariable("id") String id,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth
+    ) {
         if (isNullOrEmpty(id) || !repo.existsByInviteCodeEqualsIgnoreCase(id)) {
             return ResponseEntity.badRequest().build();
         }
 
-        // TODO: Check if request is from an admin.
+        // This is a protected API endpoint.
+        // Check that authorization headers were provided.
+        var login = BasicAuthParser.parse(auth);
+        if (login == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // Calculate the password hash
+        PasswordHasher hasher = new PasswordHasher();
+        String hash = hasher.compute(login.getPassword());
+
+        // Check if the admin exists and the password matches.
+        Admin admin = adminRepository.findById(login.getUsername()).orElse(null);
+        if (admin == null || !hash.equals(admin.getPassword())) {
+            return ResponseEntity.badRequest().build();
+        }
 
         repo.deleteById(id);
         return ResponseEntity.ok("Deleted");
