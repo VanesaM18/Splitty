@@ -89,9 +89,10 @@ public class Main extends Application {
                 "client",
                 "scenes",
                 "AddParticipants.fxml");
+        var startPage = FXML.load(StartScreenCtrl.class, locale, "client", "scenes", "StartScreen.fxml");
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(this.stage, settings, overview, add, participants, loginAdmin);
+        mainCtrl.initialize(this.stage, settings, overview, add, participants, loginAdmin, startPage);
 
     }
 }

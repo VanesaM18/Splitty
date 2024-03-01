@@ -24,6 +24,7 @@ import commons.Quote;
 import commons.Participant;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,7 @@ public class ServerUtils {
     @Inject
     public ServerUtils(MyWebSocketClient webSocketClient) {
         this.webSocketClient = webSocketClient;
+        this.objectMapper.registerModule(new JavaTimeModule());
     }
 
     /**
@@ -108,6 +110,39 @@ public class ServerUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Gets an event by id
+     * @param code the code of the event
+     * @return the requested event or null if it does not exist
+     */
+    public Event getEventByInviteCode(String code) {
+        try {
+            WebSocketMessage request = new WebSocketMessage();
+            request.setEndpoint("api/events/invites/inviteCode");
+            request.setMethod("GET");
+            List<Object> parameters = new ArrayList<>();
+            parameters.add(code);
+            request.setParameters(parameters);
+            WebSocketMessage response = sendMessageWithResponse(request);
+            return objectMapper.convertValue(response.getData(), Event.class);
+        } catch (ExecutionException | InterruptedException ignored) {
+
+        }
+        return null;
+    }
+
+    /**
+     * Adds an event
+     * @param ev to be added
+     */
+    public void addEvent(Event ev) {
+        WebSocketMessage request = new WebSocketMessage();
+        request.setEndpoint("api/events");
+        request.setMethod("POST");
+        request.setData(ev);
+        sendMessageWithoutResponse(request);
     }
 
     /**

@@ -1,9 +1,6 @@
 package commons;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -19,7 +16,7 @@ public class Event {
     private String inviteCode;
     private LocalDateTime dateTime;
 
-    @ManyToMany private Set<Participant> participants;
+    @ManyToMany(fetch = FetchType.EAGER) private Set<Participant> participants;
 
     /**
      * Create an Event with the given details.

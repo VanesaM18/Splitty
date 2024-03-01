@@ -36,6 +36,8 @@ public class MainCtrl {
 
     private LoginCtrl loginCtrl;
     private Scene login;
+    private StartScreenCtrl startPageCtrl;
+    private Scene startPage;
 
     /**
      * Initializes the app with the specified primary stage and scenes for various controllers.
@@ -51,6 +53,8 @@ public class MainCtrl {
      * @param participant A Pair containing the AddParticipantsCtrl and its corresponding scene.
      *
      * @param login A Pair containing the LoginCtrl and its corresponding Parent scene.
+     *
+     * @param startPage A Pair containing the StartPageCtrl and its corresponding Parent scene.
      */
     public void initialize(
         Stage primaryStage,
@@ -58,7 +62,9 @@ public class MainCtrl {
         Pair<QuoteOverviewCtrl, Parent> overview,
         Pair<AddQuoteCtrl, Parent> add,
         Pair<AddParticipantsCtrl, Parent> participant,
-        Pair<LoginCtrl, Parent> login) {
+        Pair<LoginCtrl, Parent> login,
+        Pair<StartScreenCtrl, Parent> startPage
+        ) {
         this.primaryStage = primaryStage;
 
         this.settingsCtrl = settings.getKey();
@@ -76,6 +82,9 @@ public class MainCtrl {
 
         this.participantsCtrl = participant.getKey();
         this.participants = new Scene(participant.getValue());
+
+        this.startPageCtrl = startPage.getKey();
+        this.startPage = new Scene(startPage.getValue());
 
         // showOverview();
         primaryStage.show();
@@ -112,6 +121,17 @@ public class MainCtrl {
         primaryStage.setTitle("Login: Admin");
         primaryStage.setScene(login);
         loginCtrl.clearFields();
+    }
+
+    /**
+     * Displays the startScreen view.
+     * This method sets the title of the primary stage to "Start page"
+     * and sets the scene to the login scene.
+     */
+    public void showStartScreen() {
+        primaryStage.setTitle("Start page");
+        primaryStage.setScene(startPage);
+        startPageCtrl.clearFields();
     }
 
     /**

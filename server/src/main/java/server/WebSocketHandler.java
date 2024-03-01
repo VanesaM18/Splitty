@@ -1,5 +1,6 @@
 package server;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import commons.Admin;
 import commons.Event;
 import commons.Quote;
@@ -33,7 +34,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
     /**
      * Creates a class for handling the websocket connection
      */
-    public WebSocketHandler() {}
+    public WebSocketHandler() {
+        this.objectMapper.registerModule(new JavaTimeModule());
+    }
 
     /**
      * Handles requests from clients
@@ -87,7 +90,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             }
             case "api/quotes/id" -> {
                 if ("GET".equals(request.getMethod())) {
-                    List parameters = objectMapper.convertValue(request.getData(), List.class);
+                    List<Object> parameters = request.getParameters();
                     long id = (long) parameters.get(0);
                     ResponseEntity<Quote> quote = quoteController.getById(id);
                     this.returnResult(session, request, quote.getBody());
@@ -116,7 +119,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             }
             case "api/events/id" -> {
                 if ("GET".equals(request.getMethod())) {
-                    List parameters = objectMapper.convertValue(request.getData(), List.class);
+                    List<Object> parameters = request.getParameters();
                     long id = (long) parameters.get(0);
                     ResponseEntity<Event> event = eventController.getById(id);
                     this.returnResult(session, request, event.getBody());
@@ -124,7 +127,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             }
             case "api/events/invites/inviteCode" -> {
                 if ("GET".equals(request.getMethod())) {
-                    List parameters = objectMapper.convertValue(request.getData(), List.class);
+                    List<Object> parameters = request.getParameters();
                     String code = (String) parameters.get(0);
                     ResponseEntity<Event> event = eventController.getByInviteCode(code);
                     this.returnResult(session, request, event.getBody());
