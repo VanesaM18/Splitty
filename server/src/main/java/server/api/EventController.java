@@ -80,6 +80,7 @@ public class EventController {
      * Update a pre-existing event
      *
      * @param event The event to update.
+     * @param id The ID of the event to update.
      * @return The updated version of the event, or a 400 error page.
      */
     @PutMapping(path = { "/{id}"})
