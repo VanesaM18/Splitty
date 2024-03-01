@@ -50,22 +50,6 @@ public class EventController {
     }
 
     /**
-     * API Endpoint for getting a certain event based on its invite code.
-     *
-     * @param code The invite code of the event to get.
-     * @return the event with matching invite code, if it exists.
-     * If it does not exist or an invalid invite code is given, a 400 error is returned.
-     */
-    @GetMapping("/invites/{inviteCode}")
-    public ResponseEntity<Event> getByInviteCode(@PathVariable("inviteCode") String code) {
-        if (isNullOrEmpty(code) || !repo.existsByInviteCodeEqualsIgnoreCase(code)) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        return ResponseEntity.ok(repo.findFirstByInviteCodeEqualsIgnoreCase(code));
-    }
-
-    /**
      * Create a new Event.
      *
      * @param event The event to create.
@@ -90,6 +74,47 @@ public class EventController {
 
         Event saved = repo.save(event);
         return ResponseEntity.ok(saved);
+    }
+
+    /**
+     * Update a pre-existing event
+     *
+     * @param event The event to update.
+     * @return The updated version of the event, or a 400 error page.
+     */
+    @PutMapping(path = { "/{id}"})
+    public ResponseEntity<Event> update(@PathVariable("id") String id, @RequestBody Event event) {
+        if (isNullOrEmpty(event.getName())
+                || event.getDateTime() == null
+                || (event.getParticipants() != null && !event.getParticipants().isEmpty())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // Make sure the ID of the event we are editing is the ID from the URL.
+        if (!id.equals(event.getInviteCode())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Event saved = repo.save(event);
+        return ResponseEntity.ok(saved);
+    }
+
+    /**
+     * Delete an event based on its ID.
+     *
+     * @param id The ID of the event to delete.
+     * @return a 200 OK on success, or a 400 error page on failure.
+     */
+    @DeleteMapping(path = {"/{id}"})
+    public ResponseEntity<String> delete(@PathVariable("id") String id) {
+        if (isNullOrEmpty(id) || !repo.existsByInviteCodeEqualsIgnoreCase(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // TODO: Check if request is from an admin.
+
+        repo.deleteById(id);
+        return ResponseEntity.ok("Deleted");
     }
 
     private static boolean isNullOrEmpty(String s) {
