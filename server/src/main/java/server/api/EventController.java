@@ -35,14 +35,15 @@ public class EventController {
 
     /**
      * API Endpoint for getting a certain event based on its ID.
+     * The ID of an Event is equal to its invite code.
      *
      * @param id The ID of the event to get.
      * @return the event with matching ID, if it exists.
      * If it does not exist or an invalid ID is given, a 404 error is returned.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Event> getById(@PathVariable("id") long id) {
-        if (id < 0 || !repo.existsById(id)) {
+    public ResponseEntity<Event> getById(@PathVariable("id") String id) {
+        if (isNullOrEmpty(id) || !repo.existsByInviteCodeEqualsIgnoreCase(id)) {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(repo.findById(id).get());
@@ -82,6 +83,10 @@ public class EventController {
 
         // Generate an invite code
         event.generateInviteCode();
+        // Check if the invite code is unique
+        while (repo.existsByInviteCodeEqualsIgnoreCase(event.getInviteCode())) {
+            event.generateInviteCode();
+        }
 
         Event saved = repo.save(event);
         return ResponseEntity.ok(saved);
