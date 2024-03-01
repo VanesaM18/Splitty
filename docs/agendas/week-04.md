@@ -1,18 +1,16 @@
-| Key          | Value                                             |
-| ------------ | ------------------------------------------------- |
-| Date:        | 2024-03-05                                        |
-| Time:        | 14:45 - 15:30 (45 min)                            |
-| Location:    | Drebbelweg - Project Room 3                       |
-| Chair        | Andreea Grigoraș                                  |
-| Minute Taker | Ruben van der Giessen                             |
-| Attendees:   | Nathan Huisman, Noah Swartjes, Ruben van der      |
-|              | Giessen, Matei Aruxandei, Andreea Grigoraș,       |
-|              | Vanesa Mitseva, Mike Segers                       |
+| Key          | Value                                                                                                               |
+| ------------ | --------------------------------------------------------------------------------------------------------------------|
+| Date:        | 2024-03-05                                                                                                          |
+| Time:        | 14:45 - 15:30 (45 min)                                                                                              |
+| Location:    | Drebbelweg - Project Room 3                                                                                         |
+| Chair        | Andreea Grigoraș                                                                                                    |
+| Minute Taker | Ruben van der Giessen                                                                                               |
+| Attendees:   | Nathan Huisman, Noah Swartjes, Ruben van der Giessen, Matei Aruxandei, Andreea Grigoraș, Vanesa Mitseva, Mike Segers|
 
 Agenda Items:
 
 - Opening by chair (1 min)
-	- Welcome everyone and see that all members are present (otherwise ckeck with the team)
+	- Welcome everyone and see that all members are present (otherwise check with the team)
 	- Officially start the meeting
 - Check -in: How is everyone doing? (3 min)
 	- Ask about everyone's weekend 
