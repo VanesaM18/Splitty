@@ -9,7 +9,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Button;
 import javafx.stage.Modality;
 
 import java.net.URL;
@@ -41,8 +40,10 @@ public class StartScreenCtrl implements Initializable {
     /**
      * Initializes the controller. This method sets up action handlers for the buttons.
      *
-     * @param location  The location used to resolve relative paths for the root object, or null if unknown.
-     * @param resources The resources used to localize the root object, or null if the root object was not localized.
+     * @param location  The location used to resolve relative
+     *                  paths for the root object, or null if unknown.
+     * @param resources The resources used to localize the root object,
+     *                  or null if the root object was not localized.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -54,7 +55,7 @@ public class StartScreenCtrl implements Initializable {
      */
     public void createEvent() {
         String eventName = createEventField.getText();
-        Event event = new Event(1L, eventName, "ABCDEF", LocalDateTime.now(), new HashSet<>());
+        Event event = new Event(-1L, eventName, "ABCDEF", LocalDateTime.now(), new HashSet<>());
         event.generateInviteCode();
         server.addEvent(event);
         clearFields();
@@ -71,6 +72,7 @@ public class StartScreenCtrl implements Initializable {
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.setContentText("The event does not exist");
             alert.showAndWait();
+            clearFields();
             return;
         }
         // redirect to the event UI

@@ -33,7 +33,10 @@ public class Event {
             String inviteCode,
             LocalDateTime dateTime,
             Set<Participant> participants) {
-        this.id = id;
+        // -1 should mean auto-generate the id when inserting, not brute force it
+        if (id != -1) {
+            this.id = id;
+        }
         this.name = name;
         this.inviteCode = inviteCode;
         this.dateTime = dateTime;

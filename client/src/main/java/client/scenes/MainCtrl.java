@@ -15,10 +15,9 @@
  */
 package client.scenes;
 
-import javafx.scene.Parent;
+import client.InitializationData;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 
 public class MainCtrl {
 
@@ -43,48 +42,30 @@ public class MainCtrl {
      * Initializes the app with the specified primary stage and scenes for various controllers.
      *
      * @param primaryStage The primary stage of the application.
-     *
-     * @param settings A Pair containing the SettingsCtrl and its corresponding Parent scene.
-     *
-     * @param overview A Pair containing the QuoteOverviewCtrl and its corresponding Parent scene.
-     *
-     * @param add A Pair containing the AddQuoteCtrl and its corresponding Parent scene.
-     *
-     * @param participant A Pair containing the AddParticipantsCtrl and its corresponding scene.
-     *
-     * @param login A Pair containing the LoginCtrl and its corresponding Parent scene.
-     *
-     * @param startPage A Pair containing the StartPageCtrl and its corresponding Parent scene.
+     * @param data Contains all initialized pair of views
      */
     public void initialize(
-        Stage primaryStage,
-        Pair<SettingsCtrl, Parent> settings,
-        Pair<QuoteOverviewCtrl, Parent> overview,
-        Pair<AddQuoteCtrl, Parent> add,
-        Pair<AddParticipantsCtrl, Parent> participant,
-        Pair<LoginCtrl, Parent> login,
-        Pair<StartScreenCtrl, Parent> startPage
-        ) {
+        Stage primaryStage, InitializationData data) {
         this.primaryStage = primaryStage;
 
-        this.settingsCtrl = settings.getKey();
-        this.settings = new Scene(settings.getValue());
+        this.settingsCtrl = data.getSettings().getKey();
+        this.settings = new Scene(data.getSettings().getValue());
 
-        this.overviewCtrl = overview.getKey();
-        this.overview = new Scene(overview.getValue());
+        this.overviewCtrl = data.getOverview().getKey();
+        this.overview = new Scene(data.getOverview().getValue());
 
-        this.addCtrl = add.getKey();
-        this.add = new Scene(add.getValue());
+        this.addCtrl = data.getAdd().getKey();
+        this.add = new Scene(data.getAdd().getValue());
 
-        this.loginCtrl = login.getKey();
-        this.login = new Scene(login.getValue());
+        this.loginCtrl = data.getLogin().getKey();
+        this.login = new Scene(data.getLogin().getValue());
         showLogin();
 
-        this.participantsCtrl = participant.getKey();
-        this.participants = new Scene(participant.getValue());
+        this.participantsCtrl = data.getParticipant().getKey();
+        this.participants = new Scene(data.getParticipant().getValue());
 
-        this.startPageCtrl = startPage.getKey();
-        this.startPage = new Scene(startPage.getValue());
+        this.startPageCtrl = data.getStartPage().getKey();
+        this.startPage = new Scene(data.getStartPage().getValue());
 
         // showOverview();
         primaryStage.show();
