@@ -11,6 +11,7 @@ public class InitializationData {
     private Pair<AddParticipantsCtrl, Parent> participant;
     private Pair<LoginCtrl, Parent> login;
     private Pair<StartScreenCtrl, Parent> startPage;
+    private Pair<OverviewCtrl, Parent> overviewEvent;
 
     /**
      * Creates an instance of initialize data
@@ -60,6 +61,13 @@ public class InitializationData {
     public void setStartPage(Pair<StartScreenCtrl, Parent> startPage) {
         this.startPage = startPage;
     }
+    /**
+     * Sets the overviewEvent pair
+     * @param overviewEvent pair
+     */
+    public void setOverviewEvent(Pair<OverviewCtrl, Parent> overviewEvent) {
+        this.overviewEvent = overviewEvent;
+    }
 
     /**
      * Gets the settings pair
@@ -102,5 +110,12 @@ public class InitializationData {
      */
     public Pair<StartScreenCtrl, Parent> getStartPage() {
         return startPage;
+    }
+    /**
+     * Gets the overviewEvent pair
+     * @return overviewEvent pair
+     */
+    public Pair<OverviewCtrl, Parent> getOverviewEvent() {
+        return overviewEvent;
     }
 }

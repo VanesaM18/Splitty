@@ -91,6 +91,8 @@ public class Main extends Application {
                 "AddParticipants.fxml");
         var startPage = FXML.load(StartScreenCtrl.class, locale,
             "client", "scenes", "StartScreen.fxml");
+        var overviewEvent = FXML.load(OverviewCtrl.class, locale,
+            "client", "scenes", "Overview.fxml");
 
         InitializationData data = new InitializationData();
         data.setSettings(settings);
@@ -99,6 +101,7 @@ public class Main extends Application {
         data.setLogin(loginAdmin);
         data.setParticipant(participants);
         data.setStartPage(startPage);
+        data.setOverviewEvent(overviewEvent);
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         mainCtrl.initialize(this.stage, data);

@@ -6,7 +6,6 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StartScreenCtrl">
    <children>
       <Text layoutX="81.0" layoutY="76.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Create new event">
@@ -26,7 +25,8 @@
             <Font name="System Bold" size="15.0" />
          </font>
       </Text>
-      <Button layoutX="415.0" layoutY="97.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="69.0" onAction="#createEvent" text="Create" />
-      <Button layoutX="415.0" layoutY="187.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="69.0" onAction="#joinEvent" text="Join" />
+      <Button layoutX="415.0" layoutY="97.0" mnemonicParsing="false" onAction="#createEvent" prefHeight="29.0" prefWidth="69.0" text="Create" />
+      <Button layoutX="415.0" layoutY="187.0" mnemonicParsing="false" onAction="#joinEvent" prefHeight="29.0" prefWidth="69.0" text="Join" />
+      <Button layoutX="484.0" layoutY="348.0" mnemonicParsing="false" onAction="#goToAdmin" prefHeight="29.0" prefWidth="88.0" text="Go to Admin" />
    </children>
 </AnchorPane>

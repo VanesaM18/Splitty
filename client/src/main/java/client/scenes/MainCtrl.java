@@ -16,6 +16,7 @@
 package client.scenes;
 
 import client.InitializationData;
+import commons.Event;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -37,6 +38,8 @@ public class MainCtrl {
     private Scene login;
     private StartScreenCtrl startPageCtrl;
     private Scene startPage;
+    private OverviewCtrl overviewEventCtrl;
+    private Scene overviewEvent;
 
     /**
      * Initializes the app with the specified primary stage and scenes for various controllers.
@@ -59,7 +62,6 @@ public class MainCtrl {
 
         this.loginCtrl = data.getLogin().getKey();
         this.login = new Scene(data.getLogin().getValue());
-        showLogin();
 
         this.participantsCtrl = data.getParticipant().getKey();
         this.participants = new Scene(data.getParticipant().getValue());
@@ -67,7 +69,11 @@ public class MainCtrl {
         this.startPageCtrl = data.getStartPage().getKey();
         this.startPage = new Scene(data.getStartPage().getValue());
 
-        // showOverview();
+        this.overviewEventCtrl = data.getOverviewEvent().getKey();
+        this.overviewEvent = new Scene(data.getOverviewEvent().getValue());
+
+        // showLogin();
+        showStartScreen();
         primaryStage.show();
     }
 
@@ -137,5 +143,25 @@ public class MainCtrl {
         primaryStage.setTitle("Add/Edit Participants");
         primaryStage.setScene(participants);
         participants.setOnKeyPressed(e -> participantsCtrl.keyPressed(e));
+    }
+
+    /**
+     * Displays the overview of the event.
+     * This method sets the title of the primary stage to "Event",
+     * sets the scene to the overview scene
+     * and refreshes the content of the overview controller if it's a new event, or
+     * keeps the data if it is the old one
+     * @param e the event to update
+     */
+    public void showOverviewEvent(Event e) {
+        if (e == null) {
+            primaryStage.setTitle("Event: Overview");
+            primaryStage.setScene(overviewEvent);
+        } else {
+            primaryStage.setTitle("Event: Overview");
+            overviewEventCtrl.setEvent(e);
+            primaryStage.setScene(overviewEvent);
+            overviewEventCtrl.refresh();
+        }
     }
 }

@@ -59,6 +59,7 @@ public class StartScreenCtrl implements Initializable {
         event.generateInviteCode();
         server.addEvent(event);
         clearFields();
+        mainCtrl.showOverviewEvent(event);
     }
 
     /**
@@ -75,11 +76,15 @@ public class StartScreenCtrl implements Initializable {
             clearFields();
             return;
         }
-        // redirect to the event UI
-
         clearFields();
+        mainCtrl.showOverviewEvent(ev);
     }
-
+    /**
+     * Redirects the user to the admin view
+     */
+    public void goToAdmin() {
+        mainCtrl.showLogin();
+    }
     /**
      * Clears the fields
      */
