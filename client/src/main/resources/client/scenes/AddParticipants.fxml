@@ -33,12 +33,12 @@
             <Font name="System Bold" size="22.0" />
          </font>
       </Label>
-      <Button layoutX="309.0" layoutY="346.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="62.0" onAction="#ok"  text="Ok">
+      <Button layoutX="309.0" layoutY="346.0" mnemonicParsing="false" onAction="#ok" prefHeight="24.0" prefWidth="62.0" text="Ok">
          <font>
             <Font size="15.0" />
          </font>
       </Button>
-      <Button layoutX="222.0" layoutY="346.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="76.0"  onAction="#abort" text="Abort">
+      <Button layoutX="222.0" layoutY="346.0" mnemonicParsing="false" onAction="#abort" prefHeight="31.0" prefWidth="76.0" text="Abort">
          <font>
             <Font size="15.0" />
          </font>
@@ -47,5 +47,10 @@
       <TextField fx:id="email" layoutX="120.0" layoutY="153.0" prefHeight="25.0" prefWidth="251.0" />
       <TextField fx:id="iban" layoutX="120.0" layoutY="217.0" prefHeight="25.0" prefWidth="251.0" />
       <TextField fx:id="bic" layoutX="120.0" layoutY="281.0" prefHeight="25.0" prefWidth="251.0" />
+      <Label fx:id="warning" layoutX="43.0" layoutY="349.0" prefHeight="17.0" prefWidth="155.0" text="" textFill="RED">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>
