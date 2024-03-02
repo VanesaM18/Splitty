@@ -11,9 +11,8 @@ import java.util.Set;
 public class Event {
 
     private static final int INVITE_CODE_LENGTH = 6;
-    @Id @GeneratedValue private Long id;
+    @Id private String inviteCode;
     private String name;
-    private String inviteCode;
     private LocalDateTime dateTime;
 
     @ManyToMany(fetch = FetchType.EAGER) private Set<Participant> participants;
@@ -21,22 +20,16 @@ public class Event {
     /**
      * Create an Event with the given details.
      *
-     * @param id The ID of the event.
-     * @param name The name/title of the event.
      * @param inviteCode The inviteCode that can be used to join the event.
+     * @param name The name/title of the event.
      * @param dateTime The date and time of the event.
      * @param participants A set of the participants in the event.
      */
     public Event(
-            Long id,
-            String name,
             String inviteCode,
+            String name,
             LocalDateTime dateTime,
             Set<Participant> participants) {
-        // -1 should mean auto-generate the id when inserting, not brute force it
-        if (id != -1) {
-            this.id = id;
-        }
         this.name = name;
         this.inviteCode = inviteCode;
         this.dateTime = dateTime;
@@ -163,8 +156,7 @@ public class Event {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Event event = (Event) o;
-        return Objects.equals(id, event.id)
-                && Objects.equals(getName(), event.getName())
+        return Objects.equals(getName(), event.getName())
                 && Objects.equals(getInviteCode(), event.getInviteCode())
                 && Objects.equals(getDateTime(), event.getDateTime())
                 && Objects.equals(getParticipants(), event.getParticipants());
@@ -177,6 +169,6 @@ public class Event {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(id, getName(), getInviteCode(), getDateTime(), getParticipants());
+        return Objects.hash(getName(), getInviteCode(), getDateTime(), getParticipants());
     }
 }

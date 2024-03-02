@@ -120,16 +120,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
             case "api/events/id" -> {
                 if ("GET".equals(request.getMethod())) {
                     List<Object> parameters = request.getParameters();
-                    long id = (long) parameters.get(0);
+                    String id = (String) parameters.get(0);
                     ResponseEntity<Event> event = eventController.getById(id);
-                    this.returnResult(session, request, event.getBody());
-                }
-            }
-            case "api/events/invites/inviteCode" -> {
-                if ("GET".equals(request.getMethod())) {
-                    List<Object> parameters = request.getParameters();
-                    String code = (String) parameters.get(0);
-                    ResponseEntity<Event> event = eventController.getByInviteCode(code);
                     this.returnResult(session, request, event.getBody());
                 }
             }

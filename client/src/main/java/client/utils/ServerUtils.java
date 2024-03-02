@@ -93,34 +93,13 @@ public class ServerUtils {
 
     /**
      * Gets an event by id
-     * @param id the id of the event
-     * @return the requested event
-     */
-    public Event getEventById(long id) {
-        try {
-            WebSocketMessage request = new WebSocketMessage();
-            request.setEndpoint("api/events/id");
-            request.setMethod("GET");
-            List<Object> parameters = new ArrayList<>();
-            parameters.add(id);
-            request.setParameters(parameters);
-            WebSocketMessage response = sendMessageWithResponse(request);
-            return objectMapper.convertValue(response.getData(), Event.class);
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * Gets an event by id
      * @param code the code of the event
      * @return the requested event or null if it does not exist
      */
-    public Event getEventByInviteCode(String code) {
+    public Event getEventById(String code) {
         try {
             WebSocketMessage request = new WebSocketMessage();
-            request.setEndpoint("api/events/invites/inviteCode");
+            request.setEndpoint("api/events/id");
             request.setMethod("GET");
             List<Object> parameters = new ArrayList<>();
             parameters.add(code);

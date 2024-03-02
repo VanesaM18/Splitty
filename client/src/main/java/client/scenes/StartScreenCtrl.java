@@ -55,7 +55,7 @@ public class StartScreenCtrl implements Initializable {
      */
     public void createEvent() {
         String eventName = createEventField.getText();
-        Event event = new Event(-1L, eventName, "ABCDEF", LocalDateTime.now(), new HashSet<>());
+        Event event = new Event( "ABCDEF", eventName, LocalDateTime.now(), new HashSet<>());
         event.generateInviteCode();
         server.addEvent(event);
         clearFields();
@@ -66,7 +66,7 @@ public class StartScreenCtrl implements Initializable {
      */
     public void joinEvent() {
         String eventCode = joinEventField.getText();
-        Event ev = server.getEventByInviteCode(eventCode);
+        Event ev = server.getEventById(eventCode);
         if (ev == null) {
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initModality(Modality.APPLICATION_MODAL);

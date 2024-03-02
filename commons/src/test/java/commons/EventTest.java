@@ -17,7 +17,7 @@ class EventTest {
 
     @BeforeEach
     void setup() {
-        event = new Event(1L, "Test Event", "ABCDEF", dateTime, new HashSet<>());
+        event = new Event("ABCDEF","Test Event", dateTime, new HashSet<>());
     }
 
     @Test
@@ -91,21 +91,21 @@ class EventTest {
 
     @Test
     void testEquals() {
-        Event event2 = new Event(1L, "Test Event", "ABCDEF", dateTime, new HashSet<>());
+        Event event2 = new Event("ABCDEF", "Test Event", dateTime, new HashSet<>());
 
         assertEquals(event, event2);
     }
 
     @Test
     void testNotEquals() {
-        Event event2 = new Event(2L, "Different name", "ABCDEF", dateTime, new HashSet<>());
+        Event event2 = new Event("ABCDEF", "Different name", dateTime, new HashSet<>());
 
         assertNotEquals(event, event2);
     }
 
     @Test
     void testHashCode() {
-        Event event2 = new Event(1L, "Test Event", "ABCDEF", dateTime, new HashSet<>());
+        Event event2 = new Event("ABCDEF", "Test Event", dateTime, new HashSet<>());
 
         assertEquals(event.hashCode(), event2.hashCode());
     }
