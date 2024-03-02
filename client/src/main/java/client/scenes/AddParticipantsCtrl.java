@@ -10,13 +10,17 @@ import jakarta.ws.rs.WebApplicationException;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 
+import java.util.regex.Pattern;
+
 public class AddParticipantsCtrl {
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
+    @FXML private Label warning;
 
     @FXML private TextField name;
 
@@ -42,6 +46,7 @@ public class AddParticipantsCtrl {
      */
     public void abort() {
         clearFields();
+        warning.setText("");
         mainCtrl.showOverview();
     }
 
@@ -61,7 +66,25 @@ public class AddParticipantsCtrl {
      */
     public void ok() {
         try {
-            server.addParticipant(getParticipant());
+            Participant p = getParticipant();
+            if(p.getName().equals("")) {
+                warning.setText("Name cannot be empty!");
+                return;
+            }
+            if(!p.getEmail().equals("") && !isEmailValid(p.getEmail())) {
+                warning.setText("Invalid email!");
+                return;
+            }
+            if(!p.getIban().equals("") && !isIbanValid(p.getIban())) {
+                warning.setText("Invalid IBAN!");
+                return;
+            }
+            if(!p.getBic().equals("") && !isIBicValid(p.getBic())) {
+                warning.setText("Invalid BIC!");
+                return;
+            }
+            server.addParticipant(p);
+            warning.setText("");
         } catch (WebApplicationException e) {
 
             var alert = new Alert(Alert.AlertType.ERROR);
@@ -73,6 +96,43 @@ public class AddParticipantsCtrl {
 
         clearFields();
         mainCtrl.showOverview();
+    }
+
+    /**
+     * Email validator.
+     * @param emailAddress the email address to be checked.
+     * @return is the email valid or not.
+     */
+    public static boolean isEmailValid(String emailAddress) {
+        String regexPattern = "^(.+)@(\\S+)$";
+        return Pattern.compile(regexPattern)
+                .matcher(emailAddress)
+                .matches();
+    }
+
+    /**
+     * IBAN validator.
+     * @param iban the IBAN to be checked.
+     * @return is the IBAN valid or not.
+     */
+    public static boolean isIbanValid(String iban) {
+        String regexPattern =
+                "\\b[A-Z]{2}[0-9]{2}(?:[ ]?[0-9]{4}){4}(?!(?:[ ]?[0-9]){3})(?:[ ]?[0-9]{1,2})?\\b";
+        return Pattern.compile(regexPattern)
+                .matcher(iban)
+                .matches();
+    }
+
+    /**
+     * BIC validator.
+     * @param bic the BIC to be checked.
+     * @return is the BIC valid or not.
+     */
+    public static boolean isIBicValid(String bic) {
+        String regexPattern = "^[a-zA-Z]{6}[0-9a-zA-Z]{2}([0-9a-zA-Z]{3})?$";
+        return Pattern.compile(regexPattern)
+                .matcher(bic)
+                .matches();
     }
 
     /**

@@ -47,13 +47,53 @@ public class ServerUtils {
     }
 
     /**
-     * Adds a participant
-     * @param p the participant to be added
+     * Adds a participant.
+     * @param p the participant to be added.
      */
     public void addParticipant(Participant p) {
         WebSocketMessage request = new WebSocketMessage();
         request.setEndpoint("api/participants");
         request.setMethod("POST");
+        request.setData(p);
+        sendMessageWithoutResponse(request);
+    }
+
+    /**
+     * Gets a participant by their id.
+     * @param id the participant's id.
+     */
+    public void getParticipant(long id) {
+        WebSocketMessage request = new WebSocketMessage();
+        request.setEndpoint("api/participants/id");
+        request.setMethod("GET");
+        request.setData(id);
+        sendMessageWithoutResponse(request);
+    }
+
+    /**
+     * Deletes a participant.
+     * @param p the participant to be deleted.
+     */
+    public void deleteParticipant(Participant p) {
+        WebSocketMessage request = new WebSocketMessage();
+        request.setEndpoint("api/participants/id");
+        request.setMethod("DELETE");
+        request.setData(p);
+        sendMessageWithoutResponse(request);
+    }
+
+    /**
+     * Edits a participant.
+     * @param newParticipant the updated participant.
+     * @param oldParticipant the participant to be edited.
+     */
+    public void editParticipant(Participant newParticipant, Participant oldParticipant) {
+        WebSocketMessage request = new WebSocketMessage();
+        request.setEndpoint("api/participants/id");
+        request.setMethod("PUT");
+        Participant[] p = new Participant[2];
+        p[0] = newParticipant;
+        p[1] = oldParticipant;
         request.setData(p);
         sendMessageWithoutResponse(request);
     }

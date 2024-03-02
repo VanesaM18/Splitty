@@ -1,9 +1,6 @@
 package server;
 
-import commons.Admin;
-import commons.Event;
-import commons.Quote;
-import commons.WebSocketMessage;
+import commons.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -14,8 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.websocket.server.ServerEndpoint;
 import server.api.AdminController;
 import server.api.EventController;
+import server.api.ParticipantController;
 import server.api.QuoteController;
-
 import java.util.List;
 
 @Component
@@ -29,6 +26,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private EventController eventController;
     @Autowired
     private QuoteController quoteController;
+    @Autowired
+    private ParticipantController participantController;
 
     /**
      * Creates a class for handling the websocket connection
@@ -64,6 +63,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
             handleEventsApi(session, request);
         } else if (endPoint.contains("/quotes")) {
             handleQuotesApi(session, request);
+        } else if (endPoint.contains("/participants")) {
+            handleParticipantsApi (session, request);
         }
     }
     /**
@@ -147,6 +148,60 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     this.returnResult(session, request, status.getBody());
                 }
             }
+        }
+    }
+
+    /**
+     * Handles the participants specific to /api/participants
+     * @param session the channel used to communicate
+     * @param request the parsed request
+     * @throws Exception if the message can't be parsed
+     */
+    private void handleParticipantsApi(WebSocketSession session,
+                                 WebSocketMessage request) throws Exception {
+        switch (request.getEndpoint()) {
+            case "api/participants" -> {
+                if ("GET".equals(request.getMethod())) {
+                    List<Participant> all = participantController.getAll();
+                    this.returnResult(session, request, all);
+                } else if ("POST".equals(request.getMethod())) {
+                    Participant p = objectMapper.convertValue(request.getData(), Participant.class);
+                    ResponseEntity<Participant> response = participantController.add(p);
+                    this.returnResult(session, request, response.getBody());
+                }
+            }
+            case "api/participants/id" -> {
+                handleParticipantsApiByID(session, request);
+            }
+        }
+    }
+
+    /**
+     * Handles the participants specific to /api/participants/id
+     * @param session the channel used to communicate
+     * @param request the parsed request
+     * @throws Exception if the message can't be parsed
+     */
+    private void handleParticipantsApiByID(WebSocketSession session,
+                                           WebSocketMessage request) throws Exception {
+        if ("DELETE".equals(request.getMethod())) {
+            long participantId = ((Participant) request.getData()).getId();
+            ResponseEntity<String> response = participantController.delete(participantId);
+            this.returnResult(session, request, response.getBody());
+        }
+        else if ("PUT".equals(request.getMethod())) {
+            Participant[] participants = objectMapper.convertValue(
+                    request.getData(), Participant[].class);
+            Participant oldParticipant = participants[1];
+            Participant newParticipant = participants[0];
+            ResponseEntity<String> response = participantController.update(
+                    oldParticipant.getId(), newParticipant);
+            this.returnResult(session, request, response.getBody());
+        }
+        else if ("GET".equals(request.getMethod())) {
+            long id = (long) request.getData();
+            ResponseEntity<Participant> response = participantController.getById(id);
+            this.returnResult(session, request, response.getBody());
         }
     }
 
