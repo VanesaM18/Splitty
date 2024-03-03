@@ -51,13 +51,20 @@ public class ServerUtils {
     /**
      * Adds a participant.
      * @param p the participant to be added.
+     * @return the created event with the associated id
      */
-    public void addParticipant(Participant p) {
-        WebSocketMessage request = new WebSocketMessage();
-        request.setEndpoint("api/participants");
-        request.setMethod("POST");
-        request.setData(p);
-        sendMessageWithoutResponse(request);
+    public Participant addParticipant(Participant p) {
+        try {
+            WebSocketMessage request = new WebSocketMessage();
+            request.setEndpoint("api/participants");
+            request.setMethod("POST");
+            request.setData(p);
+            WebSocketMessage response = sendMessageWithResponse(request);
+            return objectMapper.convertValue(response.getData(), Participant.class);
+        } catch (ExecutionException | InterruptedException ignored) {
+
+        }
+        return null;
     }
 
     /**
@@ -160,6 +167,18 @@ public class ServerUtils {
         WebSocketMessage request = new WebSocketMessage();
         request.setEndpoint("api/events");
         request.setMethod("POST");
+        request.setData(ev);
+        sendMessageWithoutResponse(request);
+    }
+
+    /**
+     * Updates an event
+     * @param ev to be updated
+     */
+    public void updateEvent(Event ev) {
+        WebSocketMessage request = new WebSocketMessage();
+        request.setEndpoint("api/events");
+        request.setMethod("PUT");
         request.setData(ev);
         sendMessageWithoutResponse(request);
     }

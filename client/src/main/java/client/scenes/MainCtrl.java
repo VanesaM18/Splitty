@@ -138,10 +138,12 @@ public class MainCtrl {
      * This method sets the title of the primary stage to "Add/Edit Participants",
      * sets the scene to the participants scene
      * and sets a key pressed event handler for the participant's controller.
+     * @param ev event where to add/edit participants
      */
-    public void showParticipants() {
+    public void showParticipants(Event ev) {
         primaryStage.setTitle("Add Participants");
         primaryStage.setScene(participants);
+        participantsCtrl.setEvent(ev);
         participants.setOnKeyPressed(e -> participantsCtrl.keyPressed(e));
     }
 

@@ -116,6 +116,11 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     Event event = objectMapper.convertValue(request.getData(), Event.class);
                     ResponseEntity<Event> savedEvent = eventController.add(event);
                     this.returnResult(session, request, savedEvent.getBody());
+                } else if ("PUT".equals(request.getMethod())) {
+                    Event event = objectMapper.convertValue(request.getData(), Event.class);
+                    ResponseEntity<Event> savedEvent =
+                        eventController.update(event.getInviteCode(), event);
+                    this.returnResult(session, request, savedEvent.getBody());
                 }
             }
             case "api/events/id" -> {

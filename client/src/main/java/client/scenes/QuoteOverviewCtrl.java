@@ -100,6 +100,6 @@ public class QuoteOverviewCtrl implements Initializable {
      * This method triggers the display of the add participant window.
      */
     public void addParticipant() {
-        mainCtrl.showParticipants();
+        // mainCtrl.showParticipants();
     }
 }

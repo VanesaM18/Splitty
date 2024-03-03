@@ -79,6 +79,6 @@ public class OverviewCtrl {
      * This method triggers the display of the add participant window.
      */
     public void addParticipant() {
-        mainCtrl.showParticipants();
+        mainCtrl.showParticipants(this.ev);
     }
 }

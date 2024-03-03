@@ -15,7 +15,8 @@ public class Event {
     private String name;
     private LocalDateTime dateTime;
 
-    @ManyToMany(fetch = FetchType.EAGER) private Set<Participant> participants;
+    @ManyToMany(fetch = FetchType.EAGER, cascade =
+        {CascadeType.PERSIST, CascadeType.MERGE}) private Set<Participant> participants;
 
     /**
      * Create an Event with the given details.

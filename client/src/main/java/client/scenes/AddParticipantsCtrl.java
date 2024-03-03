@@ -4,6 +4,7 @@ import client.utils.ServerUtils;
 
 import com.google.inject.Inject;
 
+import commons.Event;
 import commons.Participant;
 
 import jakarta.ws.rs.WebApplicationException;
@@ -29,6 +30,7 @@ public class AddParticipantsCtrl {
     @FXML private TextField iban;
 
     @FXML private TextField bic;
+    private Event ev;
 
     /**
      * Controller responsible for handling the addition of participants functionality.
@@ -71,19 +73,21 @@ public class AddParticipantsCtrl {
                 warning.setText("Name cannot be empty!");
                 return;
             }
-            if(!p.getEmail().equals("") && !isEmailValid(p.getEmail())) {
+            if(p.getEmail().equals("") || !isEmailValid(p.getEmail())) {
                 warning.setText("Invalid email!");
                 return;
             }
-            if(!p.getIban().equals("") && !isIbanValid(p.getIban())) {
+            if(p.getIban().equals("") || !isIbanValid(p.getIban())) {
                 warning.setText("Invalid IBAN!");
                 return;
             }
-            if(!p.getBic().equals("") && !isIBicValid(p.getBic())) {
+            if(p.getBic().equals("") || !isIBicValid(p.getBic())) {
                 warning.setText("Invalid BIC!");
                 return;
             }
-            server.addParticipant(p);
+            p = server.addParticipant(p);
+            ev.addParticipant(p);
+            server.updateEvent(ev);
             warning.setText("");
         } catch (WebApplicationException e) {
 
@@ -95,7 +99,7 @@ public class AddParticipantsCtrl {
         }
 
         clearFields();
-        mainCtrl.showOverviewEvent(null);
+        mainCtrl.showOverviewEvent(ev);
     }
 
     /**
@@ -160,5 +164,13 @@ public class AddParticipantsCtrl {
             default:
                 break;
         }
+    }
+
+    /**
+     * Sets the event where to add the participant
+     * @param ev the event
+     */
+    public void setEvent(Event ev) {
+        this.ev = ev;
     }
 }
