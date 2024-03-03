@@ -31,7 +31,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import commons.WebSocketMessage;
-import javafx.scene.control.Alert;
 
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -49,10 +48,18 @@ public class ServerUtils {
         this.webSocketClient = webSocketClient;
     }
 
+    /**
+     * gets the ObjectMapper instance for handling JSON serialization/deserialization
+     * @return ObjectMapper instance
+     */
     public ObjectMapper getObjectMapper() {
         return objectMapper;
     }
 
+    /**
+     * gets the WebSocket client instance for communication with the server
+     * @return WebSocket client instance
+     */
     public MyWebSocketClient getWebSocketClient() {
         return webSocketClient;
     }
@@ -192,13 +199,19 @@ public class ServerUtils {
         sendMessageWithoutResponse(request);
     }
 
+    /**
+     * sends a JSON dump request to the server via WebSocket and waits for the response
+     * @return an Optional containing the JSON dump as a String if successful,
+     * or empty if an error occurs
+     */
     public Optional<String> handleJsonDump() {
 
         try {
             WebSocketMessage requestMessage = new WebSocketMessage();
             getWebSocketClient().send(getObjectMapper().writeValueAsString(requestMessage));
             CompletableFuture<WebSocketMessage> future =
-                    getWebSocketClient().addPendingRequests(sendMessageWithResponse(requestMessage).toString());
+                    getWebSocketClient()
+                            .addPendingRequests(sendMessageWithResponse(requestMessage).toString());
             var response = future.get();
             if (response.getData() != null) {
                 return Optional.of(response.getData().toString());
