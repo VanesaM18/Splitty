@@ -67,7 +67,8 @@ public class Debts {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Debts debts = (Debts) o;
-        return Objects.equals(debtor, debts.debtor) && Objects.equals(amount, debts.amount) && Objects.equals(creditor, debts.creditor);
+        return Objects.equals(debtor, debts.debtor) && Objects.equals(amount, debts.amount)
+                && Objects.equals(creditor, debts.creditor);
     }
 
     /**
