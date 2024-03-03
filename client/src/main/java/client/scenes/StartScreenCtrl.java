@@ -10,10 +10,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.ResourceBundle;
 
 public class StartScreenCtrl {
 
