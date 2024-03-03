@@ -42,13 +42,13 @@
             </ImageView>
          </graphic>
       </Button>
-      <ListView layoutX="45.0" layoutY="141.0" orientation="HORIZONTAL" prefHeight="25.0" prefWidth="421.0" />
+      <ListView fx:id="participantNames" layoutX="45.0" layoutY="141.0" orientation="HORIZONTAL" prefHeight="25.0" prefWidth="421.0" />
       <Label layoutX="45.0" layoutY="184.0" prefHeight="39.0" prefWidth="119.0" text="Expenses">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
       </Label>
-      <ComboBox layoutX="45.0" layoutY="223.0" prefHeight="25.0" prefWidth="161.0" visibleRowCount="2" />
+      <ComboBox fx:id="participantComboBox" layoutX="45.0" layoutY="223.0" prefHeight="25.0" prefWidth="161.0" visibleRowCount="2" />
       <Button layoutX="360.0" layoutY="221.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="102.0" text="Add expense" />
       <TabPane layoutX="45.0" layoutY="311.0" prefHeight="200.0" prefWidth="421.0" style="-fx-border-width: 2; -fx-border-color: black;" tabClosingPolicy="UNAVAILABLE">
         <tabs>

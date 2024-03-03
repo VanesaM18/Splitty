@@ -3,13 +3,16 @@ package client.scenes;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
-import commons.Quote;
-import javafx.collections.ObservableList;
+import commons.Participant;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.net.URL;
 
@@ -18,7 +21,6 @@ public class OverviewCtrl {
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
     private Event ev;
-    private ObservableList<Quote> data;
 
     @FXML
     private Label title;
@@ -26,6 +28,11 @@ public class OverviewCtrl {
     private Button addParticipantButton;
     @FXML
     private Button editParticipantButton;
+    @FXML
+    private ListView<String> participantNames;
+    private final ObservableList<String> participantNamesObs = FXCollections.observableArrayList();
+    @FXML
+    private ComboBox<String> participantComboBox;
 
     /**
      * Controller responsible for handling the quote overview functionality.
@@ -52,6 +59,15 @@ public class OverviewCtrl {
         title.setText(ev.getName());
         this.attachImage(addParticipantButton, "/assets/user-plus-solid.png");
         this.attachImage(editParticipantButton, "/assets/pen-solid.png");
+        if (this.ev != null) {
+            this.ev = server.getEventById(ev.getInviteCode());
+            participantNamesObs.clear();
+            for (Participant p : this.ev.getParticipants()) {
+                participantNamesObs.add(p.getName());
+            }
+            participantNames.setItems(participantNamesObs);
+            participantComboBox.setItems(participantNamesObs);
+        }
     }
 
     /**

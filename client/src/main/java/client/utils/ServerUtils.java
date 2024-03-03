@@ -162,13 +162,20 @@ public class ServerUtils {
     /**
      * Adds an event
      * @param ev to be added
+     * @return the event with the new inviteCode
      */
-    public void addEvent(Event ev) {
-        WebSocketMessage request = new WebSocketMessage();
-        request.setEndpoint("api/events");
-        request.setMethod("POST");
-        request.setData(ev);
-        sendMessageWithoutResponse(request);
+    public Event addEvent(Event ev) {
+        try {
+            WebSocketMessage request = new WebSocketMessage();
+            request.setEndpoint("api/events");
+            request.setMethod("POST");
+            request.setData(ev);
+            WebSocketMessage response = sendMessageWithResponse(request);
+            return objectMapper.convertValue(response.getData(), Event.class);
+        } catch (ExecutionException | InterruptedException ignored) {
+
+        }
+        return null;
     }
 
     /**

@@ -88,25 +88,17 @@ public class ParticipantController {
         if (isNull(id) || !repo.existsById(id)) {
             return ResponseEntity.badRequest().body("Participant not found.");
         }
-
-        // Validate the updated participant data
         if (updatedParticipant == null || isNullOrEmpty(updatedParticipant.getName())
                 || isNullOrEmpty(updatedParticipant.getEmail())) {
             return ResponseEntity.badRequest().body("Invalid participant data.");
         }
-
-        // Update the id
         updatedParticipant.setId(id);
-
-        // Update the participant
         try {
             Participant existingParticipant = repo.findById(id).orElse(null);
             if (existingParticipant != null) {
-                // Update existing participant with new data
                 existingParticipant.setName(updatedParticipant.getName());
                 existingParticipant.setEmail(updatedParticipant.getEmail());
 
-                // Save the updated participant
                 repo.save(existingParticipant);
                 return ResponseEntity.ok().body("Participant updated successfully.");
             } else {

@@ -57,7 +57,7 @@ public class StartScreenCtrl implements Initializable {
         String eventName = createEventField.getText();
         Event event = new Event( "ABCDEF", eventName, LocalDateTime.now(), new HashSet<>());
         event.generateInviteCode();
-        server.addEvent(event);
+        event = server.addEvent(event);
         clearFields();
         mainCtrl.showOverviewEvent(event);
     }
