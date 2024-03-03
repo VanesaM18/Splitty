@@ -20,6 +20,22 @@ public class Event {
 
     @ManyToMany private Set<Participant> participants;
 
+    /**
+     * Get expenses with this event
+     * @return The events' expenses
+     */
+    public Set<Expense> getExpenses() {
+        return expenses;
+    }
+
+    /**
+     * Set the expenses on this event
+     * @param expenses The expenses to set
+     */
+    public void setExpenses(Set<Expense> expenses) {
+        this.expenses = expenses;
+    }
+
     @OneToMany(mappedBy = "expense")
     private Set<Expense> expenses;
 

@@ -25,14 +25,10 @@ public class ExpenseController {
     /**
      * Get all the expenses belonging to an event
      * @param eventId The id of the event containing the expenses
-     * @return The expenses belonging to the provided event,
-     *         404 if empty, or a 400 bad request when id is negative
+     * @return The expenses belonging to the provided event or 404 if empty
      */
     @GetMapping("/by_event/{id}")
-    public ResponseEntity<List<Expense>> getByEvent(@PathVariable("id") long eventId) {
-        if (eventId < 0) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<List<Expense>> getByEvent(@PathVariable("id") String eventId) {
         List<Expense> expenses = repo.getExpensesByEventId(eventId);
         if (expenses == null || expenses.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -72,5 +68,56 @@ public class ExpenseController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    /**
+     * Update by id
+     * @param id The expense to update
+     * @param expense The partial expense
+     * @return the updated expense if successful,
+     * else 404 for not found or 400 for badly formatted request
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateById(@PathVariable("id") long id,
+                                             @RequestBody Expense expense) {
+        if (id < 0) {
+            return ResponseEntity.badRequest().build();
+        }
+        Expense oldExpense;
+        try {
+            oldExpense = repo.getReferenceById(id);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+        if (expense.getAmount() != null) {
+            oldExpense.setAmount(expense.getAmount());
+        }
+        if (expense.getEvent() != null) {
+            return ResponseEntity
+                .badRequest()
+                .body("Cannot change event of expense, delete this and create a new one instead");
+        }
+        if (expense.getParticipant() != null) {
+            oldExpense.setParticipant(expense.getParticipant());
+        }
+        return ResponseEntity.ok(repo.save(oldExpense));
+    }
+
+    /**
+     * Delete an expense by id
+     * @param id The id to delete
+     * @return 204 if deleted successfully, 404 if not found
+     * and 400 if id incorrect
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteById(@PathVariable("id") long id) {
+        if (id < 0) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (!repo.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        repo.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

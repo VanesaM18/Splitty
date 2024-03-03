@@ -4,10 +4,11 @@ import jakarta.persistence.*;
 
 @Entity
 public class Expense {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
     @Embedded
     private Monetary amount;
-    @Id
-    private Long id;
     @ManyToOne(optional = false)
     @JoinColumn(name = "PARTICIPANT_ID", referencedColumnName = "id")
     private Participant participant;
@@ -16,8 +17,10 @@ public class Expense {
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
+    /**
+     * For object mapper
+     */
     public Expense() {
-
     }
 
     /**

@@ -11,5 +11,5 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
      * @param eventId The event id
      * @return The expenses
      */
-    List<Expense> getExpensesByEventId(Long eventId);
+    List<Expense> getExpensesByEventId(String eventId);
 }
