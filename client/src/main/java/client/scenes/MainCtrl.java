@@ -26,6 +26,9 @@ public class MainCtrl {
     private SettingsCtrl settingsCtrl;
     private Scene settings;
 
+//    private ManagementCtrl managementCtrl;
+//    private Scene management;
+
     private QuoteOverviewCtrl overviewCtrl;
     private Scene overview;
 
@@ -102,6 +105,12 @@ public class MainCtrl {
         primaryStage.setScene(overview);
         overviewCtrl.refresh();
     }
+
+//    public void showManagementOverview() {
+//        primaryStage.setTitle("Management Overview");
+//        primaryStage.setScene(management);
+//        managementCtrl.refresh();
+//    }
 
     /**
      * Displays the login view.
