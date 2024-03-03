@@ -140,7 +140,7 @@ public class MainCtrl {
      * and sets a key pressed event handler for the participant's controller.
      */
     public void showParticipants() {
-        primaryStage.setTitle("Add/Edit Participants");
+        primaryStage.setTitle("Add Participants");
         primaryStage.setScene(participants);
         participants.setOnKeyPressed(e -> participantsCtrl.keyPressed(e));
     }
