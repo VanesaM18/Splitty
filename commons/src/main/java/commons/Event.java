@@ -3,6 +3,7 @@ package commons;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -18,6 +19,25 @@ public class Event {
     private LocalDateTime dateTime;
 
     @ManyToMany private Set<Participant> participants;
+
+    /**
+     * Get expenses with this event
+     * @return The events' expenses
+     */
+    public Set<Expense> getExpenses() {
+        return expenses;
+    }
+
+    /**
+     * Set the expenses on this event
+     * @param expenses The expenses to set
+     */
+    public void setExpenses(Set<Expense> expenses) {
+        this.expenses = expenses;
+    }
+
+    @OneToMany(mappedBy = "expense")
+    private Set<Expense> expenses;
 
     /**
      * Create an Event with the given details.
