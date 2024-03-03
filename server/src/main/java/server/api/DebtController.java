@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Random;
 
 @RestController
-@RequestMapping("/api/quotes")
+@RequestMapping("/api/debts")
 public class DebtController {
 
     private final Random random;
@@ -83,7 +83,7 @@ public class DebtController {
     public ResponseEntity<Debts> add(@RequestBody Debts debts) {
 
         if (debts.getDebtor() == null
-                || debts.getCreditor() == null || debts.getAmount() <= 0) {
+                || debts.getCreditor() == null || debts.getAmount() == null) {
             return ResponseEntity.badRequest().build();
         }
 

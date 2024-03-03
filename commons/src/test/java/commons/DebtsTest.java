@@ -9,7 +9,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class DebtsTest {
     Participant debtor = new Participant("Tom", "tom23@gmail.com", "NL22345518923056", "LAUGH");
     Participant creditor = new Participant("John", "crew@gmail.com", "NL99128381301324", "FUNNY");
-    Debts debt = new Debts(debtor, 100, creditor);
+    Monetary monetary = new Monetary(100);
+    Debts debt = new Debts(debtor, monetary, creditor);
 
     @Test
     void getDebtor() {
@@ -23,7 +24,7 @@ class DebtsTest {
     void testEquals() {
         Participant debtor = new Participant("Tom", "tom23@gmail.com", "NL22345518923056", "LAUGH");
         Participant creditor = new Participant("John", "crew@gmail.com", "NL99128381301324", "FUNNY");
-        Debts debt2 = new Debts(creditor, 100, debtor);
+        Debts debt2 = new Debts(creditor, monetary, debtor);
         assertNotEquals(debt, debt2);
     }
 }

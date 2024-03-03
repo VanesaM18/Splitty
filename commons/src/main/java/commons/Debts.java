@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Debts {
     private Participant debtor;
-    private double amount;
+    private Monetary amount;
     private Participant creditor;
 
     /**
@@ -13,7 +13,7 @@ public class Debts {
      * @param amount the amount of money they are in debt
      * @param creditor the person who should receive money
      */
-    public Debts(Participant debtor, double amount, Participant creditor) {
+    public Debts(Participant debtor, Monetary amount, Participant creditor) {
         this.debtor = debtor;
         this.amount = amount;
         this.creditor = creditor;
@@ -33,7 +33,7 @@ public class Debts {
      *
      * @return the amount of debt
      */
-    public double getAmount() {
+    public Monetary getAmount() {
         return amount;
     }
 
@@ -43,7 +43,7 @@ public class Debts {
      * @param total total amount of debt
      * @return the total amount of debt
      */
-    public double totalAmount(double total){
+    public Monetary totalAmount(Monetary total){
         return total;
     }
 
@@ -67,8 +67,7 @@ public class Debts {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Debts debts = (Debts) o;
-        return Double.compare(amount, debts.amount) == 0
-                && Objects.equals(debtor, debts.debtor) && Objects.equals(creditor, debts.creditor);
+        return Objects.equals(debtor, debts.debtor) && Objects.equals(amount, debts.amount) && Objects.equals(creditor, debts.creditor);
     }
 
     /**
@@ -82,8 +81,9 @@ public class Debts {
     }
 
     /**
+     * Converts debt into a readable string format
      *
-     * @return
+     * @return a string of the debt
      */
     @Override
     public String toString() {
