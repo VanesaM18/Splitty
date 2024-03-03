@@ -16,7 +16,6 @@
 package server.api;
 
 import commons.Debts;
-import commons.Quote;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import server.database.DebtRepository;
-import server.database.QuoteRepository;
 
 import java.util.List;
 import java.util.Random;
@@ -40,9 +38,9 @@ public class DebtController {
     private final DebtRepository repo;
 
     /**
-     * Constructs a DebtController with the specified random generator and quote repository.
+     * Constructs a DebtController with the specified random generator and debt repository.
      * @param random An instance of Random for generating random values.
-     * @param repo An instance of QuoteRepository for accessing quote data.
+     * @param repo An instance of DebtRepository for accessing debt data.
      */
     public DebtController(Random random, DebtRepository repo) {
         this.random = random;
@@ -61,9 +59,9 @@ public class DebtController {
 
     /**
      * Retrieves a debt by its ID.
-     * @param id The ID of the quote to retrieve.
-     * @return ResponseEntity containing the retrieved Quote if found,
-     * or a bad request response if the ID is invalid or the quote does not exist.
+     * @param id The ID of the debt to retrieve.
+     * @return ResponseEntity containing the retrieved debt if found,
+     * or a bad request response if the ID is invalid or the debt does not exist.
      */
     @GetMapping("/{id}")
     public ResponseEntity<Debts> getById(@PathVariable("id") long id) {
@@ -78,14 +76,14 @@ public class DebtController {
      *
      * @param debts The Debts object to add.
      *
-     * @return ResponseEntity containing the added Quote if successful,
-     * or a bad request response if the quote data is invalid.
+     * @return ResponseEntity containing the added debts if successful,
+     * or a bad request response if the debt data is invalid.
      */
     @PostMapping(path = { "", "/" })
     public ResponseEntity<Debts> add(@RequestBody Debts debts) {
 
         if (debts.getDebtor() == null
-                || debts.getDebtor() == null || debts.getAmount() <= 0) {
+                || debts.getCreditor() == null || debts.getAmount() <= 0) {
             return ResponseEntity.badRequest().build();
         }
 
@@ -103,9 +101,9 @@ public class DebtController {
     }
 
     /**
-     * Retrieves a random quote.
-     * @return ResponseEntity containing a randomly selected Quote object if available,
-     * or a bad request response if there are no quotes in the repository.
+     * Retrieves a random debt.
+     * @return ResponseEntity containing a randomly selected Debt object if available,
+     * or a bad request response if there are no debts in the repository.
      */
     @GetMapping("rnd")
     public ResponseEntity<Debts> getRandom() {
