@@ -6,7 +6,6 @@ import com.google.inject.Inject;
 
 import commons.Event;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
@@ -16,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.ResourceBundle;
 
-public class StartScreenCtrl implements Initializable {
+public class StartScreenCtrl {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
@@ -35,19 +34,6 @@ public class StartScreenCtrl implements Initializable {
     public StartScreenCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
-    }
-
-    /**
-     * Initializes the controller. This method sets up action handlers for the buttons.
-     *
-     * @param location  The location used to resolve relative
-     *                  paths for the root object, or null if unknown.
-     * @param resources The resources used to localize the root object,
-     *                  or null if the root object was not localized.
-     */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-
     }
 
     /**
