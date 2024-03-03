@@ -1,5 +1,6 @@
 package server;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import commons.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private QuoteController quoteController;
     @Autowired
     private ParticipantController participantController;
+
+    {
+        objectMapper.registerModule(new JavaTimeModule());
+    }
 
     /**
      * Creates a class for handling the websocket connection

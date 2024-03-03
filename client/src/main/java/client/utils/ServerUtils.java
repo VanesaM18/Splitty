@@ -27,9 +27,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import commons.WebSocketMessage;
+import javafx.scene.control.Alert;
+
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -44,6 +47,14 @@ public class ServerUtils {
     @Inject
     public ServerUtils(MyWebSocketClient webSocketClient) {
         this.webSocketClient = webSocketClient;
+    }
+
+    public ObjectMapper getObjectMapper() {
+        return objectMapper;
+    }
+
+    public MyWebSocketClient getWebSocketClient() {
+        return webSocketClient;
     }
 
     /**
@@ -181,6 +192,23 @@ public class ServerUtils {
         sendMessageWithoutResponse(request);
     }
 
+    public Optional<String> handleJsonDump() {
+
+        try {
+            WebSocketMessage requestMessage = new WebSocketMessage();
+            getWebSocketClient().send(getObjectMapper().writeValueAsString(requestMessage));
+            CompletableFuture<WebSocketMessage> future =
+                    getWebSocketClient().addPendingRequests(sendMessageWithResponse(requestMessage).toString());
+            var response = future.get();
+            if (response.getData() != null) {
+                return Optional.of(response.getData().toString());
+            } else {
+                return Optional.empty();
+            }
+        } catch (JsonProcessingException | ExecutionException | InterruptedException e) {
+            return Optional.empty();
+        }
+    }
     /**
      * Send a message to the server with awaiting response
      * @param request the message body
