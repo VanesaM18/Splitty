@@ -87,27 +87,32 @@ public class EventController {
     /**
      * Update a pre-existing event
      *
-     * @param event The event to update.
+     * @param updatedEvent The event to update.
      * @param id The ID of the event to update.
      * @return The updated version of the event, or a 400 error page.
      */
     @PutMapping(path = { "/{id}"})
-    public ResponseEntity<Event> update(@PathVariable("id") String id, @RequestBody Event event) {
-        if (isNullOrEmpty(event.getName())
-                || event.getDateTime() == null
-                || (event.getParticipants() != null && !event.getParticipants().isEmpty())) {
+    public ResponseEntity<Event> update(@PathVariable("id") String id,
+                                        @RequestBody Event updatedEvent) {
+        if (isNullOrEmpty(updatedEvent.getName())
+            || updatedEvent.getDateTime() == null
+            || !id.equals(updatedEvent.getInviteCode())) {
             return ResponseEntity.badRequest().build();
         }
 
-        // Make sure the ID of the event we are editing is the ID from the URL.
-        if (!id.equals(event.getInviteCode())) {
-            return ResponseEntity.badRequest().build();
-        }
+        return repo.findById(id).map(existingEvent -> {
+            existingEvent.setName(updatedEvent.getName());
+            existingEvent.setDateTime(updatedEvent.getDateTime());
 
-        Event saved = repo.save(event);
-        return ResponseEntity.ok(saved);
+            if (updatedEvent.getParticipants() != null) {
+                existingEvent.getParticipants().clear();
+                existingEvent.getParticipants().addAll(updatedEvent.getParticipants());
+            }
+
+            Event savedEvent = repo.save(existingEvent);
+            return ResponseEntity.ok(savedEvent);
+        }).orElse(ResponseEntity.notFound().build());
     }
-
     /**
      * Delete an event based on its ID.
      *

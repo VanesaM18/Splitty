@@ -24,6 +24,7 @@ import commons.Quote;
 import commons.Participant;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,18 +45,26 @@ public class ServerUtils {
     @Inject
     public ServerUtils(MyWebSocketClient webSocketClient) {
         this.webSocketClient = webSocketClient;
+        this.objectMapper.registerModule(new JavaTimeModule());
     }
 
     /**
      * Adds a participant.
      * @param p the participant to be added.
+     * @return the created event with the associated id
      */
-    public void addParticipant(Participant p) {
-        WebSocketMessage request = new WebSocketMessage();
-        request.setEndpoint("api/participants");
-        request.setMethod("POST");
-        request.setData(p);
-        sendMessageWithoutResponse(request);
+    public Participant addParticipant(Participant p) {
+        try {
+            WebSocketMessage request = new WebSocketMessage();
+            request.setEndpoint("api/participants");
+            request.setMethod("POST");
+            request.setData(p);
+            WebSocketMessage response = sendMessageWithResponse(request);
+            return objectMapper.convertValue(response.getData(), Participant.class);
+        } catch (ExecutionException | InterruptedException ignored) {
+
+        }
+        return null;
     }
 
     /**
@@ -131,23 +140,54 @@ public class ServerUtils {
 
     /**
      * Gets an event by id
-     * @param id the id of the event
-     * @return the requested event
+     * @param code the code of the event
+     * @return the requested event or null if it does not exist
      */
-    public Event getEventById(long id) {
+    public Event getEventById(String code) {
         try {
             WebSocketMessage request = new WebSocketMessage();
             request.setEndpoint("api/events/id");
             request.setMethod("GET");
             List<Object> parameters = new ArrayList<>();
-            parameters.add(id);
+            parameters.add(code);
             request.setParameters(parameters);
             WebSocketMessage response = sendMessageWithResponse(request);
             return objectMapper.convertValue(response.getData(), Event.class);
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
+        } catch (ExecutionException | InterruptedException ignored) {
+
         }
         return null;
+    }
+
+    /**
+     * Adds an event
+     * @param ev to be added
+     * @return the event with the new inviteCode
+     */
+    public Event addEvent(Event ev) {
+        try {
+            WebSocketMessage request = new WebSocketMessage();
+            request.setEndpoint("api/events");
+            request.setMethod("POST");
+            request.setData(ev);
+            WebSocketMessage response = sendMessageWithResponse(request);
+            return objectMapper.convertValue(response.getData(), Event.class);
+        } catch (ExecutionException | InterruptedException ignored) {
+
+        }
+        return null;
+    }
+
+    /**
+     * Updates an event
+     * @param ev to be updated
+     */
+    public void updateEvent(Event ev) {
+        WebSocketMessage request = new WebSocketMessage();
+        request.setEndpoint("api/events");
+        request.setMethod("PUT");
+        request.setData(ev);
+        sendMessageWithoutResponse(request);
     }
 
     /**

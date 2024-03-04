@@ -1,9 +1,6 @@
 package commons;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -18,7 +15,8 @@ public class Event {
     private String name;
     private LocalDateTime dateTime;
 
-    @ManyToMany private Set<Participant> participants;
+    @ManyToMany(fetch = FetchType.EAGER, cascade =
+        {CascadeType.PERSIST, CascadeType.MERGE}) private Set<Participant> participants;
 
     /**
      * Get expenses with this event
