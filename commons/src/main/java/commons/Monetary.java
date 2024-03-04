@@ -2,6 +2,7 @@ package commons;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
+import jakarta.persistence.Embeddable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -10,6 +11,7 @@ import java.util.Arrays;
 import java.util.Currency;
 
 /** Abstraction for monetary values */
+@Embeddable
 public class Monetary {
     private long value;
     private Currency currency;

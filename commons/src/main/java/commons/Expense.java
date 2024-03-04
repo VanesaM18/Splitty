@@ -8,6 +8,12 @@ public class Expense {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "value", column = @Column(name = "amount_value")),
+        @AttributeOverride(name = "currency", column = @Column(name = "amount_currency")),
+        @AttributeOverride(name = "fractionDivider",
+                column = @Column(name = "amount_fraction_divider"))
+    })
     private Monetary amount;
     @ManyToOne(optional = false)
     @JoinColumn(name = "PARTICIPANT_ID", referencedColumnName = "id")
