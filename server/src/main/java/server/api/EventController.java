@@ -1,5 +1,7 @@
 package server.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import commons.Admin;
 import commons.Event;
 import commons.PasswordHasher;
@@ -9,6 +11,15 @@ import org.springframework.web.bind.annotation.*;
 import server.BasicAuthParser;
 import server.database.AdminRepository;
 import server.database.EventRepository;
+
+import java.util.List;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -40,6 +51,30 @@ public class EventController {
     public List<Event> getAll() {
         return repo.findAll();
     }
+
+    /**
+     * API Endpoint for getting a JSON dump of all events.
+     *
+     * @return ResponseEntity with the JSON dump in the response body.
+     */
+    @GetMapping("/jsonDump")
+    public ResponseEntity<String> getJsonDump() {
+        List<Event> events = repo.findAll();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        try {
+            String jsonDump = objectMapper.writeValueAsString(events);
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
+//            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=events_dump.json");
+//            headers.add("Access-Control-Expose-Headers", "Content-Disposition");
+            return ResponseEntity.ok().body(jsonDump); //.headers(headers)
+        } catch (JsonProcessingException e) {
+            //TODO log error
+            return ResponseEntity.status(500).body("Error generating JSON dump");
+        }
+    }
+
 
     /**
      * API Endpoint for getting a certain event based on its ID.

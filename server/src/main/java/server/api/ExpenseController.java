@@ -29,7 +29,7 @@ public class ExpenseController {
      */
     @GetMapping("/by_event/{id}")
     public ResponseEntity<List<Expense>> getByEvent(@PathVariable("id") String eventId) {
-        List<Expense> expenses = repo.getExpensesByEventId(eventId);
+        List<Expense> expenses = repo.getExpensesByEventInviteCode(eventId);
         if (expenses == null || expenses.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
