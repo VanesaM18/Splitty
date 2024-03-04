@@ -26,8 +26,8 @@ public class MainCtrl {
     private SettingsCtrl settingsCtrl;
     private Scene settings;
 
-//    private ManagementCtrl managementCtrl;
-//    private Scene management;
+    private ManagementCtrl managementCtrl;
+    private Scene management;
 
     private QuoteOverviewCtrl overviewCtrl;
     private Scene overview;
@@ -56,6 +56,9 @@ public class MainCtrl {
 
         this.settingsCtrl = data.getSettings().getKey();
         this.settings = new Scene(data.getSettings().getValue());
+
+        this.managementCtrl = data.getManagement().getKey();
+        this.management = new Scene(data.getManagement().getValue());
 
         this.overviewCtrl = data.getOverview().getKey();
         this.overview = new Scene(data.getOverview().getValue());
@@ -91,6 +94,15 @@ public class MainCtrl {
     }
 
     /**
+     * displays the management overview
+     */
+    public void showManagementOverview() {
+        primaryStage.setTitle("Management Overview");
+        primaryStage.setScene(management);
+        managementCtrl.refresh();
+    }
+
+    /**
      * Displays the overview of quotes.
      * This method sets the title of the primary stage to "Quotes: Overview",
      * sets the scene to the overview scene
@@ -101,12 +113,6 @@ public class MainCtrl {
         primaryStage.setScene(overview);
         overviewCtrl.refresh();
     }
-
-//    public void showManagementOverview() {
-//        primaryStage.setTitle("Management Overview");
-//        primaryStage.setScene(management);
-//        managementCtrl.refresh();
-//    }
 
     /**
      * Displays the login view.

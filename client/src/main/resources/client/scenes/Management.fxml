@@ -8,8 +8,7 @@
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ManagementCtrl">
 
     <children>
-        <Button fx:id="jsonDumpButton" onAction="#handleJsonDumpButton" text="JSON Dump" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0" />
-        <Button layoutX="315.0" layoutY="360.0" mnemonicParsing="false" onAction="#addParticipant" text="Add Participant" />
+        <Button fx:id="jsonDumpButton" onAction="#handleJsonDumpButton" text="%jsondump_button" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0" />
         <Text layoutX="223.0" layoutY="44.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%management_title" wrappingWidth="153.97265625" />
     </children>
 

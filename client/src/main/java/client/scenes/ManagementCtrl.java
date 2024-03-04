@@ -5,8 +5,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import client.utils.ServerUtils;
+import javafx.stage.FileChooser;
 
 import javax.inject.Inject;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 
 public class ManagementCtrl {
@@ -36,9 +40,31 @@ public class ManagementCtrl {
     public void handleJsonDumpButton() {
         var optional = server.handleJsonDump();
         if (optional.isPresent()) {
-            showAlert(AlertType.INFORMATION, "JSON Dump", optional.get());
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save JSON Dump");
+            fileChooser.getExtensionFilters().
+                    add(new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json"));
+            File file = fileChooser.showSaveDialog(null);
+
+            if (file != null) {
+                saveJsonToFile(optional.get(), file);
+            }
         } else {
             showAlert(AlertType.ERROR, "JSON Dump Error", "Failed to retrieve JSON dump");
+        }
+    }
+
+    /**
+     * saves a JSON string to a specified file
+     * @param json JSON string to be saved
+     * @param file file where the JSON string will be saved
+     */
+    private void saveJsonToFile(String json, File file) {
+        try (PrintWriter writer = new PrintWriter(file)) {
+            writer.write(json);
+            showAlert(AlertType.INFORMATION, "JSON Dump Saved", "JSON dump saved successfully");
+        } catch (IOException e) {
+            showAlert(AlertType.ERROR, "Save Error", "Failed to save JSON dump: " + e.getMessage());
         }
     }
 
@@ -57,10 +83,8 @@ public class ManagementCtrl {
     }
 
     /**
-     * Method to add a new participant.
-     * This method triggers the display of the add participant window.
+     * method for refreshing the settings page
      */
-    public void addParticipant() {
-        mainCtrl.showParticipants();
+    public void refresh() {
     }
 }

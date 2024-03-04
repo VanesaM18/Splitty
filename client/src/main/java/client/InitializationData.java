@@ -6,6 +6,7 @@ import javafx.util.Pair;
 
 public class InitializationData {
     private Pair<SettingsCtrl, Parent> settings;
+    private Pair<ManagementCtrl, Parent> management;
     private Pair<QuoteOverviewCtrl, Parent> overview;
     private Pair<AddQuoteCtrl, Parent> add;
     private Pair<AddParticipantsCtrl, Parent> participant;
@@ -25,6 +26,14 @@ public class InitializationData {
      */
     public void setSettings(Pair<SettingsCtrl, Parent> settings) {
         this.settings = settings;
+    }
+
+    /**
+     * sets the management pair
+     * @param management pair
+     */
+    public void setManagement(Pair<ManagementCtrl, Parent> management) {
+        this.management = management;
     }
     /**
      * Sets the overview pair
@@ -76,6 +85,15 @@ public class InitializationData {
     public Pair<SettingsCtrl, Parent> getSettings() {
         return settings;
     }
+
+    /**
+     * gets the management pair
+     * @return management pair
+     */
+    public Pair<ManagementCtrl, Parent> getManagement() {
+        return management;
+    }
+
     /**
      * Gets the overview pair
      * @return overview pair
