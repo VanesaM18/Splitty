@@ -30,7 +30,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @Entity
 public class Quote {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;

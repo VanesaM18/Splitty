@@ -19,6 +19,25 @@ public class Event {
         {CascadeType.PERSIST, CascadeType.MERGE}) private Set<Participant> participants;
 
     /**
+     * Get expenses with this event
+     * @return The events' expenses
+     */
+    public Set<Expense> getExpenses() {
+        return expenses;
+    }
+
+    /**
+     * Set the expenses on this event
+     * @param expenses The expenses to set
+     */
+    public void setExpenses(Set<Expense> expenses) {
+        this.expenses = expenses;
+    }
+
+    @OneToMany(mappedBy = "expense")
+    private Set<Expense> expenses;
+
+    /**
      * Create an Event with the given details.
      *
      * @param inviteCode The inviteCode that can be used to join the event.
