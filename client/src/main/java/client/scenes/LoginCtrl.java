@@ -70,7 +70,7 @@ public class LoginCtrl {
         }
         // login successful redirect to where needed
         clearFields();
-        mainCtrl.showOverview();
+        mainCtrl.showStartScreen();
     }
 
     /**

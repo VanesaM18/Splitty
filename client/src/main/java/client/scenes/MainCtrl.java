@@ -15,10 +15,10 @@
  */
 package client.scenes;
 
-import javafx.scene.Parent;
+import client.InitializationData;
+import commons.Event;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 
 public class MainCtrl {
 
@@ -39,48 +39,44 @@ public class MainCtrl {
 
     private LoginCtrl loginCtrl;
     private Scene login;
+    private StartScreenCtrl startPageCtrl;
+    private Scene startPage;
+    private OverviewCtrl overviewEventCtrl;
+    private Scene overviewEvent;
 
     /**
      * Initializes the app with the specified primary stage and scenes for various controllers.
      *
      * @param primaryStage The primary stage of the application.
-     *
-     * @param settings A Pair containing the SettingsCtrl and its corresponding Parent scene.
-     *
-     * @param overview A Pair containing the QuoteOverviewCtrl and its corresponding Parent scene.
-     *
-     * @param add A Pair containing the AddQuoteCtrl and its corresponding Parent scene.
-     *
-     * @param participant A Pair containing the AddParticipantsCtrl and its corresponding scene.
-     *
-     * @param login A Pair containing the LoginCtrl and its corresponding Parent scene.
+     * @param data Contains all initialized pair of views
      */
     public void initialize(
-        Stage primaryStage,
-        Pair<SettingsCtrl, Parent> settings,
-        Pair<QuoteOverviewCtrl, Parent> overview,
-        Pair<AddQuoteCtrl, Parent> add,
-        Pair<AddParticipantsCtrl, Parent> participant,
-        Pair<LoginCtrl, Parent> login) {
+        Stage primaryStage, InitializationData data) {
         this.primaryStage = primaryStage;
 
-        this.settingsCtrl = settings.getKey();
-        this.settings = new Scene(settings.getValue());
+        this.settingsCtrl = data.getSettings().getKey();
+        this.settings = new Scene(data.getSettings().getValue());
 
-        this.overviewCtrl = overview.getKey();
-        this.overview = new Scene(overview.getValue());
+        this.overviewCtrl = data.getOverview().getKey();
+        this.overview = new Scene(data.getOverview().getValue());
 
-        this.addCtrl = add.getKey();
-        this.add = new Scene(add.getValue());
+        this.addCtrl = data.getAdd().getKey();
+        this.add = new Scene(data.getAdd().getValue());
 
-        this.loginCtrl = login.getKey();
-        this.login = new Scene(login.getValue());
-        showLogin();
+        this.loginCtrl = data.getLogin().getKey();
+        this.login = new Scene(data.getLogin().getValue());
 
-        this.participantsCtrl = participant.getKey();
-        this.participants = new Scene(participant.getValue());
+        this.participantsCtrl = data.getParticipant().getKey();
+        this.participants = new Scene(data.getParticipant().getValue());
 
-        // showOverview();
+        this.startPageCtrl = data.getStartPage().getKey();
+        this.startPage = new Scene(data.getStartPage().getValue());
+
+        this.overviewEventCtrl = data.getOverviewEvent().getKey();
+        this.overviewEvent = new Scene(data.getOverviewEvent().getValue());
+
+        // showLogin();
+        showStartScreen();
         primaryStage.show();
     }
 
@@ -124,6 +120,17 @@ public class MainCtrl {
     }
 
     /**
+     * Displays the startScreen view.
+     * This method sets the title of the primary stage to "Start page"
+     * and sets the scene to the login scene.
+     */
+    public void showStartScreen() {
+        primaryStage.setTitle("Start page");
+        primaryStage.setScene(startPage);
+        startPageCtrl.clearFields();
+    }
+
+    /**
      * Displays the window for adding a new quote.
      * This method sets the title of the primary stage to "Quotes: Adding Quote",
      * sets the scene to the add scene
@@ -140,10 +147,32 @@ public class MainCtrl {
      * This method sets the title of the primary stage to "Add/Edit Participants",
      * sets the scene to the participants scene
      * and sets a key pressed event handler for the participant's controller.
+     * @param ev event where to add/edit participants
      */
-    public void showParticipants() {
+    public void showParticipants(Event ev) {
         primaryStage.setTitle("Add Participants");
         primaryStage.setScene(participants);
+        participantsCtrl.setEvent(ev);
         participants.setOnKeyPressed(e -> participantsCtrl.keyPressed(e));
+    }
+
+    /**
+     * Displays the overview of the event.
+     * This method sets the title of the primary stage to "Event",
+     * sets the scene to the overview scene
+     * and refreshes the content of the overview controller if it's a new event, or
+     * keeps the data if it is the old one
+     * @param e the event to update
+     */
+    public void showOverviewEvent(Event e) {
+        if (e == null) {
+            primaryStage.setTitle("Event: Overview");
+            primaryStage.setScene(overviewEvent);
+        } else {
+            primaryStage.setTitle("Event: Overview");
+            overviewEventCtrl.setEvent(e);
+            primaryStage.setScene(overviewEvent);
+            overviewEventCtrl.refresh();
+        }
     }
 }
