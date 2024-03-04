@@ -26,6 +26,9 @@ public class MainCtrl {
     private SettingsCtrl settingsCtrl;
     private Scene settings;
 
+    private ManagementCtrl managementCtrl;
+    private Scene management;
+
     private QuoteOverviewCtrl overviewCtrl;
     private Scene overview;
 
@@ -53,6 +56,9 @@ public class MainCtrl {
 
         this.settingsCtrl = data.getSettings().getKey();
         this.settings = new Scene(data.getSettings().getValue());
+
+        this.managementCtrl = data.getManagement().getKey();
+        this.management = new Scene(data.getManagement().getValue());
 
         this.overviewCtrl = data.getOverview().getKey();
         this.overview = new Scene(data.getOverview().getValue());
@@ -85,6 +91,15 @@ public class MainCtrl {
         primaryStage.setScene(settings);
         settingsCtrl.make();
         settingsCtrl.refresh();
+    }
+
+    /**
+     * displays the management overview
+     */
+    public void showManagementOverview() {
+        primaryStage.setTitle("Management Overview");
+        primaryStage.setScene(management);
+        managementCtrl.refresh();
     }
 
     /**

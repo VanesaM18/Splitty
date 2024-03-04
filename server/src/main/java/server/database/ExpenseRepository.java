@@ -8,8 +8,8 @@ import java.util.List;
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     /**
      * Get all the expenses by an event's id
-     * @param eventId The event id
+     * @param inviteCode The event id (invite code)
      * @return The expenses
      */
-    List<Expense> getExpensesByEventId(String eventId);
+    List<Expense> getExpensesByEventInviteCode(String inviteCode);
 }

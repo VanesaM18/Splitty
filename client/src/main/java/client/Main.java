@@ -77,6 +77,8 @@ public class Main extends Application {
      */
     public void start(Locale locale) throws IOException {
         var settings = FXML.load(SettingsCtrl.class, locale, "client", "scenes", "Settings.fxml");
+        var management = FXML.
+                load(ManagementCtrl.class, locale, "client", "scenes", "Management.fxml");
         var overview =
             FXML.load(
                 QuoteOverviewCtrl.class, locale, "client", "scenes", "QuoteOverview.fxml");
@@ -96,6 +98,7 @@ public class Main extends Application {
 
         InitializationData data = new InitializationData();
         data.setSettings(settings);
+        data.setManagement(management);
         data.setOverview(overview);
         data.setAdd(add);
         data.setLogin(loginAdmin);
