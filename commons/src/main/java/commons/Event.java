@@ -34,7 +34,7 @@ public class Event {
         this.expenses = expenses;
     }
 
-    @OneToMany(mappedBy = "expense")
+    @OneToMany//(mappedBy = "expense")
     private Set<Expense> expenses;
 
     /**

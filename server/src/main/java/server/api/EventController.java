@@ -64,12 +64,11 @@ public class EventController {
         objectMapper.registerModule(new JavaTimeModule());
         try {
             String jsonDump = objectMapper.writeValueAsString(events);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=events_dump.json");
-            headers.add("Access-Control-Expose-Headers", "Content-Disposition");
-
-            return ResponseEntity.ok().headers(headers).body(jsonDump);
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
+//            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=events_dump.json");
+//            headers.add("Access-Control-Expose-Headers", "Content-Disposition");
+            return ResponseEntity.ok().body(jsonDump); //.headers(headers)
         } catch (JsonProcessingException e) {
             //TODO log error
             return ResponseEntity.status(500).body("Error generating JSON dump");

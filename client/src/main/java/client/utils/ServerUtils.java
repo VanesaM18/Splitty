@@ -248,17 +248,16 @@ public class ServerUtils {
 
         try {
             WebSocketMessage requestMessage = new WebSocketMessage();
-            getWebSocketClient().send(getObjectMapper().writeValueAsString(requestMessage));
-            CompletableFuture<WebSocketMessage> future =
-                    getWebSocketClient()
-                            .addPendingRequests(sendMessageWithResponse(requestMessage).toString());
-            var response = future.get();
+            requestMessage.setEndpoint("api/events/jsonDump");
+            requestMessage.setMethod("GET");
+            WebSocketMessage response = sendMessageWithResponse(requestMessage);
             if (response.getData() != null) {
-                return Optional.of(response.getData().toString());
+                return Optional.
+                        of(getObjectMapper().convertValue(response.getData(), String.class));
             } else {
                 return Optional.empty();
             }
-        } catch (JsonProcessingException | ExecutionException | InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             return Optional.empty();
         }
     }
