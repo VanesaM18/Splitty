@@ -135,8 +135,22 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     this.returnResult(session, request, event.getBody());
                 }
             }
+            case "api/events/jsonDump" -> {
+                handleJsonDumpApi(session, request);
+            }
         }
     }
+
+    private void handleJsonDumpApi(WebSocketSession session,
+                                   WebSocketMessage request) throws Exception {
+        if ("GET".equals(request.getMethod())) {
+            ResponseEntity<String> jsonDumpResponse = eventController.getJsonDump();
+            if (jsonDumpResponse.getStatusCode().is2xxSuccessful()) {
+                this.returnResult(session, request, jsonDumpResponse.getBody());
+            }
+        }
+    }
+
     /**
      * Handles the event specific to /api/admin
      * @param session the channel used to communicate
