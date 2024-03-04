@@ -34,7 +34,8 @@ public class Event {
         this.expenses = expenses;
     }
 
-    @OneToMany//(mappedBy = "expense")
+    @OneToMany(fetch = FetchType.EAGER, cascade =
+        {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Expense> expenses;
 
     /**
