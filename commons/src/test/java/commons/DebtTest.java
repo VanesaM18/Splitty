@@ -2,15 +2,13 @@ package commons;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-class DebtsTest {
+class DebtTest {
     Participant debtor = new Participant("Tom", "tom23@gmail.com", "NL22345518923056", "LAUGH");
     Participant creditor = new Participant("John", "crew@gmail.com", "NL99128381301324", "FUNNY");
     Monetary monetary = new Monetary(100);
-    Debts debt = new Debts(debtor, monetary, creditor);
+    Debt debt = new Debt(debtor, monetary, creditor);
 
     @Test
     void getDebtor() {
@@ -24,7 +22,7 @@ class DebtsTest {
     void testEquals() {
         Participant debtor = new Participant("Tom", "tom23@gmail.com", "NL22345518923056", "LAUGH");
         Participant creditor = new Participant("John", "crew@gmail.com", "NL99128381301324", "FUNNY");
-        Debts debt2 = new Debts(creditor, monetary, debtor);
+        Debt debt2 = new Debt(creditor, monetary, debtor);
         assertNotEquals(debt, debt2);
     }
 }
