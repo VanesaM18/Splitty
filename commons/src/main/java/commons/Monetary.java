@@ -13,7 +13,7 @@ import java.util.Currency;
 /** Abstraction for monetary values */
 @Embeddable
 public class Monetary {
-    private long value;
+    private long iValue;
     private Currency currency;
     // 10^(currency fraction digits)
     private long fractionDivider;
@@ -35,7 +35,7 @@ public class Monetary {
      * @param currency The currency to use
      */
     public Monetary(long value, Currency currency) {
-        this.value = value;
+        this.iValue = value;
         this.setCurrency(currency);
     }
 
@@ -57,7 +57,7 @@ public class Monetary {
      * @return the internal value
      */
     public long getInternalValue() {
-        return this.value;
+        return this.iValue;
     }
 
     /**
@@ -88,7 +88,7 @@ public class Monetary {
      * @return the major value
      */
     public long getMajor() {
-        return this.value / this.fractionDivider;
+        return this.iValue / this.fractionDivider;
     }
 
     /**
@@ -97,7 +97,7 @@ public class Monetary {
      * @return the minor value
      */
     public long getMinor() {
-        return this.value % this.fractionDivider;
+        return this.iValue % this.fractionDivider;
     }
 
     /**
@@ -127,7 +127,7 @@ public class Monetary {
                                                 "All monetaries must have the same currency");
                                     }
                                 })
-                        .mapToLong(mon -> mon.value)
+                        .mapToLong(mon -> mon.iValue)
                         .sum();
 
         return new Monetary(sum, curr);

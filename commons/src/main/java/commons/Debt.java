@@ -1,11 +1,15 @@
 package commons;
 
+import jakarta.persistence.*;
+
 import java.util.Objects;
 
-public class Debts {
-    private Participant debtor;
+@Entity
+public class Debt {
+    @Id @GeneratedValue private long id;
+    @ManyToOne private Participant debtor;
     private Monetary amount;
-    private Participant creditor;
+    @ManyToOne private Participant creditor;
 
     /**
      * Constructs debts
@@ -13,7 +17,7 @@ public class Debts {
      * @param amount the amount of money they are in debt
      * @param creditor the person who should receive money
      */
-    public Debts(Participant debtor, Monetary amount, Participant creditor) {
+    public Debt(Participant debtor, Monetary amount, Participant creditor) {
         this.debtor = debtor;
         this.amount = amount;
         this.creditor = creditor;
@@ -66,9 +70,9 @@ public class Debts {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Debts debts = (Debts) o;
-        return Objects.equals(debtor, debts.debtor) && Objects.equals(amount, debts.amount)
-                && Objects.equals(creditor, debts.creditor);
+        Debt debt = (Debt) o;
+        return Objects.equals(debtor, debt.debtor) && Objects.equals(amount, debt.amount)
+                && Objects.equals(creditor, debt.creditor);
     }
 
     /**

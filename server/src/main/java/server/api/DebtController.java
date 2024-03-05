@@ -15,7 +15,7 @@
  */
 package server.api;
 
-import commons.Debts;
+import commons.Debt;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,7 +53,7 @@ public class DebtController {
      * @return A list of Debt objects representing all debts.
      */
     @GetMapping(path = { "", "/" })
-    public List<Debts> getAll() {
+    public List<Debt> getAll() {
         return repo.findAll();
     }
 
@@ -64,7 +64,7 @@ public class DebtController {
      * or a bad request response if the ID is invalid or the debt does not exist.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Debts> getById(@PathVariable("id") long id) {
+    public ResponseEntity<Debt> getById(@PathVariable("id") long id) {
         if (id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
         }
@@ -74,20 +74,20 @@ public class DebtController {
     /**
      * Adds a new quote.
      *
-     * @param debts The Debts object to add.
+     * @param debt The Debts object to add.
      *
      * @return ResponseEntity containing the added debts if successful,
      * or a bad request response if the debt data is invalid.
      */
     @PostMapping(path = { "", "/" })
-    public ResponseEntity<Debts> add(@RequestBody Debts debts) {
+    public ResponseEntity<Debt> add(@RequestBody Debt debt) {
 
-        if (debts.getDebtor() == null
-                || debts.getCreditor() == null || debts.getAmount() == null) {
+        if (debt.getDebtor() == null
+                || debt.getCreditor() == null || debt.getAmount() == null) {
             return ResponseEntity.badRequest().build();
         }
 
-        Debts saved = repo.save(debts);
+        Debt saved = repo.save(debt);
         return ResponseEntity.ok(saved);
     }
 
@@ -106,7 +106,7 @@ public class DebtController {
      * or a bad request response if there are no debts in the repository.
      */
     @GetMapping("rnd")
-    public ResponseEntity<Debts> getRandom() {
+    public ResponseEntity<Debt> getRandom() {
         var debts = repo.findAll();
         var idx = random.nextInt((int) repo.count());
         return ResponseEntity.ok(debts.get(idx));

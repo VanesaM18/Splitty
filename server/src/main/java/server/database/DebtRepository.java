@@ -1,6 +1,6 @@
 package server.database;
 
-import commons.Debts;
+import commons.Debt;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface DebtRepository extends JpaRepository<Debts, Long> {}
+public interface DebtRepository extends JpaRepository<Debt, Long> {}
