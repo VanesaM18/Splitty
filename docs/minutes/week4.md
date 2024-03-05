@@ -1,0 +1,23 @@
+- Agenda and previous minutes
+    - All OK!
+- Announcements from TA
+    - Make sure your emails match between GitLab and your PC. You can check this using contributor analytics page under analytics. There should be only one graph with your name.
+    - If you have something planned on one of the OOPP days during the endterm test week, make sure you send a formal email about this so this can be planned around. Birthdays don't count, but things like an extra exam or funeral do.
+    - Do the Buddycheck this week.
+    - We will be getting some filled out rubrics soon for feedback. All are formative:
+        - In week 4 (this week) we will get a rubric about "tasks and planning"
+        - In week 5 (next week) we will get a rubric about "code contribution and reviewing" and "technology usage".
+    - Knockout criteria are more lax during week 5, but make sure you still contribute.
+- To do/Conclusion
+    - Make an explicit list of things to test manually before merging. To prevent the recent issues with main breaking.
+    - Recently viewed events
+        - Store history and invite codes on the client side
+    - Store config file in AppData or .config or ...
+        - For windows: Store under %LOCALAPPDATA%\\Splitty\\config.json
+        - For linux:
+            - First check if the environment variable "XDG_CONFIG_HOME" exists. If it does, store under $XDG_CONFIG_HOME/Splitty/config.json
+            - If the environment variable does not exist, use ~/.config/Splitty/config.json
+        - For mac: ~/Library/Application Support/Splitty/config.json
+        - See https://stackoverflow.com/questions/15677388/default-location-for-configuration-files-macos
+- No rubric for accessibility yet. Still to come at a later date.
+- Pushing directly to main is now blocked.
