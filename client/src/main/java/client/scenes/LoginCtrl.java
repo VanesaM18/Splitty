@@ -21,6 +21,7 @@ import com.google.inject.Inject;
 
 import commons.Admin;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
@@ -108,5 +109,12 @@ public class LoginCtrl {
      */
     public void openSettings () {
         mainCtrl.showSettings();
+    }
+
+    /**
+     * Goes back to the starting page.
+     */
+    public void back() {
+        mainCtrl.showStartScreen();
     }
 }

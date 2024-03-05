@@ -1,5 +1,6 @@
 package client.scenes;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Alert;
@@ -86,5 +87,12 @@ public class ManagementCtrl {
      * method for refreshing the settings page
      */
     public void refresh() {
+    }
+
+    /**
+     * Goes back to the starting page.
+     */
+    public void home() {
+        mainCtrl.showStartScreen();
     }
 }
