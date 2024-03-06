@@ -120,17 +120,27 @@ public class ParticipantsCtrl {
      */
     private boolean uniqueName(Event ev, Participant p) {
         if(!add) {
-            int count = 0;
-            Set<Participant> participants = ev.getParticipants();
-            for(Participant participant : participants) {
-                if(participant.getName().equals(p.getName())) count++;
-                if(count > 1) return false;
-            }
-            return true;
+            return uniqueUpdate(ev, p);
         }
         Set<Participant> participants = ev.getParticipants();
         for(Participant participant : participants) {
             if(participant.getName().equals(p.getName())) return false;
+        }
+        return true;
+    }
+
+    /**
+     * Checks if the participants name is only once in the event.
+     * @param ev event to be looked into.
+     * @param p participant whose name is to be checked.
+     * @return whether the name is unique.
+     */
+    private boolean uniqueUpdate(Event ev, Participant p) {
+        int count = 0;
+        Set<Participant> participants = ev.getParticipants();
+        for(Participant participant : participants) {
+            if(participant.getName().equals(p.getName())) count++;
+            if(count > 1) return false;
         }
         return true;
     }
@@ -235,6 +245,11 @@ public class ParticipantsCtrl {
         else title.setText("Edit participant");
     }
 
+    /**
+     * Sets the fields with the details of the participant
+     * we want to update.
+     * @param p
+     */
     public  void setFields (Participant p) {
         iban.setText(p.getIban());
         name.setText(p.getName());

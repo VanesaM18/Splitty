@@ -110,7 +110,8 @@ public class OverviewCtrl {
             return;
         }
         warning.setText("");
-        mainCtrl.showParticipants(this.ev, false, participantNames.getSelectionModel().getSelectedItem());
+        mainCtrl.showParticipants(this.ev, false,
+                participantNames.getSelectionModel().getSelectedItem());
     }
 
     /**
