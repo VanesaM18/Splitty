@@ -6,14 +6,14 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="396.0" prefWidth="405.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddParticipantsCtrl">
+<AnchorPane prefHeight="396.0" prefWidth="405.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ParticipantsCtrl">
    <children>
       <Label layoutX="37.0" layoutY="88.0" text="Name">
          <font>
             <Font name="System Bold" size="22.0" />
          </font>
       </Label>
-      <Label layoutX="37.0" layoutY="14.0" text="Add Participant">
+      <Label fx:id="title" layoutX="37.0" layoutY="14.0" text="">
          <font>
             <Font name="System Bold" size="32.0" />
          </font>

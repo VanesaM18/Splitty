@@ -17,6 +17,7 @@ package client.scenes;
 
 import client.InitializationData;
 import commons.Event;
+import commons.Participant;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -34,7 +35,7 @@ public class MainCtrl {
 
     private AddQuoteCtrl addCtrl;
     private Scene add;
-    private AddParticipantsCtrl participantsCtrl;
+    private ParticipantsCtrl participantsCtrl;
     private Scene participants;
 
     private LoginCtrl loginCtrl;
@@ -150,16 +151,29 @@ public class MainCtrl {
 
     /**
      * Displays the window for adding a new participant.
-     * This method sets the title of the primary stage to "Add/Edit Participants",
+     * This method sets the title of the primary stage to "Participants: Overview",
      * sets the scene to the participants scene
      * and sets a key pressed event handler for the participant's controller.
      * @param ev event where to add/edit participants
+     * @param add true - add / false - edit.
+     * @param change the name of the participant to be edited.
      */
-    public void showParticipants(Event ev) {
-        primaryStage.setTitle("Add Participants");
+    public void showParticipants(Event ev, boolean add, String change) {
+        participantsCtrl.setAdd(add);
+        if(!add) editParticipant(ev, change);
+        primaryStage.setTitle("Participants: Overview");
         primaryStage.setScene(participants);
         participantsCtrl.setEvent(ev);
         participants.setOnKeyPressed(e -> participantsCtrl.keyPressed(e));
+    }
+
+    private void editParticipant(Event ev, String name) {
+        for(Participant participant : ev.getParticipants()) {
+            if(participant.getName().equals(name)) {
+                participantsCtrl.setFields(participant);
+                return;
+            }
+        }
     }
 
     /**

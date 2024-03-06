@@ -33,7 +33,7 @@
             </ImageView>
          </graphic>
       </Button>
-      <Button fx:id="editParticipantButton" layoutX="174.0" layoutY="103.0" mnemonicParsing="false" prefHeight="7.0" prefWidth="24.0">
+      <Button fx:id="editParticipantButton" layoutX="174.0" layoutY="103.0" mnemonicParsing="false" onAction="#editParticipant" prefHeight="7.0" prefWidth="24.0">
          <graphic>
             <ImageView fitHeight="19.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -70,6 +70,11 @@
         </tabs>
       </TabPane>
       <Button layoutX="364.0" layoutY="523.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="102.0" text="Settle Debts" />
-      <Button layoutX="45.0" layoutY="523.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="102.0" onAction="#back" text="Back" />
+      <Button layoutX="45.0" layoutY="523.0" mnemonicParsing="false" onAction="#back" prefHeight="30.0" prefWidth="102.0" text="Back" />
+      <Label fx:id="warning" layoutX="269.0" layoutY="106.0" textFill="RED">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>

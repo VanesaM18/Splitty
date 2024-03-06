@@ -9,7 +9,7 @@ public class InitializationData {
     private Pair<ManagementCtrl, Parent> management;
     private Pair<QuoteOverviewCtrl, Parent> overview;
     private Pair<AddQuoteCtrl, Parent> add;
-    private Pair<AddParticipantsCtrl, Parent> participant;
+    private Pair<ParticipantsCtrl, Parent> participant;
     private Pair<LoginCtrl, Parent> login;
     private Pair<StartScreenCtrl, Parent> startPage;
     private Pair<OverviewCtrl, Parent> overviewEvent;
@@ -53,7 +53,7 @@ public class InitializationData {
      * Sets the participant pair
      * @param participant pair
      */
-    public void setParticipant(Pair<AddParticipantsCtrl, Parent> participant) {
+    public void setParticipant(Pair<ParticipantsCtrl, Parent> participant) {
         this.participant = participant;
     }
     /**
@@ -112,7 +112,7 @@ public class InitializationData {
      * Gets the participant pair
      * @return participant pair
      */
-    public Pair<AddParticipantsCtrl, Parent> getParticipant() {
+    public Pair<ParticipantsCtrl, Parent> getParticipant() {
         return participant;
     }
     /**

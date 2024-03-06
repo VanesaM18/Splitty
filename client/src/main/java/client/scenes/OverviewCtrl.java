@@ -33,6 +33,8 @@ public class OverviewCtrl {
     private final ObservableList<String> participantNamesObs = FXCollections.observableArrayList();
     @FXML
     private ComboBox<String> participantComboBox;
+    @FXML
+    private Label warning;
 
     /**
      * Controller responsible for handling the quote overview functionality.
@@ -95,7 +97,20 @@ public class OverviewCtrl {
      * This method triggers the display of the add participant window.
      */
     public void addParticipant() {
-        mainCtrl.showParticipants(this.ev);
+        mainCtrl.showParticipants(this.ev, true, "");
+    }
+
+    /**
+     * Method to edit a new participant.
+     * This method triggers the display of the edit participant window.
+     */
+    public void editParticipant() {
+        if(participantNames.getSelectionModel().getSelectedItem() == null) {
+            warning.setText("First chose a participant.");
+            return;
+        }
+        warning.setText("");
+        mainCtrl.showParticipants(this.ev, false, participantNames.getSelectionModel().getSelectedItem());
     }
 
     /**

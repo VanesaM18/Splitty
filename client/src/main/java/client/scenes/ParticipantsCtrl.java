@@ -16,9 +16,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 
+import java.util.Set;
 import java.util.regex.Pattern;
 
-public class AddParticipantsCtrl {
+public class ParticipantsCtrl {
+    @FXML private Label title;
+    private boolean add;
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
     @FXML private Label warning;
@@ -32,13 +35,15 @@ public class AddParticipantsCtrl {
     @FXML private TextField bic;
     private Event ev;
 
+    private Participant participantToChange;
+
     /**
      * Controller responsible for handling the addition of participants functionality.
      * @param server An instance of ServerUtils for server-related operations.
      * @param mainCtrl An instance of MainCtrl for coordinating with the main controller.
      */
     @Inject
-    public AddParticipantsCtrl(ServerUtils server, MainCtrl mainCtrl) {
+    public ParticipantsCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
     }
@@ -67,8 +72,13 @@ public class AddParticipantsCtrl {
      * Throws an error if the request is bad.
      */
     public void ok() {
+        Participant p = participantToChange;
         try {
-            Participant p = getParticipant();
+            p = getParticipant();
+            if(!uniqueName(ev, p)) {
+                warning.setText("Not a unique name!");
+                return;
+            }
             if(p.getName().equals("")) {
                 warning.setText("Name cannot be empty!");
                 return;
@@ -100,6 +110,29 @@ public class AddParticipantsCtrl {
 
         clearFields();
         mainCtrl.showOverviewEvent(ev);
+    }
+
+    /**
+     * Checks if the participants name is unique for the event.
+     * @param ev event to be looked into.
+     * @param p participant whose name is to be checked.
+     * @return whether the name is unique.
+     */
+    private boolean uniqueName(Event ev, Participant p) {
+        if(!add) {
+            int count = 0;
+            Set<Participant> participants = ev.getParticipants();
+            for(Participant participant : participants) {
+                if(participant.getName().equals(p.getName())) count++;
+                if(count > 1) return false;
+            }
+            return true;
+        }
+        Set<Participant> participants = ev.getParticipants();
+        for(Participant participant : participants) {
+            if(participant.getName().equals(p.getName())) return false;
+        }
+        return true;
     }
 
     /**
@@ -140,12 +173,19 @@ public class AddParticipantsCtrl {
     }
 
     /**
-     * Creates a participant from the text fields.
+     * Creates or updates a participant from the text fields.
      * @return the created participant.
      */
     private Participant getParticipant() {
-        Participant p =
-                new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
+        Participant p = participantToChange;
+        if(p == null) {
+            p = new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
+        } else {
+            p.setName(name.getText());
+            p.setIban(iban.getText());
+            p.setEmail(email.getText());
+            p.setBic(bic.getText());
+        }
         return p;
     }
 
@@ -173,4 +213,37 @@ public class AddParticipantsCtrl {
     public void setEvent(Event ev) {
         this.ev = ev;
     }
+
+    /**
+     * Checks weather the user is adding or editing participants.
+     * @return true - add / false - edit.
+     */
+    public boolean isAdd() {
+        return add;
+    }
+
+    /**
+     * Changes the title of the screen depending on weather
+     * the user wants to edit or add a participant.
+     * @param add true - add / false - edit.
+     */
+    public void setAdd(boolean add) {
+        this.add = add;
+        if(add) {
+            title.setText("Add participant");
+        }
+        else title.setText("Edit participant");
+    }
+
+    public  void setFields (Participant p) {
+        iban.setText(p.getIban());
+        name.setText(p.getName());
+        bic.setText(p.getBic());
+        email.setText(p.getEmail());
+        participantToChange = p;
+    }
+
+
 }
+
+
