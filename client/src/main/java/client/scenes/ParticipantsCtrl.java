@@ -164,7 +164,7 @@ public class ParticipantsCtrl {
      */
     public static boolean isIbanValid(String iban) {
         String regexPattern =
-                "\\b[A-Z]{2}[0-9]{2}(?:[ ]?[0-9]{4}){4}(?!(?:[ ]?[0-9]){3})(?:[ ]?[0-9]{1,2})?\\b";
+                "[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}";
         return Pattern.compile(regexPattern)
                 .matcher(iban)
                 .matches();
