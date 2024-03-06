@@ -134,6 +134,18 @@ public class Event {
     }
 
     /**
+     * Remove a participant from the list of participants for this event.
+     *
+     * @param name the name of the participant to be removed.
+     */
+    public void removeParticipant(String name) {
+        for(Participant p : getParticipants()) {
+            if (p.getName().equals(name)) removeParticipant(p);
+            return;
+        }
+    }
+
+    /**
      * Get the invite code for this event.
      * This code can be used to join this event.
      *

@@ -27,6 +27,8 @@ public class OverviewCtrl {
     @FXML
     private Button addParticipantButton;
     @FXML
+    private Button deleteParticipantButton;
+    @FXML
     private Button editParticipantButton;
     @FXML
     private ListView<String> participantNames;
@@ -61,6 +63,7 @@ public class OverviewCtrl {
         title.setText(ev.getName());
         this.attachImage(addParticipantButton, "/assets/user-plus-solid.png");
         this.attachImage(editParticipantButton, "/assets/pen-solid.png");
+        this.attachImage(deleteParticipantButton, "/assets/bin.png");
         if (this.ev != null) {
             this.ev = server.getEventById(ev.getInviteCode());
             participantNamesObs.clear();
@@ -119,5 +122,21 @@ public class OverviewCtrl {
      */
     public void back() {
         mainCtrl.showStartScreen();
+    }
+
+    /**
+     *  Deletes a participant from the event.
+     */
+    public void deleteParticipant() {
+        if(participantNames.getSelectionModel().getSelectedItem() == null) {
+            warning.setText("First chose a participant.");
+            return;
+        }
+        warning.setText("");
+        String name = participantNames.getSelectionModel().getSelectedItem();
+        ev.removeParticipant(name);
+        server.updateEvent(ev);
+        refresh();
+        mainCtrl.showOverviewEvent(ev);
     }
 }
