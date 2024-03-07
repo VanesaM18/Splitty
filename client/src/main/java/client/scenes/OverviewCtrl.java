@@ -36,6 +36,7 @@ public class OverviewCtrl {
 
     /**
      * Controller responsible for handling the quote overview functionality.
+     * 
      * @param server An instance of ServerUtils for server-related operations.
      * @param mainCtrl An instance of MainCtrl for coordinating with the main controller.
      */
@@ -47,11 +48,13 @@ public class OverviewCtrl {
 
     /**
      * Initialize the event data
+     * 
      * @param ev the event
      */
     public void setEvent(Event ev) {
         this.ev = ev;
     }
+
     /**
      * Method to refresh the current view.
      */
@@ -72,6 +75,7 @@ public class OverviewCtrl {
 
     /**
      * Attaches an image to a button
+     * 
      * @param but the button to attach to
      * @param url the url to the image
      */
@@ -91,11 +95,18 @@ public class OverviewCtrl {
     }
 
     /**
-     * Method to add a new participant.
-     * This method triggers the display of the add participant window.
+     * Method to add a new participant. This method triggers the display of the add participant
+     * window.
      */
     public void addParticipant() {
         mainCtrl.showParticipants(this.ev);
+    }
+
+    /**
+     * Show the send invites screen.
+     */
+    public void sendInvites() {
+        mainCtrl.showInviteScreen(this.ev);
     }
 
     /**
