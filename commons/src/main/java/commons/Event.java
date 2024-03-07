@@ -11,15 +11,17 @@ import java.util.Set;
 public class Event {
 
     private static final int INVITE_CODE_LENGTH = 6;
-    @Id private String inviteCode;
+    @Id
+    private String inviteCode;
     private String name;
     private LocalDateTime dateTime;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade =
-        {CascadeType.PERSIST, CascadeType.MERGE}) private Set<Participant> participants;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    private Set<Participant> participants;
 
     /**
      * Get expenses with this event
+     * 
      * @return The events' expenses
      */
     public Set<Expense> getExpenses() {
@@ -28,22 +30,22 @@ public class Event {
 
     /**
      * Set the expenses on this event
+     * 
      * @param expenses The expenses to set
      */
     public void setExpenses(Set<Expense> expenses) {
         this.expenses = expenses;
     }
 
-    @OneToMany(fetch = FetchType.EAGER, cascade =
-        {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private Set<Expense> expenses;
 
     /**
      * Create an Event with the given details.
      *
-     * @param inviteCode The inviteCode that can be used to join the event.
-     * @param name The name/title of the event.
-     * @param dateTime The date and time of the event.
+     * @param inviteCode   The inviteCode that can be used to join the event.
+     * @param name         The name/title of the event.
+     * @param dateTime     The date and time of the event.
      * @param participants A set of the participants in the event.
      */
     public Event(
@@ -156,7 +158,8 @@ public class Event {
     /**
      * Generate a new invite code.
      * The code is generated using a new SecureRandom instance.
-     * The generated code is then automatically set as the new invite code for this event.
+     * The generated code is then automatically set as the new invite code for this
+     * event.
      */
     public void generateInviteCode() {
         CodeGenerator generator = new CodeGenerator(new SecureRandom());
@@ -174,8 +177,10 @@ public class Event {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Event event = (Event) o;
         return Objects.equals(getName(), event.getName())
                 && Objects.equals(getInviteCode(), event.getInviteCode())

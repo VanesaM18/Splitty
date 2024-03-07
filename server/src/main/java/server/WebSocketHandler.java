@@ -113,10 +113,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
                                  WebSocketMessage request) throws Exception {
         switch (request.getEndpoint()) {
             case "api/events" -> {
-                if ("GET".equals(request.getMethod())) {
-                    List<Event> all = eventController.getAll();
-                    this.returnResult(session, request, all);
-                } else if ("POST".equals(request.getMethod())) {
+                if ("POST".equals(request.getMethod())) {
                     Event event = objectMapper.convertValue(request.getData(), Event.class);
                     ResponseEntity<Event> savedEvent = eventController.add(event);
                     this.returnResult(session, request, savedEvent.getBody());
