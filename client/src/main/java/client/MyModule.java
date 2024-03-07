@@ -44,9 +44,16 @@ public class MyModule implements Module {
      * @throws URISyntaxException if the server address is wrong
      */
     @Provides
-    public MyWebSocketClient provideMyWebSocketClient() throws URISyntaxException {
-        ConfigLoader configLoader = new ConfigLoader();
-        String serverAddress = configLoader.getProperty("server.address");
-        return new MyWebSocketClient(new URI(serverAddress));
+    public MyWebSocketClient provideMyWebSocketClient(ConfigLoader config) throws URISyntaxException {
+        return new MyWebSocketClient(config);
+    }
+
+    /**
+     * Provides the configuration file for our client
+     * @return the instance referring to our configuration file
+     */
+    @Provides
+    public ConfigLoader provideConfigLoader() {
+        return new ConfigLoader();
     }
 }

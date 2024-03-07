@@ -134,6 +134,7 @@ public class MainCtrl {
         primaryStage.setTitle("Start page");
         primaryStage.setScene(startPage);
         startPageCtrl.clearFields();
+        startPageCtrl.refresh();
     }
 
     /**
