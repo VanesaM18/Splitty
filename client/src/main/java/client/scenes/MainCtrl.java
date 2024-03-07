@@ -78,6 +78,10 @@ public class MainCtrl {
         this.overviewEventCtrl = data.getOverviewEvent().getKey();
         this.overviewEvent = new Scene(data.getOverviewEvent().getValue());
 
+        primaryStage.setOnCloseRequest(event -> {
+            startPageCtrl.updateConfig();
+        });
+
         // showLogin();
         showStartScreen();
         primaryStage.show();
@@ -134,6 +138,7 @@ public class MainCtrl {
         primaryStage.setTitle("Start page");
         primaryStage.setScene(startPage);
         startPageCtrl.clearFields();
+        startPageCtrl.refresh();
     }
 
     /**

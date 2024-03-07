@@ -1,10 +1,12 @@
 package client;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.inject.Inject;
 import commons.WebSocketMessage;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -17,10 +19,11 @@ public class MyWebSocketClient extends WebSocketClient {
 
     /**
      * Creates a websocket class instance
-     * @param serverUri the address to connect to
+     * @param config the config that will be used to get the address of the server
      */
-    public MyWebSocketClient(URI serverUri) {
-        super(serverUri);
+    @Inject
+    public MyWebSocketClient(ConfigLoader config) throws URISyntaxException {
+        super(new URI((String) config.getProperty("address")));
         this.objectMapper = new ObjectMapper();
         try {
             this.connectSync();
