@@ -24,14 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class EventController {
 
     private final EventRepository repo;
+
     private final AdminRepository adminRepository;
 
     /**
-     * Create a new event controller.
-     * This controller contains all api endpoints that have to do with events.
+     * Create a new event controller. This controller contains all api endpoints that have to do
+     * with events.
      *
-     * @param repo            The repository used for creating, reading, updating
-     *                        and deleting events.
+     * @param repo The repository used for creating, reading, updating and deleting events.
      * @param adminRepository The repository used for checking authentication.
      */
     public EventController(EventRepository repo, AdminRepository adminRepository) {
@@ -42,10 +42,12 @@ public class EventController {
     /**
      * API Endpoint for getting a list of all events.
      *
+     * @param auth The authorization header.
      * @return a list of all events.
      */
-    @GetMapping(path = { "", "/" })
-    public ResponseEntity<List<Event>> getAll(@RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
+    @GetMapping(path = {"", "/"})
+    public ResponseEntity<List<Event>> getAll(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
         // This is a protected API endpoint.
         if (!isAuthenticated(auth)) {
             return ResponseEntity.badRequest().build();
@@ -69,7 +71,8 @@ public class EventController {
             // headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
             // headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;
             // filename=events_dump.json");
-            // headers.add("Access-Control-Expose-Headers", "Content-Disposition");
+            // headers.add("Access-Control-Expose-Headers",
+            // "Content-Disposition");
             return ResponseEntity.ok().body(jsonDump); // .headers(headers)
         } catch (JsonProcessingException e) {
             // TODO log error
@@ -78,13 +81,12 @@ public class EventController {
     }
 
     /**
-     * API Endpoint for getting a certain event based on its ID.
-     * The ID of an Event is equal to its invite code.
+     * API Endpoint for getting a certain event based on its ID. The ID of an Event is equal to its
+     * invite code.
      *
      * @param id The ID of the event to get.
-     * @return the event with matching ID, if it exists.
-     *         If it does not exist or an invalid ID is given, a 404 error is
-     *         returned.
+     * @return the event with matching ID, if it exists. If it does not exist or an invalid ID is
+     *         given, a 404 error is returned.
      */
     @GetMapping("/{id}")
     public ResponseEntity<Event> getById(@PathVariable("id") String id) {
@@ -100,12 +102,11 @@ public class EventController {
      * @param event The event to create.
      * @return The saved version of the event, or a 400 error page.
      */
-    @PostMapping(path = { "", "/" })
+    @PostMapping(path = {"", "/"})
     public ResponseEntity<Event> add(@RequestBody Event event) {
-        // NOTE: The participant list must be empty, people can only be added to an
-        // event by using the invite code.
-        if (isNullOrEmpty(event.getName())
-                || event.getDateTime() == null
+        // NOTE: The participant list must be empty, people can only be added to an event by using
+        // the invite code.
+        if (isNullOrEmpty(event.getName()) || event.getDateTime() == null
                 || (event.getParticipants() != null && !event.getParticipants().isEmpty())) {
             return ResponseEntity.badRequest().build();
         }
@@ -125,14 +126,13 @@ public class EventController {
      * Update a pre-existing event
      *
      * @param updatedEvent The event to update.
-     * @param id           The ID of the event to update.
+     * @param id The ID of the event to update.
      * @return The updated version of the event, or a 400 error page.
      */
-    @PutMapping(path = { "/{id}" })
+    @PutMapping(path = {"/{id}"})
     public ResponseEntity<Event> update(@PathVariable("id") String id,
             @RequestBody Event updatedEvent) {
-        if (isNullOrEmpty(updatedEvent.getName())
-                || updatedEvent.getDateTime() == null
+        if (isNullOrEmpty(updatedEvent.getName()) || updatedEvent.getDateTime() == null
                 || !id.equals(updatedEvent.getInviteCode())) {
             return ResponseEntity.badRequest().build();
         }
@@ -154,13 +154,12 @@ public class EventController {
     /**
      * Delete an event based on its ID.
      *
-     * @param id   The ID of the event to delete.
+     * @param id The ID of the event to delete.
      * @param auth The authorization header.
      * @return a 200 OK on success, or a 400 error page on failure.
      */
-    @DeleteMapping(path = { "/{id}" })
-    public ResponseEntity<String> delete(
-            @PathVariable("id") String id,
+    @DeleteMapping(path = {"/{id}"})
+    public ResponseEntity<String> delete(@PathVariable("id") String id,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
         if (isNullOrEmpty(id) || !repo.existsByInviteCodeEqualsIgnoreCase(id)) {
             return ResponseEntity.badRequest().build();

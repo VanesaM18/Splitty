@@ -11,12 +11,15 @@ import java.util.Set;
 public class Event {
 
     private static final int INVITE_CODE_LENGTH = 6;
+
     @Id
     private String inviteCode;
+
     private String name;
+
     private LocalDateTime dateTime;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Participant> participants;
 
     /**
@@ -37,21 +40,18 @@ public class Event {
         this.expenses = expenses;
     }
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Expense> expenses;
 
     /**
      * Create an Event with the given details.
      *
-     * @param inviteCode   The inviteCode that can be used to join the event.
-     * @param name         The name/title of the event.
-     * @param dateTime     The date and time of the event.
+     * @param inviteCode The inviteCode that can be used to join the event.
+     * @param name The name/title of the event.
+     * @param dateTime The date and time of the event.
      * @param participants A set of the participants in the event.
      */
-    public Event(
-            String inviteCode,
-            String name,
-            LocalDateTime dateTime,
+    public Event(String inviteCode, String name, LocalDateTime dateTime,
             Set<Participant> participants) {
         this.name = name;
         this.inviteCode = inviteCode;
@@ -136,8 +136,7 @@ public class Event {
     }
 
     /**
-     * Get the invite code for this event.
-     * This code can be used to join this event.
+     * Get the invite code for this event. This code can be used to join this event.
      *
      * @return the invite code for this event.
      */
@@ -146,8 +145,7 @@ public class Event {
     }
 
     /**
-     * Set the invite code for this event.
-     * This code can be used to join this event.
+     * Set the invite code for this event. This code can be used to join this event.
      *
      * @param inviteCode The new invite code.
      */
@@ -156,10 +154,8 @@ public class Event {
     }
 
     /**
-     * Generate a new invite code.
-     * The code is generated using a new SecureRandom instance.
-     * The generated code is then automatically set as the new invite code for this
-     * event.
+     * Generate a new invite code. The code is generated using a new SecureRandom instance. The
+     * generated code is then automatically set as the new invite code for this event.
      */
     public void generateInviteCode() {
         CodeGenerator generator = new CodeGenerator(new SecureRandom());
@@ -169,8 +165,8 @@ public class Event {
     }
 
     /**
-     * Check whether two events are the same.
-     * Returns true iff o is also an event, and if all properties match.
+     * Check whether two events are the same. Returns true iff o is also an event, and if all
+     * properties match.
      *
      * @param o The object to compare to this event.
      * @return true iff o is also an event, and all properties match.
