@@ -19,6 +19,7 @@ public class MyWebSocketClient extends WebSocketClient {
 
     /**
      * Creates a websocket class instance
+     * @param config the config that will be used to get the address of the server
      */
     @Inject
     public MyWebSocketClient(ConfigLoader config) throws URISyntaxException {

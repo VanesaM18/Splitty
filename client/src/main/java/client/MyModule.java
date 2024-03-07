@@ -23,7 +23,6 @@ import com.google.inject.Module;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 
 public class MyModule implements Module {
@@ -40,11 +39,13 @@ public class MyModule implements Module {
 
     /**
      * Instantiate the websocket dependency
+     * @param config the ConfigLoader instance which will be injected
      * @return the instantiated websocket
      * @throws URISyntaxException if the server address is wrong
      */
     @Provides
-    public MyWebSocketClient provideMyWebSocketClient(ConfigLoader config) throws URISyntaxException {
+    public MyWebSocketClient provideMyWebSocketClient(ConfigLoader config)
+        throws URISyntaxException {
         return new MyWebSocketClient(config);
     }
 

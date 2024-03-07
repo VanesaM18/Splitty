@@ -9,11 +9,19 @@ import commons.Event;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Button;
 import javafx.scene.control.Alert;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.util.Callback;
 
@@ -41,6 +49,7 @@ public class StartScreenCtrl implements Initializable {
      *
      * @param server   An instance of ServerUtils for server-related operations.
      * @param mainCtrl An instance of MainCtrl for coordinating with the main controller.
+     * @param config An instance of ConfigLoader used to update/read the config file
      */
     @Inject
     public StartScreenCtrl(ServerUtils server, MainCtrl mainCtrl, ConfigLoader config) {
@@ -75,10 +84,35 @@ public class StartScreenCtrl implements Initializable {
                             setGraphic(null);
                         } else {
                             Event e = server.getEventById(item);
-                            setText(e.getName());
-                            Button deleteButton = new Button("X");
+                            HBox hBox = new HBox(10);
+                            hBox.setAlignment(Pos.CENTER_LEFT);
+                            Text text = new Text(e.getName());
+                            Button deleteButton = new Button();
                             deleteButton.setOnAction(event -> listView.getItems().remove(item));
-                            setGraphic(deleteButton);
+                            deleteButton.setAlignment(Pos.CENTER);
+                            Button joinButton = new Button();
+                            joinButton.setOnAction(event -> {
+                                joinEventField.setText(item);
+                            });
+                            HBox.setHgrow(joinButton, Priority.ALWAYS);
+                            Region region = new Region();
+                            HBox.setHgrow(region, Priority.ALWAYS);
+                            attachImage(joinButton, "/assets/up-right-arrow.png", 15, 15);
+                            attachImage(deleteButton, "/assets/circle-xmark-solid.png", 15, 15);
+                            joinButton.setStyle("-fx-background-color: transparent; " +
+                                "-fx-padding: 0; -fx-border: none;");
+                            deleteButton.setStyle("-fx-background-color: transparent; " +
+                                "-fx-padding: 0; -fx-border: none;");
+                            joinButton.setOnMouseEntered(event ->
+                                joinButton.setCursor(Cursor.HAND));
+                            joinButton.setOnMouseExited(event ->
+                                joinButton.setCursor(Cursor.DEFAULT));
+                            deleteButton.setOnMouseEntered(event ->
+                                deleteButton.setCursor(Cursor.HAND));
+                            deleteButton.setOnMouseExited(event ->
+                                deleteButton.setCursor(Cursor.DEFAULT));
+                            hBox.getChildren().addAll(text, joinButton, region, deleteButton);
+                            setGraphic(hBox);
                         }
                     }
                 };
@@ -122,6 +156,7 @@ public class StartScreenCtrl implements Initializable {
      * Redirects the user to the admin view
      */
     public void goToAdmin() {
+        updateConfig();
         mainCtrl.showLogin();
     }
     /**
@@ -135,15 +170,21 @@ public class StartScreenCtrl implements Initializable {
     /**
      * Updates the config after the client entered an event or created a new one
      */
-    private void updateConfig() {
+    public void updateConfig() {
         ObservableList<String> items = recentEvents.getItems();
         List<String> lst = new ArrayList<>();
+        int cnt = 0;
         if (lastEvent != null) {
             lst.add(lastEvent);
+            cnt += 1;
         }
         for (String item: items) {
-            if (item != null) {
+            if (item != null && !item.equals(lastEvent)) {
                 lst.add(item);
+                cnt += 1;
+            }
+            if (cnt == 5) {
+                break;
             }
         }
         lastEvent = null;
@@ -155,7 +196,28 @@ public class StartScreenCtrl implements Initializable {
      * Refreshes the event list
      */
     public void refresh() {
-        updateConfig();
         recentEvents.getItems().setAll((List<String>) config.getProperty("recentEvents"));
+    }
+
+    /**
+     * Attaches an image to a button
+     * @param but the button to attach to
+     * @param url the url to the image
+     * @param height the height of the image
+     * @param width the width of the image
+     */
+    public void attachImage(Button but, String url, float height, float width) {
+        URL imageUrl = getClass().getResource(url);
+        if (imageUrl != null) {
+            Image image = new Image(imageUrl.toExternalForm());
+            ImageView imageView = new ImageView(image);
+            imageView.setFitHeight(height);
+            imageView.setFitWidth(width);
+            imageView.setPickOnBounds(true);
+            imageView.setPreserveRatio(true);
+            but.setGraphic(imageView);
+        } else {
+            System.out.println("Image URL is null. Check the path to the image file.");
+        }
     }
 }
