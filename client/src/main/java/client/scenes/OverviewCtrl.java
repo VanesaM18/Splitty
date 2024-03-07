@@ -101,6 +101,7 @@ public class OverviewCtrl {
      */
     public void addParticipant() {
         mainCtrl.showParticipants(this.ev, true, "");
+        refresh();
     }
 
     /**
@@ -134,9 +135,14 @@ public class OverviewCtrl {
         }
         warning.setText("");
         String name = participantNames.getSelectionModel().getSelectedItem();
-        ev.removeParticipant(name);
+        Participant participant = null;
+        for(Participant p : ev.getParticipants()) {
+            if (p.getName().equals(name)) participant = p;
+        }
+        ev.removeParticipant(participant);
         server.updateEvent(ev);
-        refresh();
         mainCtrl.showOverviewEvent(ev);
+        refresh();
+        //server.deleteParticipant(participant);
     }
 }

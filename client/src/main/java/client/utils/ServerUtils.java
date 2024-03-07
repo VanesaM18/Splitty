@@ -79,8 +79,8 @@ public class ServerUtils {
             request.setData(p);
             WebSocketMessage response = sendMessageWithResponse(request);
             return objectMapper.convertValue(response.getData(), Participant.class);
-        } catch (ExecutionException | InterruptedException ignored) {
-
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -105,7 +105,7 @@ public class ServerUtils {
         WebSocketMessage request = new WebSocketMessage();
         request.setEndpoint("api/participants/id");
         request.setMethod("DELETE");
-        request.setData(p);
+        request.setData(p.getId());
         sendMessageWithoutResponse(request);
     }
 
