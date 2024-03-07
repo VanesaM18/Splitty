@@ -109,4 +109,11 @@ public class LoginCtrl {
     public void openSettings () {
         mainCtrl.showSettings();
     }
+
+    /**
+     * Goes back to the starting page.
+     */
+    public void back() {
+        mainCtrl.showStartScreen();
+    }
 }

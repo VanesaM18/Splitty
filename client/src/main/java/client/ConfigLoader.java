@@ -1,35 +1,82 @@
 package client;
 
-import java.io.InputStream;
-import java.util.Properties;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.core.type.TypeReference;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ConfigLoader {
-    private Properties configProperties;
+    private Map<String, Object> configMap;
+    private final ObjectMapper objectMapper;
+    private final Path configPath;
 
     /**
      * Creates a class which loads the config file
      */
     public ConfigLoader() {
-        loadProperties();
+        this.configMap = new HashMap<>();
+        this.configPath = getConfigFilePath();
+        this.objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        loadConfig();
+    }
+    /**
+        Saves the config at the specific path
+    **/
+    public void saveConfig() {
+        try {
+            Files.createDirectories(configPath.getParent());
+            objectMapper.writeValue(configPath.toFile(), configMap);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
-     * Parses the file with the properties
+     *  Loads the config from the specific file path, if it does not exist it tries to create it
      */
-    private void loadProperties() {
-        try (InputStream input =
-                 getClass().getClassLoader().getResourceAsStream("config.properties")) {
-            configProperties = new Properties();
-
-            if (input == null) {
-                System.out.println("Unable to find config.properties");
-                return;
+    public void loadConfig() {
+        try {
+            if (!Files.exists(configPath)) {
+                configMap.put("address", "ws://localhost:8080/ws");
+                configMap.put("recentEvents", new ArrayList<String>());
+                saveConfig();
+            } else {
+                configMap = objectMapper.readValue(configPath.toFile(), new TypeReference<>() {});
             }
-
-            configProperties.load(input);
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Tries to get the config file from the specific folder
+     * @return the path to the config file
+     */
+    private static Path getConfigFilePath() {
+        String userHome = System.getProperty("user.home");
+        String osName = System.getProperty("os.name").toLowerCase();
+        Path configDir;
+
+        if (osName.contains("win")) {
+            configDir = Paths.get(System.getenv("APPDATA"), "Splitty");
+        } else if (osName.contains("mac")) {
+            configDir = Paths.get(userHome, "Library", "Application Support", "Splitty");
+        } else {
+            String configHome = System.getenv("XDG_CONFIG_HOME");
+            if (configHome != null && !configHome.isEmpty()) {
+                configDir = Paths.get(configHome, "Splitty");
+            } else {
+                configDir = Paths.get(userHome, ".config", "Splitty");
+            }
+        }
+
+        return configDir.resolve("config.json");
     }
 
     /**
@@ -37,7 +84,16 @@ public class ConfigLoader {
      * @param key the property
      * @return the value of the property
      */
-    public String getProperty(String key) {
-        return configProperties.getProperty(key);
+    public Object getProperty(String key) {
+        return configMap.get(key);
+    }
+
+    /**
+     * Updates the config with a new (key, value) pair
+     * @param key the key of the new property
+     * @param value the value of the new property
+     */
+    public void updateProperty(String key, Object value) {
+        configMap.put(key, value);
     }
 }

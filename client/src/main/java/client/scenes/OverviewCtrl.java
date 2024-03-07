@@ -97,4 +97,11 @@ public class OverviewCtrl {
     public void addParticipant() {
         mainCtrl.showParticipants(this.ev);
     }
+
+    /**
+     * Goes back to the starting page.
+     */
+    public void back() {
+        mainCtrl.showStartScreen();
+    }
 }

@@ -87,4 +87,11 @@ public class ManagementCtrl {
      */
     public void refresh() {
     }
+
+    /**
+     * Goes back to the starting page.
+     */
+    public void home() {
+        mainCtrl.showStartScreen();
+    }
 }
