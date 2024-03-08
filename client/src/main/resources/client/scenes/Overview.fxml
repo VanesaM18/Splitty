@@ -18,7 +18,7 @@
             <Font name="System Bold" size="31.0" />
          </font>
       </Label>
-      <Button layoutX="360.0" layoutY="56.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="102.0" text="Send invites" />
+      <Button layoutX="360.0" layoutY="56.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="102.0" onAction="#sendInvites" text="Send invites" />
       <Label layoutX="48.0" layoutY="93.0" prefHeight="39.0" prefWidth="119.0" text="Participants">
          <font>
             <Font name="System Bold" size="20.0" />
