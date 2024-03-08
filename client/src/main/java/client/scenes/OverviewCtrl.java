@@ -9,12 +9,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.net.URL;
+import java.util.Optional;
 
 public class OverviewCtrl {
 
@@ -107,6 +109,24 @@ public class OverviewCtrl {
      */
     public void sendInvites() {
         mainCtrl.showInviteScreen(this.ev);
+    }
+
+    /**
+     * Open a dialog with an input box to allow the user to enter a new event name. The name that is
+     * entered is made to be new event name. If the user cancels the dialog, no action is performed.
+     */
+    public void editTitle() {
+        TextInputDialog dialog = new TextInputDialog(ev.getName());
+        dialog.setTitle("Change event name");
+
+        Optional<String> newNameOpt = dialog.showAndWait();
+        if (!newNameOpt.isPresent()) {
+            return;
+        }
+
+        ev.setName(newNameOpt.get());
+        server.updateEvent(ev);
+        refresh();
     }
 
     /**
