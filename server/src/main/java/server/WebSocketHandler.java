@@ -5,6 +5,7 @@ import commons.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -13,32 +14,47 @@ import jakarta.websocket.server.ServerEndpoint;
 import server.api.AdminController;
 import server.api.EventController;
 import server.api.ParticipantController;
-import server.api.QuoteController;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
 @ServerEndpoint(value = "/ws", configurator = ContextConfigurator.class)
 public class WebSocketHandler extends TextWebSocketHandler {
-
+    private static List<WebSocketSession> sessions = new ArrayList<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private AdminController adminController;
     @Autowired
     private EventController eventController;
     @Autowired
-    private QuoteController quoteController;
-    @Autowired
     private ParticipantController participantController;
-
-    {
-        objectMapper.registerModule(new JavaTimeModule());
-    }
 
     /**
      * Creates a class for handling the websocket connection
      */
     public WebSocketHandler() {
         this.objectMapper.registerModule(new JavaTimeModule());
+    }
+
+    /**
+     * Adds a new client to the lists of clients
+     * @param session the client session
+     */
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        sessions.add(session);
+    }
+
+    /**
+     * Removes a client from the list of clients if he disconnected or errored
+     * @param session the client session
+     * @param status the closed status
+     */
+    @Override
+    public void afterConnectionClosed(WebSocketSession session,
+                                      CloseStatus status) throws Exception {
+        sessions.remove(session);
     }
 
     /**
@@ -68,39 +84,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
             handleAdminApi(session, request);
         } else if (endPoint.contains("/events")) {
             handleEventsApi(session, request);
-        } else if (endPoint.contains("/quotes")) {
-            handleQuotesApi(session, request);
         } else if (endPoint.contains("/participants")) {
             handleParticipantsApi (session, request);
-        }
-    }
-    /**
-     * Handles the quotes specific to /api/quote
-     * @param session the channel used to communicate
-     * @param request the parsed request
-     * @throws Exception if the message can't be parsed
-     */
-    private void handleQuotesApi(WebSocketSession session,
-                                 WebSocketMessage request) throws Exception {
-        switch (request.getEndpoint()) {
-            case "api/quotes" -> {
-                if ("GET".equals(request.getMethod())) {
-                    List<Quote> all = quoteController.getAll();
-                    this.returnResult(session, request, all);
-                } else if ("POST".equals(request.getMethod())) {
-                    Quote quote = objectMapper.convertValue(request.getData(), Quote.class);
-                    ResponseEntity<Quote> savedEvent = quoteController.add(quote);
-                    this.returnResult(session, request, savedEvent.getBody());
-                }
-            }
-            case "api/quotes/id" -> {
-                if ("GET".equals(request.getMethod())) {
-                    List<Object> parameters = request.getParameters();
-                    long id = (long) parameters.get(0);
-                    ResponseEntity<Quote> quote = quoteController.getById(id);
-                    this.returnResult(session, request, quote.getBody());
-                }
-            }
         }
     }
     /**
