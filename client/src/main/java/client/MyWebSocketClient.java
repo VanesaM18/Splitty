@@ -83,7 +83,6 @@ public class MyWebSocketClient extends WebSocketClient {
         try {
             WebSocketMessage response = objectMapper.readValue(message, WebSocketMessage.class);
             if (response.getEndpoint() != null && response.getEndpoint().equals("events/refresh")) {
-                System.out.println("Received sendData");
                 Platform.runLater(mainCtrl::refreshData);
                 return;
             }

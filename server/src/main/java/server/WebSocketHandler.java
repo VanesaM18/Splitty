@@ -129,7 +129,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private void handleClientUpdate(WebSocketSession session, WebSocketMessage request) {
         if (Objects.equals(request.getEndpoint(), "api/client")) {
             if ("POST".equals(request.getMethod())) {
-                System.out.println(request.getData());
                 connectionToEvent.put(session, (String)request.getData());
             }
         }
