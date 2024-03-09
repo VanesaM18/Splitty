@@ -169,4 +169,11 @@ public class MainCtrl {
         primaryStage.setScene(invite);
         inviteScreenCtrl.refresh();
     }
+
+    /**
+     * Refreshes data on client side
+     */
+    public void refreshData() {
+        overviewEventCtrl.refresh();
+    }
 }

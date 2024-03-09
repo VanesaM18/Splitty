@@ -15,13 +15,17 @@ import server.api.AdminController;
 import server.api.EventController;
 import server.api.ParticipantController;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @ServerEndpoint(value = "/ws", configurator = ContextConfigurator.class)
 public class WebSocketHandler extends TextWebSocketHandler {
-    private static List<WebSocketSession> sessions = new ArrayList<>();
+    private static final HashMap<WebSocketSession, String> connectionToEvent = new HashMap<>();
+    private static final List<WebSocketSession> sessions = new ArrayList<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private AdminController adminController;
@@ -54,6 +58,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session,
                                       CloseStatus status) throws Exception {
+        connectionToEvent.remove(session);
         sessions.remove(session);
     }
 
@@ -86,8 +91,50 @@ public class WebSocketHandler extends TextWebSocketHandler {
             handleEventsApi(session, request);
         } else if (endPoint.contains("/participants")) {
             handleParticipantsApi (session, request);
+        } else if (endPoint.contains("/client")) {
+            handleClientUpdate(session, request);
+        }
+        updateClients(session, request);
+    }
+
+    /**
+     * Send requests to refresh views to all clients that are in the same event as the current one
+     * Only if the request was POST/PUT/DELETE which means an update
+     * @param session the session of the current user
+     * @param request the request from the current user
+     * @throws IOException if the object mapper fails
+     */
+    private void updateClients(WebSocketSession session,
+                               WebSocketMessage request) throws IOException {
+        if (connectionToEvent.containsKey(session) && !Objects.equals(request.getMethod(), "GET")) {
+            WebSocketMessage toUpdate = new WebSocketMessage();
+            toUpdate.setEndpoint("events/refresh");
+            TextMessage convMessage = new TextMessage(objectMapper.writeValueAsString(toUpdate));
+            String inviteCode = connectionToEvent.get(session);
+            for (WebSocketSession ses: sessions) {
+                if (connectionToEvent.containsKey(ses)
+                    && connectionToEvent.get(ses).equals(inviteCode)
+                    && ses != session) {
+                    ses.sendMessage(convMessage);
+                }
+            }
         }
     }
+
+    /**
+     * Process the special requests from the client
+     * @param session the client session used to identify the client
+     * @param request the request message
+     */
+    private void handleClientUpdate(WebSocketSession session, WebSocketMessage request) {
+        if (Objects.equals(request.getEndpoint(), "api/client")) {
+            if ("POST".equals(request.getMethod())) {
+                System.out.println(request.getData());
+                connectionToEvent.put(session, (String)request.getData());
+            }
+        }
+    }
+
     /**
      * Handles the event specific to /api/event
      * @param session the channel used to communicate

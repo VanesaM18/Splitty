@@ -80,9 +80,6 @@ public class Main extends Application {
         var settings = FXML.load(SettingsCtrl.class, locale, "client", "scenes", "Settings.fxml");
         var management =
                 FXML.load(ManagementCtrl.class, locale, "client", "scenes", "Management.fxml");
-        var overview = FXML.load(QuoteOverviewCtrl.class, locale, "client", "scenes",
-                "QuoteOverview.fxml");
-        var add = FXML.load(AddQuoteCtrl.class, locale, "client", "scenes", "AddQuote.fxml");
         var loginAdmin = FXML.load(LoginCtrl.class, locale, "client", "scenes", "LoginView.fxml");
         var participants = FXML.load(AddParticipantsCtrl.class, locale, "client", "scenes",
                 "AddParticipants.fxml");
@@ -96,8 +93,6 @@ public class Main extends Application {
         InitializationData data = new InitializationData();
         data.setSettings(settings);
         data.setManagement(management);
-        data.setOverview(overview);
-        data.setAdd(add);
         data.setLogin(loginAdmin);
         data.setParticipant(participants);
         data.setStartPage(startPage);
