@@ -27,6 +27,8 @@ public class OverviewCtrl {
     @FXML
     private Label title;
     @FXML
+    private Button editTitleButton;
+    @FXML
     private Button addParticipantButton;
     @FXML
     private Button editParticipantButton;
@@ -62,6 +64,7 @@ public class OverviewCtrl {
      */
     public void refresh() {
         title.setText(ev.getName());
+        this.attachImage(editTitleButton, "/assets/pen-solid.png");
         this.attachImage(addParticipantButton, "/assets/user-plus-solid.png");
         this.attachImage(editParticipantButton, "/assets/pen-solid.png");
         if (this.ev != null) {
