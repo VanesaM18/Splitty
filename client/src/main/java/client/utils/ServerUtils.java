@@ -261,6 +261,19 @@ public class ServerUtils {
             return Optional.empty();
         }
     }
+
+    /**
+     * Send to the websocket the eventId to which the current client it's connected too
+     * @param eventId the inviteCode of the event
+     */
+    public void sendUpdateStatus(String eventId) {
+        WebSocketMessage requestMessage = new WebSocketMessage();
+        requestMessage.setEndpoint("api/client");
+        requestMessage.setMethod("POST");
+        requestMessage.setData(eventId);
+        sendMessageWithoutResponse(requestMessage);
+    }
+
     /**
      * Send a message to the server with awaiting response
      * @param request the message body

@@ -128,6 +128,7 @@ public class StartScreenCtrl implements Initializable {
         event.generateInviteCode();
         event = server.addEvent(event);
         lastEvent = event.getInviteCode();
+        server.sendUpdateStatus(lastEvent);
         updateConfig();
         clearFields();
         mainCtrl.showOverviewEvent(event);
@@ -147,6 +148,7 @@ public class StartScreenCtrl implements Initializable {
             clearFields();
             return;
         }
+        server.sendUpdateStatus(eventCode);
         lastEvent = eventCode;
         updateConfig();
         clearFields();

@@ -59,6 +59,9 @@ public class OverviewCtrl {
      * Method to refresh the current view.
      */
     public void refresh() {
+        if (ev == null) {
+            return;
+        }
         title.setText(ev.getName());
         this.attachImage(addParticipantButton, "/assets/user-plus-solid.png");
         this.attachImage(editParticipantButton, "/assets/pen-solid.png");
