@@ -186,10 +186,7 @@ public class EventController {
         if (login == null) {
             return false;
         }
-
-        // Calculate the password hash
-        PasswordHasher hasher = new PasswordHasher();
-        String hash = hasher.compute(login.getPassword());
+        String hash = login.getPassword();
 
         // Check if the admin exists and the password matches.
         Admin admin = adminRepository.findById(login.getUsername()).orElse(null);

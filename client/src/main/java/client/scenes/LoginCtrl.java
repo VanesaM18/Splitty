@@ -61,6 +61,7 @@ public class LoginCtrl {
      */
     public void logIn() {
         Admin admin = getAdmin();
+
         String result = server.loginAdmin(admin);
         if (!Objects.equals(result, "Login successfully")) {
             var alert = new Alert(Alert.AlertType.ERROR);

@@ -1,30 +1,40 @@
 package client.scenes;
 
 import commons.Event;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import client.utils.ServerUtils;
-import javafx.scene.control.ListView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class ManagementCtrl {
     private final MainCtrl mainCtrl;
     private final ServerUtils server;
-    @FXML
-    private ListView<Event> events;
+    private List<Event> events;
 
     @FXML
     private Button jsonDumpButton;
+    @FXML
+    private TableView<Event> eventsTable;
+    @FXML
+    private TableColumn<Event, String> titleColumn;
+//    @FXML
+//    private TableColumn<Event, String> creationDateColumn;
+//    @FXML
+//    private TableColumn<Event, String> lastActivityColumn;
 
 
     /**
@@ -38,16 +48,24 @@ public class ManagementCtrl {
         this.server = server;
     }
 
-    //@FXML
     public void showEvents() {
         var optional = server.getAllEvents();
         if (optional.isPresent()) {
-            ObservableList<Event> events = FXCollections.observableArrayList(optional.get());
-            this.events.getItems().setAll(events);
+            this.events = optional.get();
+            ObservableList<Event> events = this.events.stream()
+                    .collect(Collectors.collectingAndThen(Collectors.toList(), FXCollections::observableArrayList));
+            this.eventsTable.getItems().setAll(events);
+            this.titleColumn.setCellValueFactory(w -> new SimpleStringProperty(w.getValue().getName()));
         } else {
             showAlert(AlertType.ERROR, "Fetch Events Error", "Failed to fetch events");
         }
     }
+
+    @FXML
+    public void handleOrderBySelection() {
+        showEvents();
+    }
+
     /**
      * handles the action when the JSON dump button is clicked in the management overview
      * invokes the server's 'handleJsonDump' method and displays a corresponding alert
@@ -99,7 +117,7 @@ public class ManagementCtrl {
     }
 
     /**
-     * method for refreshing the settings page
+     * method for refreshing the events list view
      */
     public void refresh() {
         showEvents();

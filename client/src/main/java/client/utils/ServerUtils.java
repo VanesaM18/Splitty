@@ -336,7 +336,7 @@ public class ServerUtils {
     private static void setAuth(String username, String password) {
         String credentials = username + ":" + password;
         String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
-        String authHeaderString = "Basic" + encodedCredentials;
+        String authHeaderString = "Basic " + encodedCredentials;
         auth = Optional.of(authHeaderString);
     }
 
