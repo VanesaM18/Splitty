@@ -31,10 +31,10 @@ public class ManagementCtrl {
     private TableView<Event> eventsTable;
     @FXML
     private TableColumn<Event, String> titleColumn;
-//    @FXML
-//    private TableColumn<Event, String> creationDateColumn;
-//    @FXML
-//    private TableColumn<Event, String> lastActivityColumn;
+    @FXML
+    private TableColumn<Event, String> creationDateColumn;
+    @FXML
+    private TableColumn<Event, String> lastActivityColumn;
 
 
     /**
@@ -52,13 +52,21 @@ public class ManagementCtrl {
         var optional = server.getAllEvents();
         if (optional.isPresent()) {
             this.events = optional.get();
-            ObservableList<Event> events = this.events.stream()
-                    .collect(Collectors.collectingAndThen(Collectors.toList(), FXCollections::observableArrayList));
-            this.eventsTable.getItems().setAll(events);
-            this.titleColumn.setCellValueFactory(w -> new SimpleStringProperty(w.getValue().getName()));
+            initializeTable();
         } else {
             showAlert(AlertType.ERROR, "Fetch Events Error", "Failed to fetch events");
         }
+    }
+
+    private void initializeTable() {
+        ObservableList<Event> events = this.events.stream().collect(Collectors
+                .collectingAndThen(Collectors.toList(), FXCollections::observableArrayList));
+        this.eventsTable.getItems().setAll(events);
+        this.titleColumn.setCellValueFactory(w -> new SimpleStringProperty(w.getValue().getName()));
+        this.creationDateColumn.setCellValueFactory(w ->
+                new SimpleStringProperty(w.getValue().getCreationTime().toString()));
+        this.lastActivityColumn.setCellValueFactory(w ->
+                new SimpleStringProperty(w.getValue().getLastUpdateTime().toString()));
     }
 
     @FXML

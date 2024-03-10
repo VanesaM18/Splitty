@@ -10,12 +10,11 @@
     <children>
         <Button fx:id="jsonDumpButton" onAction="#handleJsonDumpButton" text="%jsondump_button" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0" />
         <Text layoutX="223.0" layoutY="44.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%management_title" wrappingWidth="153.97265625" />
-        <ComboBox fx:id="orderByComboBox" layoutX="436.0" layoutY="52.0" onAction="#handleOrderBySelection" prefWidth="150.0" />
         <TableView fx:id="eventsTable" layoutX="32.0" layoutY="80.0" prefHeight="263.0" prefWidth="554.0">
             <columns>
-                <TableColumn fx:id="titleColumn" prefWidth="226.0" text="Title" />
-<!--                <TableColumn fx:id="creationDateColumn" prefWidth="191.0" text="Creation Date" />-->
-<!--                <TableColumn fx:id="lastActivityColumn" prefWidth="195.0" text="Last Activity" />-->
+                <TableColumn fx:id="titleColumn" prefWidth="167.0" text="Title" />
+                <TableColumn fx:id="creationDateColumn" minWidth="0.0" prefWidth="205.0" text="Creation Date" />
+                <TableColumn fx:id="lastActivityColumn" prefWidth="181.0" text="Last Activity" />
             </columns>
         </TableView>
         <Button layoutX="24.0" layoutY="351.0" mnemonicParsing="false" onAction="#home" text="Home" />
