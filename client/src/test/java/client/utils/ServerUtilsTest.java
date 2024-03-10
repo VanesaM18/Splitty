@@ -48,9 +48,8 @@ class ServerUtilsTest {
     }
 
     /**
-     * Static method to create and send a completely random event.
-     *
-     * @return The randomly generated event.
+     * method to create and send a random event.
+     * @return randomly generated event.
      */
     public static Event generateRandomEvent() {
         String randomInviteCode = UUID.randomUUID().toString().substring(0, INVITE_CODE_LENGTH);
@@ -59,17 +58,12 @@ class ServerUtilsTest {
         Set<Participant> randomParticipants = generateRandomParticipants();
 
         Event randomEvent = new Event(randomInviteCode, randomName, randomDateTime, randomParticipants);
-        randomEvent.generateInviteCode(); // Optional: Generate a new invite code
-
-        // You may perform additional actions or validations here before "sending" the event
-
+        randomEvent.generateInviteCode();
         return randomEvent;
     }
 
     private static Set<Participant> generateRandomParticipants() {
         Set<Participant> participants = new HashSet<>();
-
-        // Generate a random number of participants between 1 and 10
         int numberOfParticipants = (int) (Math.random() * 10) + 1;
 
         for (int i = 1; i <= numberOfParticipants; i++) {
@@ -85,12 +79,10 @@ class ServerUtilsTest {
     }
 
     private static String generateRandomIban() {
-        // Replace this with your logic to generate a random IBAN
         return "IBAN" + UUID.randomUUID().toString().substring(0, 10);
     }
 
     private static String generateRandomBic() {
-        // Replace this with your logic to generate a random BIC
         return "BIC" + UUID.randomUUID().toString().substring(0, 8);
     }
 
