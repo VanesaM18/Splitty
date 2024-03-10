@@ -18,6 +18,9 @@ import commons.Event;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.util.Locale;
+import java.util.Optional;
+
 public class MainCtrl {
 
     private Stage primaryStage;
@@ -40,6 +43,7 @@ public class MainCtrl {
 
     private InviteScreenCtrl inviteScreenCtrl;
     private Scene invite;
+    private Optional<Locale> currentLocale = Optional.empty();
 
 
     /**
@@ -175,5 +179,13 @@ public class MainCtrl {
      */
     public void refreshData() {
         overviewEventCtrl.refresh();
+    }
+
+    public void setCurrentLocale(Locale locale) {
+        this.currentLocale = Optional.of(locale);
+    }
+
+    public Optional<Locale> getCurrentLocale() {
+        return this.currentLocale;
     }
 }

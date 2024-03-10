@@ -15,8 +15,13 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -58,15 +63,26 @@ public class ManagementCtrl {
         }
     }
 
+    private final Function<LocalDateTime, String> formatDate = dateTime -> {
+        var locale = extractLocale();
+        var formatterBuilder = new DateTimeFormatterBuilder()
+                .appendPattern("yyyy-MM-dd HH:mm");
+        var formatter = locale != null
+                ? formatterBuilder.toFormatter(locale)
+                : formatterBuilder.toFormatter();
+        String formatted = dateTime.format(formatter);
+        return formatted;
+    };
+
     private void initializeTable() {
         ObservableList<Event> events = this.events.stream().collect(Collectors
                 .collectingAndThen(Collectors.toList(), FXCollections::observableArrayList));
         this.eventsTable.getItems().setAll(events);
         this.titleColumn.setCellValueFactory(w -> new SimpleStringProperty(w.getValue().getName()));
         this.creationDateColumn.setCellValueFactory(w ->
-                new SimpleStringProperty(w.getValue().getCreationTime().toString()));
+                new SimpleStringProperty(formatDate.apply(w.getValue().getCreationTime())));
         this.lastActivityColumn.setCellValueFactory(w ->
-                new SimpleStringProperty(w.getValue().getLastUpdateTime().toString()));
+                new SimpleStringProperty(formatDate.apply(w.getValue().getLastUpdateTime())));
     }
 
     @FXML
@@ -136,5 +152,10 @@ public class ManagementCtrl {
      */
     public void home() {
         mainCtrl.showStartScreen();
+    }
+
+    private Locale extractLocale() {
+        var optionalLocale = this.mainCtrl.getCurrentLocale();
+        return optionalLocale.orElse(null);
     }
 }

@@ -12,6 +12,7 @@ import server.BasicAuthParser;
 import server.database.AdminRepository;
 import server.database.EventRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -138,7 +139,7 @@ public class EventController {
         return repo.findById(id).map(existingEvent -> {
             existingEvent.setName(updatedEvent.getName());
             existingEvent.setDateTime(updatedEvent.getDateTime());
-
+            existingEvent.setLastUpdateTime(LocalDateTime.now());
             if (updatedEvent.getParticipants() != null) {
                 existingEvent.getParticipants().clear();
                 existingEvent.getParticipants().addAll(updatedEvent.getParticipants());
