@@ -181,10 +181,18 @@ public class MainCtrl {
         overviewEventCtrl.refresh();
     }
 
+    /**
+     * sets the current locale of the application
+     * @param locale current locale of the application
+     */
     public void setCurrentLocale(Locale locale) {
         this.currentLocale = Optional.of(locale);
     }
 
+    /**
+     * gets the current locale of the application
+     * @return current locale of the application
+     */
     public Optional<Locale> getCurrentLocale() {
         return this.currentLocale;
     }

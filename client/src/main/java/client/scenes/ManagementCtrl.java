@@ -8,7 +8,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import client.utils.ServerUtils;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 
 import javax.inject.Inject;
@@ -16,9 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
@@ -53,6 +50,12 @@ public class ManagementCtrl {
         this.server = server;
     }
 
+    /**
+     * fetches and displays all events from the server.
+     * if all events are successfully retrieved,
+     * updates the local events list and initializes the display table.
+     * if retrieval fails, shows an error alert.
+     */
     public void showEvents() {
         var optional = server.getAllEvents();
         if (optional.isPresent()) {
@@ -83,11 +86,6 @@ public class ManagementCtrl {
                 new SimpleStringProperty(formatDate.apply(w.getValue().getCreationTime())));
         this.lastActivityColumn.setCellValueFactory(w ->
                 new SimpleStringProperty(formatDate.apply(w.getValue().getLastUpdateTime())));
-    }
-
-    @FXML
-    public void handleOrderBySelection() {
-        showEvents();
     }
 
     /**

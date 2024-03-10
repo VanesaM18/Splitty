@@ -169,7 +169,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
 //        }
 //    }
 
-    private void handleEventsApi(WebSocketSession session, WebSocketMessage request) throws Exception {
+    private void handleEventsApi(WebSocketSession session,
+                                 WebSocketMessage request) throws Exception {
         String endpoint = request.getEndpoint();
         String method = request.getMethod();
 
@@ -180,7 +181,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    private void handleEventsEndpoint(WebSocketSession session, WebSocketMessage request, String method) throws Exception {
+    private void handleEventsEndpoint(WebSocketSession session,
+                                      WebSocketMessage request, String method) throws Exception {
         switch (method) {
             case "POST" -> handleAddEvent(session, request);
             case "PUT" -> handleUpdateEvent(session, request);
@@ -190,25 +192,29 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
 
     private void handleEventsByIdEndpoint(WebSocketSession session,
-                                          WebSocketMessage request, String method) throws Exception {
+                                          WebSocketMessage request,
+                                          String method) throws Exception {
         if ("GET".equals(method)) {
             handleGetEventById(session, request);
         }
     }
 
-    private void handleAddEvent(WebSocketSession session, WebSocketMessage request) throws Exception {
+    private void handleAddEvent(WebSocketSession session,
+                                WebSocketMessage request) throws Exception {
         Event event = objectMapper.convertValue(request.getData(), Event.class);
         ResponseEntity<Event> savedEvent = eventController.add(event);
         returnResult(session, request, savedEvent.getBody());
     }
 
-    private void handleUpdateEvent(WebSocketSession session, WebSocketMessage request) throws Exception {
+    private void handleUpdateEvent(WebSocketSession session,
+                                   WebSocketMessage request) throws Exception {
         Event event = objectMapper.convertValue(request.getData(), Event.class);
         ResponseEntity<Event> savedEvent = eventController.update(event.getInviteCode(), event);
         returnResult(session, request, savedEvent.getBody());
     }
 
-    private void handleGetEvents(WebSocketSession session, WebSocketMessage request) throws Exception {
+    private void handleGetEvents(WebSocketSession session,
+                                 WebSocketMessage request) throws Exception {
         String authHeader = request.getAuthHeader();
         ResponseEntity<List<Event>> events = eventController.getAll(authHeader);
         if (events != null) {
@@ -216,7 +222,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    private void handleGetEventById(WebSocketSession session, WebSocketMessage request) throws Exception {
+    private void handleGetEventById(WebSocketSession session,
+                                    WebSocketMessage request) throws Exception {
         List<Object> parameters = request.getParameters();
         String id = (String) parameters.get(0);
 

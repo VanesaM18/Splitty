@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import commons.Admin;
 import commons.Event;
-import commons.PasswordHasher;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -70,7 +69,8 @@ public class EventController {
             String jsonDump = objectMapper.writeValueAsString(events);
             // HttpHeaders headers = new HttpHeaders();
             // headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
-            // headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=events_dump.json");
+            // headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;
+            // filename=events_dump.json");
             // headers.add("Access-Control-Expose-Headers", "Content-Disposition");
             return ResponseEntity.ok().body(jsonDump); // .headers(headers)
         } catch (JsonProcessingException e) {
