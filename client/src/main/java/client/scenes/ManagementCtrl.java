@@ -1,10 +1,14 @@
 package client.scenes;
 
+import commons.Event;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import client.utils.ServerUtils;
+import javafx.scene.control.ListView;
 import javafx.stage.FileChooser;
 
 import javax.inject.Inject;
@@ -16,6 +20,8 @@ import java.io.PrintWriter;
 public class ManagementCtrl {
     private final MainCtrl mainCtrl;
     private final ServerUtils server;
+    @FXML
+    private ListView<Event> events;
 
     @FXML
     private Button jsonDumpButton;
@@ -32,6 +38,16 @@ public class ManagementCtrl {
         this.server = server;
     }
 
+    //@FXML
+    public void showEvents() {
+        var optional = server.getAllEvents();
+        if (optional.isPresent()) {
+            ObservableList<Event> events = FXCollections.observableArrayList(optional.get());
+            this.events.getItems().setAll(events);
+        } else {
+            showAlert(AlertType.ERROR, "Fetch Events Error", "Failed to fetch events");
+        }
+    }
     /**
      * handles the action when the JSON dump button is clicked in the management overview
      * invokes the server's 'handleJsonDump' method and displays a corresponding alert
@@ -86,6 +102,7 @@ public class ManagementCtrl {
      * method for refreshing the settings page
      */
     public void refresh() {
+        showEvents();
     }
 
     /**

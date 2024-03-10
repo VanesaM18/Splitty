@@ -60,7 +60,8 @@ public class LoginCtrl {
      * Tries to log in with the credentials provided by the user in the UI
      */
     public void logIn() {
-        String result = server.loginAdmin(getAdmin());
+        Admin admin = getAdmin();
+        String result = server.loginAdmin(admin);
         if (!Objects.equals(result, "Login successfully")) {
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initModality(Modality.APPLICATION_MODAL);
@@ -69,6 +70,7 @@ public class LoginCtrl {
             return;
         }
         // login successful redirect to where needed
+        ServerUtils.adminAuth(admin);
         clearFields();
         mainCtrl.showManagementOverview();
     }

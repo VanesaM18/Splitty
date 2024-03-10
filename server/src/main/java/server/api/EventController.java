@@ -69,10 +69,8 @@ public class EventController {
             String jsonDump = objectMapper.writeValueAsString(events);
             // HttpHeaders headers = new HttpHeaders();
             // headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
-            // headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;
-            // filename=events_dump.json");
-            // headers.add("Access-Control-Expose-Headers",
-            // "Content-Disposition");
+            // headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=events_dump.json");
+            // headers.add("Access-Control-Expose-Headers", "Content-Disposition");
             return ResponseEntity.ok().body(jsonDump); // .headers(headers)
         } catch (JsonProcessingException e) {
             // TODO log error

@@ -26,19 +26,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import commons.WebSocketMessage;
+import jakarta.ws.rs.HttpMethod;
 
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 public class ServerUtils {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final MyWebSocketClient webSocketClient;
+    private static Optional<String> auth = Optional.empty();
 
     /**
      * Creates an instance of ServerUtils which is used for communicating with the server
@@ -262,6 +261,26 @@ public class ServerUtils {
         }
     }
 
+    public Optional<List<Event>> getAllEvents() {
+        if(isAuthenticated()) {
+            try {
+                WebSocketMessage requestMessage = new WebSocketMessage();
+                requestMessage.setEndpoint("api/events");
+                requestMessage.setMethod("GET");
+                requestMessage.setAuthHeader(auth.get());
+                WebSocketMessage response = sendMessageWithResponse(requestMessage);
+                if (response.getData() != null) {
+                    return Optional.of(getObjectMapper().convertValue(response.getData(),
+                            new TypeReference<ArrayList<Event>>() {}));
+                }
+            } catch (ExecutionException | InterruptedException e) {
+                return Optional.empty();
+            }
+        }
+        return Optional.empty();
+    }
+
+
     /**
      * Send to the websocket the eventId to which the current client it's connected too
      * @param eventId the inviteCode of the event
@@ -310,4 +329,18 @@ public class ServerUtils {
         }
     }
 
+    public static boolean isAuthenticated() {
+        return auth.isPresent();
+    }
+
+    private static void setAuth(String username, String password) {
+        String credentials = username + ":" + password;
+        String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
+        String authHeaderString = "Basic" + encodedCredentials;
+        auth = Optional.of(authHeaderString);
+    }
+
+    public static void adminAuth (Admin admin) {
+        setAuth(admin.getUsername(), admin.getPassword());
+    }
 }
