@@ -1,5 +1,7 @@
 package client.scenes;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import commons.Event;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -18,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,6 +40,8 @@ public class ManagementCtrl {
     private TableColumn<Event, String> creationDateColumn;
     @FXML
     private TableColumn<Event, String> lastActivityColumn;
+    @FXML
+    private TableColumn<Event, Button> downloadColumn;
 
 
     /**
@@ -86,6 +91,43 @@ public class ManagementCtrl {
                 new SimpleStringProperty(formatDate.apply(w.getValue().getCreationTime())));
         this.lastActivityColumn.setCellValueFactory(w ->
                 new SimpleStringProperty(formatDate.apply(w.getValue().getLastUpdateTime())));
+        this.downloadColumn.setCellFactory(w -> this.createJsonDownloadButton());
+    }
+
+    private void downloadJsonDumpForEvent(Event event) {
+        ObjectMapper objectMapper = this.server.getObjectMapper();
+        String jsonDump;
+        try {
+            jsonDump = objectMapper.writeValueAsString(event);
+        } catch (JsonProcessingException e) {
+            showAlert(AlertType.ERROR, "JSON Serialization Error",
+                    "Failed to serialize event to JSON: " + e.getMessage());
+            return;
+        }
+        var defaultTitle = "event_" + event.getInviteCode() + "_dump.json";
+        showFileChooser(jsonDump, defaultTitle);
+    }
+
+    private TableCell<Event, Button> createJsonDownloadButton() {
+        return new TableCell<>() {
+            private final Button downloadButton = new Button("download json");
+
+            {
+                downloadButton.setOnAction(event -> {
+                    downloadJsonDumpForEvent(this.getTableView().getItems().get(getIndex()));
+                });
+            }
+            @Override
+            @com.google.inject.Inject
+            protected void updateItem(Button item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(downloadButton);
+                }
+            }
+        };
     }
 
     /**
@@ -95,18 +137,22 @@ public class ManagementCtrl {
     @FXML
     public void handleJsonDumpButton() {
         var optional = server.handleJsonDump();
-        if (optional.isPresent()) {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Save JSON Dump");
-            fileChooser.getExtensionFilters().
-                    add(new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json"));
-            File file = fileChooser.showSaveDialog(null);
+        optional.ifPresentOrElse(dump -> this.showFileChooser(dump, null), () ->
+                showAlert(AlertType.ERROR, "JSON Dump Error", "Failed to retrieve JSON dump"));
+    }
 
-            if (file != null) {
-                saveJsonToFile(optional.get(), file);
-            }
-        } else {
-            showAlert(AlertType.ERROR, "JSON Dump Error", "Failed to retrieve JSON dump");
+    private void showFileChooser(String fileContent, String defaultTitle) {
+        var fileContentOptional = Optional.ofNullable(fileContent);
+        var defaultTitleOptional = Optional.ofNullable(defaultTitle);
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save JSON Dump");
+        fileChooser.getExtensionFilters().
+                add(new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json"));
+        defaultTitleOptional.ifPresent(fileChooser::setInitialFileName);
+        File file = fileChooser.showSaveDialog(null);
+
+        if (file != null) {
+            fileContentOptional.ifPresent(content -> saveJsonToFile(content, file));
         }
     }
 
