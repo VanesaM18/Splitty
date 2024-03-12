@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import commons.Admin;
 import commons.Event;
-import commons.PasswordHasher;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +11,7 @@ import server.BasicAuthParser;
 import server.database.AdminRepository;
 import server.database.EventRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -71,8 +71,7 @@ public class EventController {
             // headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
             // headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;
             // filename=events_dump.json");
-            // headers.add("Access-Control-Expose-Headers",
-            // "Content-Disposition");
+            // headers.add("Access-Control-Expose-Headers", "Content-Disposition");
             return ResponseEntity.ok().body(jsonDump); // .headers(headers)
         } catch (JsonProcessingException e) {
             // TODO log error
@@ -140,7 +139,7 @@ public class EventController {
         return repo.findById(id).map(existingEvent -> {
             existingEvent.setName(updatedEvent.getName());
             existingEvent.setDateTime(updatedEvent.getDateTime());
-
+            existingEvent.setLastUpdateTime(LocalDateTime.now());
             if (updatedEvent.getParticipants() != null) {
                 existingEvent.getParticipants().clear();
                 existingEvent.getParticipants().addAll(updatedEvent.getParticipants());
@@ -188,10 +187,7 @@ public class EventController {
         if (login == null) {
             return false;
         }
-
-        // Calculate the password hash
-        PasswordHasher hasher = new PasswordHasher();
-        String hash = hasher.compute(login.getPassword());
+        String hash = login.getPassword();
 
         // Check if the admin exists and the password matches.
         Admin admin = adminRepository.findById(login.getUsername()).orElse(null);

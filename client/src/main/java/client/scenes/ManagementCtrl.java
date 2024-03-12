@@ -1,8 +1,11 @@
 package client.scenes;
 
+import commons.Event;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import client.utils.ServerUtils;
 import javafx.stage.FileChooser;
@@ -11,14 +14,29 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.List;
+import java.util.Locale;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 public class ManagementCtrl {
     private final MainCtrl mainCtrl;
     private final ServerUtils server;
+    private List<Event> events;
 
     @FXML
     private Button jsonDumpButton;
+    @FXML
+    private TableView<Event> eventsTable;
+    @FXML
+    private TableColumn<Event, String> titleColumn;
+    @FXML
+    private TableColumn<Event, String> creationDateColumn;
+    @FXML
+    private TableColumn<Event, String> lastActivityColumn;
 
 
     /**
@@ -30,6 +48,44 @@ public class ManagementCtrl {
     public ManagementCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
+    }
+
+    /**
+     * fetches and displays all events from the server.
+     * if all events are successfully retrieved,
+     * updates the local events list and initializes the display table.
+     * if retrieval fails, shows an error alert.
+     */
+    public void showEvents() {
+        var optional = server.getAllEvents();
+        if (optional.isPresent()) {
+            this.events = optional.get();
+            initializeTable();
+        } else {
+            showAlert(AlertType.ERROR, "Fetch Events Error", "Failed to fetch events");
+        }
+    }
+
+    private final Function<LocalDateTime, String> formatDate = dateTime -> {
+        var locale = extractLocale();
+        var formatterBuilder = new DateTimeFormatterBuilder()
+                .appendPattern("yyyy-MM-dd HH:mm");
+        var formatter = locale != null
+                ? formatterBuilder.toFormatter(locale)
+                : formatterBuilder.toFormatter();
+        String formatted = dateTime.format(formatter);
+        return formatted;
+    };
+
+    private void initializeTable() {
+        ObservableList<Event> events = this.events.stream().collect(Collectors
+                .collectingAndThen(Collectors.toList(), FXCollections::observableArrayList));
+        this.eventsTable.getItems().setAll(events);
+        this.titleColumn.setCellValueFactory(w -> new SimpleStringProperty(w.getValue().getName()));
+        this.creationDateColumn.setCellValueFactory(w ->
+                new SimpleStringProperty(formatDate.apply(w.getValue().getCreationTime())));
+        this.lastActivityColumn.setCellValueFactory(w ->
+                new SimpleStringProperty(formatDate.apply(w.getValue().getLastUpdateTime())));
     }
 
     /**
@@ -83,9 +139,10 @@ public class ManagementCtrl {
     }
 
     /**
-     * method for refreshing the settings page
+     * method for refreshing the events list view
      */
     public void refresh() {
+        showEvents();
     }
 
     /**
@@ -93,5 +150,10 @@ public class ManagementCtrl {
      */
     public void home() {
         mainCtrl.showStartScreen();
+    }
+
+    private Locale extractLocale() {
+        var optionalLocale = this.mainCtrl.getCurrentLocale();
+        return optionalLocale.orElse(null);
     }
 }

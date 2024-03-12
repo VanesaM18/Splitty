@@ -18,6 +18,8 @@ public class Event {
     private String name;
 
     private LocalDateTime dateTime;
+    private LocalDateTime creationTime;
+    private LocalDateTime lastUpdateTime;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Participant> participants;
@@ -57,6 +59,8 @@ public class Event {
         this.inviteCode = inviteCode;
         this.dateTime = dateTime;
         this.participants = participants;
+        this.creationTime = LocalDateTime.now();
+        this.lastUpdateTime = LocalDateTime.now();
     }
 
     private Event() {
@@ -151,6 +155,30 @@ public class Event {
      */
     public void setInviteCode(String inviteCode) {
         this.inviteCode = inviteCode;
+    }
+
+    /**
+     * gets the date and time of the event's creation
+     * @return creation date and time of the event
+     */
+    public LocalDateTime getCreationTime() {
+        return creationTime;
+    }
+
+    /**
+     * gets the date and time of the event's last update
+     * @return last update date and time of the event
+     */
+    public LocalDateTime getLastUpdateTime() {
+        return lastUpdateTime;
+    }
+
+    /**
+     * sets the date and time of the event's last update
+     * @param lastUpdateTime last update date and time
+     */
+    public void setLastUpdateTime(LocalDateTime lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
     }
 
     /**
