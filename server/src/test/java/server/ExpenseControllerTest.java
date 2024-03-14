@@ -14,6 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import server.api.ExpenseController;
 import server.database.ExpenseRepository;
+import static org.hamcrest.Matchers.is;
+import jakarta.persistence.EntityNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -91,4 +93,59 @@ public class ExpenseControllerTest {
 
         verify(expenseRepository, never()).save(any(Expense.class));
     }
+
+    @Test
+    public void updateById_existingIdValidUpdate_shouldReturnUpdatedExpense() throws Exception {
+        Expense updatedExpense = new Expense(null, testExpense.getParticipant(), new Monetary(1500, "USD"));
+        updatedExpense.setId(1L);
+
+        when(expenseRepository.getReferenceById(1L)).thenReturn(testExpense);
+        when(expenseRepository.save(any(Expense.class))).thenReturn(updatedExpense);
+
+        String updatedExpenseJson = objectMapper.writeValueAsString(updatedExpense);
+
+        mockMvc.perform(put("/api/expenses/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updatedExpenseJson))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.amount.internalValue", is(1500)));
+
+        verify(expenseRepository, times(1)).save(any(Expense.class));
+    }
+
+    @Test
+    public void updateById_nonExistingId_shouldReturnNotFound() throws Exception {
+        when(expenseRepository.getReferenceById(anyLong())).thenThrow(new EntityNotFoundException());
+
+        Expense updateAttempt = new Expense();
+        updateAttempt.setId(99L);
+
+        mockMvc.perform(put("/api/expenses/{id}", 99L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateAttempt)))
+            .andExpect(status().isNotFound());
+
+        verify(expenseRepository, never()).save(any(Expense.class));
+    }
+
+    @Test
+    public void deleteById_existingId_shouldReturnNoContent() throws Exception {
+        when(expenseRepository.existsById(1L)).thenReturn(true);
+
+        mockMvc.perform(delete("/api/expenses/{id}", 1L))
+            .andExpect(status().isNoContent());
+
+        verify(expenseRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    public void deleteById_nonExistingId_shouldReturnNotFound() throws Exception {
+        when(expenseRepository.existsById(anyLong())).thenReturn(false);
+
+        mockMvc.perform(delete("/api/expenses/{id}", 99L))
+            .andExpect(status().isNotFound());
+
+        verify(expenseRepository, never()).deleteById(99L);
+    }
+
 }
