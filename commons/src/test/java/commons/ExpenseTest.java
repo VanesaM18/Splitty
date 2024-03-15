@@ -23,7 +23,7 @@ public class ExpenseTest {
         var amount = new Monetary(2022, "EUR");
         var date = LocalDate.now();
         Set<Participant> splitBetween = Set.of();
-        var expense = new Expense(event, creator, amount, date, splitBetween);
+        var expense = new Expense(event, "Kobi's Grill", creator, amount, date, splitBetween);
 
         assertEquals(event, expense.getEvent());
         assertEquals(creator, expense.getCreator());
@@ -40,7 +40,7 @@ public class ExpenseTest {
         var date = LocalDate.now();
         Set<Participant> splitBetween = new HashSet<Participant>();
 
-        var expense = new Expense(event, creator, amount, date, splitBetween);
+        var expense = new Expense(event, "OWee", creator, amount, date, splitBetween);
 
         for (Participant p : SOME_PARTICIPANTS) {
             expense.addParticipant(p);

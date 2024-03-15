@@ -42,6 +42,8 @@ public class Expense {
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
+    private String name;
+
     private LocalDate date;
 
     @ManyToMany
@@ -62,8 +64,10 @@ public class Expense {
      * @param amount  The amount of this expense
      * @param date    The date this expense took place
      */
-    public Expense(Event event, Participant creator, Monetary amount, LocalDate date, Set<Participant> splitBetween) {
+    public Expense(Event event, String name, Participant creator, Monetary amount, LocalDate date,
+            Set<Participant> splitBetween) {
         this.event = event;
+        this.name = name;
         this.creator = creator;
         this.amount = amount;
         this.date = date;
@@ -72,6 +76,14 @@ public class Expense {
         } else {
             this.splitBetween = splitBetween;
         }
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
