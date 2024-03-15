@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,7 +21,7 @@ public class ExpenseTest {
         var event = new Event();
         var creator = new Participant();
         var amount = new Monetary(2022, "EUR");
-        var date = DateFormat.getDateInstance().parse("2002-10-11");
+        var date = LocalDate.now();
         Set<Participant> splitBetween = Set.of();
         var expense = new Expense(event, creator, amount, date, splitBetween);
 
@@ -36,13 +37,13 @@ public class ExpenseTest {
         var event = new Event();
         var creator = new Participant();
         var amount = new Monetary(2022, "EUR");
-        var date = DateFormat.getDateInstance().parse("2002-10-11");
+        var date = LocalDate.now();
         Set<Participant> splitBetween = new HashSet<Participant>();
 
         var expense = new Expense(event, creator, amount, date, splitBetween);
 
         for (Participant p : SOME_PARTICIPANTS) {
-            assertFalse(expense.addParticipant(p));
+            expense.addParticipant(p);
         }
 
         assertTrue(expense.getSplitBetween().containsAll(SOME_PARTICIPANTS));

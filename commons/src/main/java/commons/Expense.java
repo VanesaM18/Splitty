@@ -2,14 +2,25 @@ package commons;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import jakarta.persistence.*;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Expense {
@@ -31,7 +42,7 @@ public class Expense {
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
-    private Date date;
+    private LocalDate date;
 
     @ManyToMany
     @JoinTable(name = "EXPENSE_PARTICIPANTS")
@@ -51,7 +62,7 @@ public class Expense {
      * @param amount  The amount of this expense
      * @param date    The date this expense took place
      */
-    public Expense(Event event, Participant creator, Monetary amount, Date date, Set<Participant> splitBetween) {
+    public Expense(Event event, Participant creator, Monetary amount, LocalDate date, Set<Participant> splitBetween) {
         this.event = event;
         this.creator = creator;
         this.amount = amount;
@@ -99,7 +110,7 @@ public class Expense {
      * 
      * @return The date
      */
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
@@ -108,7 +119,7 @@ public class Expense {
      * 
      * @param date the date to set
      */
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
