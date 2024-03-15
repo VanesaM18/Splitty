@@ -129,6 +129,18 @@ public class Expense {
     }
 
     /**
+     * Removes a participant from the set of participants
+     * WARN: IF the expense is constructed with an immutable set, this will error
+     *
+     * @param participant The participant to remove
+     *
+     * @return True if the participant was in the list
+     */
+    public boolean removeParticipant(Participant participant) {
+        return this.splitBetween.remove(participant);
+    }
+
+    /**
      * Get the date associated with this event.
      * 
      * @return The date
