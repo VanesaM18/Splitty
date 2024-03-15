@@ -31,9 +31,14 @@ public class Main extends Application {
 
     private static final Injector INJECTOR = createInjector(new MyModule());
     private static final MyFXML FXML = new MyFXML(INJECTOR);
-    private static final Locale DEFAULT_LOCALE = Locale.of("en", "EN");
+    public static final Locale DEFAULT_LOCALE = Locale.of("en", "EN");
     private static Main instance;
     private Stage stage;
+    private final ConfigLoader configLoader;
+
+    {
+        this.configLoader = INJECTOR.getInstance(ConfigLoader.class);
+    }
 
     /**
      * The main of our client
@@ -58,7 +63,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws IOException {
         instance = this;
         this.stage = primaryStage;
-        this.start(DEFAULT_LOCALE);
+        this.start(configLoader.getLanguage());
     }
 
     /**
@@ -77,6 +82,8 @@ public class Main extends Application {
      * @throws IOException any IO error related
      */
     public void start(Locale locale) throws IOException {
+        this.configLoader.updateProperty("language", locale);
+        this.configLoader.saveConfig();
         var settings = FXML.load(SettingsCtrl.class, locale, "client", "scenes", "Settings.fxml");
         var management =
                 FXML.load(ManagementCtrl.class, locale, "client", "scenes", "Management.fxml");

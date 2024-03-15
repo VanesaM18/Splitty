@@ -25,6 +25,7 @@ public abstract class LanguageTemplate implements Language {
                 if (optionalMain.isPresent()) {
                     try {
                         optionalMain.get().start(locale);
+
                     } catch (IOException e) {
                         //TODO log error
                     }

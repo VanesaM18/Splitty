@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ConfigLoader {
     private Map<String, Object> configMap;
@@ -45,6 +43,7 @@ public class ConfigLoader {
             if (!Files.exists(configPath)) {
                 configMap.put("address", "ws://localhost:8080/ws");
                 configMap.put("recentEvents", new ArrayList<String>());
+                configMap.put("language", Main.DEFAULT_LOCALE);
                 saveConfig();
             } else {
                 configMap = objectMapper.readValue(configPath.toFile(), new TypeReference<>() {});
@@ -96,4 +95,36 @@ public class ConfigLoader {
     public void updateProperty(String key, Object value) {
         configMap.put(key, value);
     }
+
+    /**
+     * gets the language stored in the config file and parses it to a Locale
+     * @return the Locale of the language if parsing is possible,
+     * the default Locale otherwise
+     */
+    public Locale getLanguage() {
+        var props = this.getProperty("language");
+        try {
+            return (Locale) props;
+        } catch (ClassCastException e) {
+            try {
+                String localeString = (String) props;
+                var optionalLocale = parseLocale(localeString);
+                if (optionalLocale.isPresent()) {
+                    return optionalLocale.get();
+                }
+            } catch (ClassCastException ee) {
+
+            }
+        }
+        return Main.DEFAULT_LOCALE;
+    }
+
+    private static Optional<Locale> parseLocale(String localeString) {
+        String[] parts = localeString.split("_");
+        if (parts.length == 2) {
+            return Optional.of(new Locale(parts[0], parts[1]));
+        }
+        return Optional.empty();
+    }
+
 }
