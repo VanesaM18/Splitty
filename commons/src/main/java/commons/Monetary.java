@@ -17,6 +17,11 @@ public class Monetary {
     private Currency currency;
     // 10^(currency fraction digits)
     private long fractionDivider;
+    /**
+     * For object mapper
+     */
+    public Monetary() {
+    }
 
     /**
      * Construct a new Monetary type with only a value

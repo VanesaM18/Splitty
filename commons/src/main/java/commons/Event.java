@@ -143,8 +143,8 @@ public class Event {
     }
 
     /**
-     * Get the invite code for this event. This code can be used to join this event.
-     *
+     * Get the invite code for this event.
+     * This code can be used to join this event.
      * @return the invite code for this event.
      */
     public String getInviteCode() {

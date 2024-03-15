@@ -31,12 +31,16 @@ public class OverviewCtrl {
     @FXML
     private Button addParticipantButton;
     @FXML
+    private Button deleteParticipantButton;
+    @FXML
     private Button editParticipantButton;
     @FXML
     private ListView<String> participantNames;
     private final ObservableList<String> participantNamesObs = FXCollections.observableArrayList();
     @FXML
     private ComboBox<String> participantComboBox;
+    @FXML
+    private Label warning;
 
     /**
      * Controller responsible for handling the quote overview functionality.
@@ -70,6 +74,7 @@ public class OverviewCtrl {
         this.attachImage(editTitleButton, "/assets/pen-solid.png");
         this.attachImage(addParticipantButton, "/assets/user-plus-solid.png");
         this.attachImage(editParticipantButton, "/assets/pen-solid.png");
+        this.attachImage(deleteParticipantButton, "/assets/bin.png");
         if (this.ev != null) {
             this.ev = server.getEventById(ev.getInviteCode());
             participantNamesObs.clear();
@@ -107,7 +112,22 @@ public class OverviewCtrl {
      * window.
      */
     public void addParticipant() {
-        mainCtrl.showParticipants(this.ev);
+        mainCtrl.showParticipants(this.ev, true, "");
+        refresh();
+    }
+
+    /**
+     * Method to edit a new participant.
+     * This method triggers the display of the edit participant window.
+     */
+    public void editParticipant() {
+        if(participantNames.getSelectionModel().getSelectedItem() == null) {
+            warning.setText("First chose a participant.");
+            return;
+        }
+        warning.setText("");
+        mainCtrl.showParticipants(this.ev, false,
+                participantNames.getSelectionModel().getSelectedItem());
     }
 
     /**
@@ -140,5 +160,26 @@ public class OverviewCtrl {
      */
     public void back() {
         mainCtrl.showStartScreen();
+    }
+
+    /**
+     *  Deletes a participant from the event.
+     */
+    public void deleteParticipant() {
+        if(participantNames.getSelectionModel().getSelectedItem() == null) {
+            warning.setText("First chose a participant.");
+            return;
+        }
+        warning.setText("");
+        String name = participantNames.getSelectionModel().getSelectedItem();
+        Participant participant = null;
+        for(Participant p : ev.getParticipants()) {
+            if (p.getName().equals(name)) participant = p;
+        }
+        ev.removeParticipant(participant);
+        server.updateEvent(ev);
+        mainCtrl.showOverviewEvent(ev);
+        refresh();
+        //server.deleteParticipant(participant);
     }
 }

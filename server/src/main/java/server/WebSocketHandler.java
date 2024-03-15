@@ -301,7 +301,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private void handleParticipantsApiByID(WebSocketSession session,
                                            WebSocketMessage request) throws Exception {
         if ("DELETE".equals(request.getMethod())) {
-            long participantId = ((Participant) request.getData()).getId();
+            long participantId = (Long) request.getData();
             ResponseEntity<String> response = participantController.delete(participantId);
             this.returnResult(session, request, response.getBody());
         }
