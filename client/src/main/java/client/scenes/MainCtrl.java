@@ -160,6 +160,7 @@ public class MainCtrl {
      */
     public void showParticipants(Event ev, boolean add, String change) {
         participantsCtrl.setAdd(add);
+        participantsCtrl.setParticipantToChange(null);
         if(!add) editParticipant(ev, change);
         primaryStage.setTitle("Participants: Overview");
         primaryStage.setScene(participants);

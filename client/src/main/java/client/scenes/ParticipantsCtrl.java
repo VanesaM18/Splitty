@@ -74,6 +74,8 @@ public class ParticipantsCtrl {
     public void ok() {
         Participant p = participantToChange;
         try {
+//            if(add) addParticipant();
+//            else editParticipant();
             p = getParticipant();
             if(!uniqueName(ev, p)) {
                 warning.setText("Not a unique name!");
@@ -258,7 +260,13 @@ public class ParticipantsCtrl {
         participantToChange = p;
     }
 
-
+    /**
+     * Sets the participant to be changed when editing.
+     * @param participantToChange participant to be changed.
+     */
+    public void setParticipantToChange(Participant participantToChange) {
+        this.participantToChange = participantToChange;
+    }
 }
 
 
