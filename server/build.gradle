@@ -16,6 +16,7 @@ dependencies {
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2'
 	runtimeOnly 'com.h2database:h2'
 	implementation project(":commons")
 }

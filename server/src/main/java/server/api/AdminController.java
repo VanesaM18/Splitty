@@ -74,7 +74,8 @@ public class AdminController {
      */
     @PostMapping(path = { "", "/" })
     public ResponseEntity<Admin> add(@RequestBody Admin admin) {
-        if (admin.getUsername() == null || repo.existsById(admin.getUsername())) {
+        if (admin.getUsername() == null || admin.getUsername().isEmpty()
+            || repo.existsById(admin.getUsername())) {
             return ResponseEntity.badRequest().build();
         }
 
