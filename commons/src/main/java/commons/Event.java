@@ -21,7 +21,7 @@ public class Event {
     private LocalDateTime creationTime;
     private LocalDateTime lastUpdateTime;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private Set<Participant> participants;
 
     /**
@@ -42,15 +42,15 @@ public class Event {
         this.expenses = expenses;
     }
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private Set<Expense> expenses;
 
     /**
      * Create an Event with the given details.
      *
-     * @param inviteCode The inviteCode that can be used to join the event.
-     * @param name The name/title of the event.
-     * @param dateTime The date and time of the event.
+     * @param inviteCode   The inviteCode that can be used to join the event.
+     * @param name         The name/title of the event.
+     * @param dateTime     The date and time of the event.
      * @param participants A set of the participants in the event.
      */
     public Event(String inviteCode, String name, LocalDateTime dateTime,
@@ -63,7 +63,10 @@ public class Event {
         this.lastUpdateTime = LocalDateTime.now();
     }
 
-    private Event() {
+    /**
+     * For object mapper
+     */
+    public Event() {
         // for object mapper
     }
 
@@ -159,6 +162,7 @@ public class Event {
 
     /**
      * gets the date and time of the event's creation
+     * 
      * @return creation date and time of the event
      */
     public LocalDateTime getCreationTime() {
@@ -167,6 +171,7 @@ public class Event {
 
     /**
      * gets the date and time of the event's last update
+     * 
      * @return last update date and time of the event
      */
     public LocalDateTime getLastUpdateTime() {
@@ -175,6 +180,7 @@ public class Event {
 
     /**
      * sets the date and time of the event's last update
+     * 
      * @param lastUpdateTime last update date and time
      */
     public void setLastUpdateTime(LocalDateTime lastUpdateTime) {
@@ -182,8 +188,10 @@ public class Event {
     }
 
     /**
-     * Generate a new invite code. The code is generated using a new SecureRandom instance. The
-     * generated code is then automatically set as the new invite code for this event.
+     * Generate a new invite code. The code is generated using a new SecureRandom
+     * instance. The
+     * generated code is then automatically set as the new invite code for this
+     * event.
      */
     public void generateInviteCode() {
         CodeGenerator generator = new CodeGenerator(new SecureRandom());
@@ -193,7 +201,8 @@ public class Event {
     }
 
     /**
-     * Check whether two events are the same. Returns true iff o is also an event, and if all
+     * Check whether two events are the same. Returns true iff o is also an event,
+     * and if all
      * properties match.
      *
      * @param o The object to compare to this event.

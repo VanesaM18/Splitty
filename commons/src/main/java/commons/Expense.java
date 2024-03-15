@@ -29,9 +29,10 @@ public class Expense {
     private Long id;
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "value", column = @Column(name = "amount_value")),
-            @AttributeOverride(name = "currency", column = @Column(name = "amount_currency")),
-            @AttributeOverride(name = "fractionDivider", column = @Column(name = "amount_fraction_divider"))
+        @AttributeOverride(name = "value", column = @Column(name = "amount_value")),
+        @AttributeOverride(name = "currency", column = @Column(name = "amount_currency")),
+        @AttributeOverride(name = "fractionDivider",
+                           column = @Column(name = "amount_fraction_divider"))
     })
     private Monetary amount;
     @ManyToOne(optional = false)
@@ -59,10 +60,12 @@ public class Expense {
     /**
      * Create a new expense
      * 
-     * @param event   The event associated with this expense
-     * @param creator The participant that made this expense
-     * @param amount  The amount of this expense
-     * @param date    The date this expense took place
+     * @param event        The event associated with this expense
+     * @param name         The name of the expense
+     * @param creator      The participant that made this expense
+     * @param amount       The amount of this expense
+     * @param date         The date this expense took place
+     * @param splitBetween The participants who will split the bill
      */
     public Expense(Event event, String name, Participant creator, Monetary amount, LocalDate date,
             Set<Participant> splitBetween) {
@@ -78,10 +81,18 @@ public class Expense {
         }
     }
 
+    /**
+     * Gets the name of the expense
+     * @return The name of the expense
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets the name of the expense
+     * @param name The name of the expense
+     */
     public void setName(String name) {
         this.name = name;
     }
