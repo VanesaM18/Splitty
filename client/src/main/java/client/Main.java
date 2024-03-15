@@ -81,8 +81,10 @@ public class Main extends Application {
         var management =
                 FXML.load(ManagementCtrl.class, locale, "client", "scenes", "Management.fxml");
         var loginAdmin = FXML.load(LoginCtrl.class, locale, "client", "scenes", "LoginView.fxml");
-        var participants = FXML.load(AddParticipantsCtrl.class, locale, "client", "scenes",
-                "AddParticipants.fxml");
+
+        var participants =
+                FXML.load(ParticipantsCtrl.class, locale, "client", "scenes", "Participants.fxml");
+
         var startPage =
                 FXML.load(StartScreenCtrl.class, locale, "client", "scenes", "StartScreen.fxml");
         var overviewEvent =
