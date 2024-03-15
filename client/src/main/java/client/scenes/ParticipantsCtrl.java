@@ -74,8 +74,6 @@ public class ParticipantsCtrl {
     public void ok() {
         Participant p = participantToChange;
         try {
-//            if(add) addParticipant();
-//            else editParticipant();
             p = getParticipant();
             if(!uniqueName(ev, p)) {
                 warning.setText("Not a unique name!");

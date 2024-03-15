@@ -8,6 +8,7 @@ public class WebSocketMessage {
     private String method;
     private String endpoint;
     private List<Object> parameters;
+    private String authHeader;
 
     /**
      * Gets parameters list
@@ -81,4 +82,21 @@ public class WebSocketMessage {
     public void setData(Object data) {
         this.data = data;
     }
+
+    /**
+     * get authorization header
+     * @return authorization header
+     */
+    public String getAuthHeader() {
+        return authHeader;
+    }
+
+    /**
+     * sets authorization header
+     * @param authHeader authorization header
+     */
+    public void setAuthHeader(String authHeader) {
+        this.authHeader = authHeader;
+    }
+
 }

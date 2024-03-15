@@ -18,12 +18,9 @@ package client;
 import client.scenes.LoginCtrl;
 import client.scenes.MainCtrl;
 
-import com.google.inject.Binder;
+import com.google.inject.*;
 import com.google.inject.Module;
-import com.google.inject.Provides;
-import com.google.inject.Scopes;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 
 public class MyModule implements Module {
@@ -40,13 +37,25 @@ public class MyModule implements Module {
 
     /**
      * Instantiate the websocket dependency
+     * @param config the ConfigLoader instance which will be injected
+     * @param mainCtrl the Main Controller
      * @return the instantiated websocket
      * @throws URISyntaxException if the server address is wrong
      */
     @Provides
-    public MyWebSocketClient provideMyWebSocketClient() throws URISyntaxException {
-        ConfigLoader configLoader = new ConfigLoader();
-        String serverAddress = configLoader.getProperty("server.address");
-        return new MyWebSocketClient(new URI(serverAddress));
+    @Singleton
+    public MyWebSocketClient provideMyWebSocketClient(ConfigLoader config, MainCtrl mainCtrl)
+        throws URISyntaxException {
+        return new MyWebSocketClient(config, mainCtrl);
+    }
+
+    /**
+     * Provides the configuration file for our client
+     * @return the instance referring to our configuration file
+     */
+    @Provides
+    @Singleton
+    public ConfigLoader provideConfigLoader() {
+        return new ConfigLoader();
     }
 }

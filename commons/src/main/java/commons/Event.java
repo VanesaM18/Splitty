@@ -11,15 +11,22 @@ import java.util.Set;
 public class Event {
 
     private static final int INVITE_CODE_LENGTH = 6;
-    @Id private String inviteCode;
-    private String name;
-    private LocalDateTime dateTime;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade =
-        {CascadeType.PERSIST, CascadeType.MERGE}) private Set<Participant> participants;
+    @Id
+    private String inviteCode;
+
+    private String name;
+
+    private LocalDateTime dateTime;
+    private LocalDateTime creationTime;
+    private LocalDateTime lastUpdateTime;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<Participant> participants;
 
     /**
      * Get expenses with this event
+     * 
      * @return The events' expenses
      */
     public Set<Expense> getExpenses() {
@@ -28,14 +35,14 @@ public class Event {
 
     /**
      * Set the expenses on this event
+     * 
      * @param expenses The expenses to set
      */
     public void setExpenses(Set<Expense> expenses) {
         this.expenses = expenses;
     }
 
-    @OneToMany(fetch = FetchType.EAGER, cascade =
-        {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Expense> expenses;
 
     /**
@@ -46,15 +53,14 @@ public class Event {
      * @param dateTime The date and time of the event.
      * @param participants A set of the participants in the event.
      */
-    public Event(
-            String inviteCode,
-            String name,
-            LocalDateTime dateTime,
+    public Event(String inviteCode, String name, LocalDateTime dateTime,
             Set<Participant> participants) {
         this.name = name;
         this.inviteCode = inviteCode;
         this.dateTime = dateTime;
         this.participants = participants;
+        this.creationTime = LocalDateTime.now();
+        this.lastUpdateTime = LocalDateTime.now();
     }
 
     private Event() {
@@ -134,21 +140,8 @@ public class Event {
     }
 
     /**
-     * Remove a participant from the list of participants for this event.
-     *
-     * @param name the name of the participant to be removed.
-     */
-    public void removeParticipant(String name) {
-        for(Participant p : getParticipants()) {
-            if (p.getName().equals(name)) removeParticipant(p);
-            return;
-        }
-    }
-
-    /**
      * Get the invite code for this event.
      * This code can be used to join this event.
-     *
      * @return the invite code for this event.
      */
     public String getInviteCode() {
@@ -156,8 +149,7 @@ public class Event {
     }
 
     /**
-     * Set the invite code for this event.
-     * This code can be used to join this event.
+     * Set the invite code for this event. This code can be used to join this event.
      *
      * @param inviteCode The new invite code.
      */
@@ -166,9 +158,32 @@ public class Event {
     }
 
     /**
-     * Generate a new invite code.
-     * The code is generated using a new SecureRandom instance.
-     * The generated code is then automatically set as the new invite code for this event.
+     * gets the date and time of the event's creation
+     * @return creation date and time of the event
+     */
+    public LocalDateTime getCreationTime() {
+        return creationTime;
+    }
+
+    /**
+     * gets the date and time of the event's last update
+     * @return last update date and time of the event
+     */
+    public LocalDateTime getLastUpdateTime() {
+        return lastUpdateTime;
+    }
+
+    /**
+     * sets the date and time of the event's last update
+     * @param lastUpdateTime last update date and time
+     */
+    public void setLastUpdateTime(LocalDateTime lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
+    }
+
+    /**
+     * Generate a new invite code. The code is generated using a new SecureRandom instance. The
+     * generated code is then automatically set as the new invite code for this event.
      */
     public void generateInviteCode() {
         CodeGenerator generator = new CodeGenerator(new SecureRandom());
@@ -178,16 +193,18 @@ public class Event {
     }
 
     /**
-     * Check whether two events are the same.
-     * Returns true iff o is also an event, and if all properties match.
+     * Check whether two events are the same. Returns true iff o is also an event, and if all
+     * properties match.
      *
      * @param o The object to compare to this event.
      * @return true iff o is also an event, and all properties match.
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Event event = (Event) o;
         return Objects.equals(getName(), event.getName())
                 && Objects.equals(getInviteCode(), event.getInviteCode())

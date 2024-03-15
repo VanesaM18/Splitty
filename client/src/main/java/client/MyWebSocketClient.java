@@ -1,11 +1,15 @@
 package client;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
+import client.scenes.MainCtrl;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.inject.Inject;
 import commons.WebSocketMessage;
+import javafx.application.Platform;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,14 +18,18 @@ public class MyWebSocketClient extends WebSocketClient {
     private ConcurrentHashMap<String, CompletableFuture<WebSocketMessage>> pendingRequests
         = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper;
+    private final MainCtrl mainCtrl;
 
     /**
      * Creates a websocket class instance
-     * @param serverUri the address to connect to
+     * @param config the config that will be used to get the address of the server
+     * @param mainCtrl the main controller used to refresh client view
      */
-    public MyWebSocketClient(URI serverUri) {
-        super(serverUri);
+    @Inject
+    public MyWebSocketClient(ConfigLoader config, MainCtrl mainCtrl) throws URISyntaxException {
+        super(new URI((String) config.getProperty("address")));
         this.objectMapper = new ObjectMapper();
+        this.mainCtrl = mainCtrl;
         try {
             this.connectSync();
         } catch (InterruptedException e) {
@@ -74,6 +82,10 @@ public class MyWebSocketClient extends WebSocketClient {
     public void onMessage(String message) {
         try {
             WebSocketMessage response = objectMapper.readValue(message, WebSocketMessage.class);
+            if (response.getEndpoint() != null && response.getEndpoint().equals("events/refresh")) {
+                Platform.runLater(mainCtrl::refreshData);
+                return;
+            }
             CompletableFuture<WebSocketMessage> future = pendingRequests.remove(response.getId());
             if (future != null) {
                 future.complete(response);

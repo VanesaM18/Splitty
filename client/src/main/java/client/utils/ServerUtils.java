@@ -26,19 +26,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import commons.WebSocketMessage;
 
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 public class ServerUtils {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final MyWebSocketClient webSocketClient;
+    private static Optional<String> auth = Optional.empty();
 
     /**
      * Creates an instance of ServerUtils which is used for communicating with the server
@@ -261,6 +259,47 @@ public class ServerUtils {
             return Optional.empty();
         }
     }
+
+    /**
+     * retrieves a list of events from the server via WebSocket.
+     * if authentication is successful,
+     * sends a GET request to the "api/events" endpoint with the authentication header.
+     * parses and returns the list of events received in the response.
+     * @return an Optional containing the list of events if successful,
+     * otherwise an empty Optional.
+     */
+    public Optional<List<Event>> getAllEvents() {
+        if(isAuthenticated()) {
+            try {
+                WebSocketMessage requestMessage = new WebSocketMessage();
+                requestMessage.setEndpoint("api/events");
+                requestMessage.setMethod("GET");
+                requestMessage.setAuthHeader(auth.get());
+                WebSocketMessage response = sendMessageWithResponse(requestMessage);
+                if (response.getData() != null) {
+                    return Optional.of(getObjectMapper().convertValue(response.getData(),
+                            new TypeReference<ArrayList<Event>>() {}));
+                }
+            } catch (ExecutionException | InterruptedException e) {
+                return Optional.empty();
+            }
+        }
+        return Optional.empty();
+    }
+
+
+    /**
+     * Send to the websocket the eventId to which the current client it's connected too
+     * @param eventId the inviteCode of the event
+     */
+    public void sendUpdateStatus(String eventId) {
+        WebSocketMessage requestMessage = new WebSocketMessage();
+        requestMessage.setEndpoint("api/client");
+        requestMessage.setMethod("POST");
+        requestMessage.setData(eventId);
+        sendMessageWithoutResponse(requestMessage);
+    }
+
     /**
      * Send a message to the server with awaiting response
      * @param request the message body
@@ -297,4 +336,33 @@ public class ServerUtils {
         }
     }
 
+    /**
+     * checks if the user is a currently authenticated admin.
+     * @return true if authenticated, false otherwise.
+     */
+    public static boolean isAuthenticated() {
+        return auth.isPresent();
+    }
+
+    /**
+     * sets the authentication credentials using the provided username and password.
+     * encodes the credentials using Base64 and constructs the authentication header.
+     * @param username username for authentication.
+     * @param password password for authentication.
+     */
+    private static void setAuth(String username, String password) {
+        String credentials = username + ":" + password;
+        String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
+        String authHeaderString = "Basic " + encodedCredentials;
+        auth = Optional.of(authHeaderString);
+    }
+
+    /**
+     * authenticates the application using the provided admin credentials.
+     * sets the authentication credentials based on the admin's username and password.
+     * @param admin Admin object containing authentication details.
+     */
+    public static void adminAuth (Admin admin) {
+        setAuth(admin.getUsername(), admin.getPassword());
+    }
 }
