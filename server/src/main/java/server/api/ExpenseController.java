@@ -44,7 +44,7 @@ public class ExpenseController {
     @PostMapping("/")
     public ResponseEntity<String> addExpense(@RequestBody Expense newExpense) {
         if (newExpense == null
-            || newExpense.getParticipant() == null
+            || newExpense.getCreator() == null
             || newExpense.getEvent() == null || newExpense.getAmount() == null) {
             return ResponseEntity.badRequest().body("POSTed expense is incomplete");
         }
@@ -97,8 +97,8 @@ public class ExpenseController {
                 .badRequest()
                 .body("Cannot change event of expense, delete this and create a new one instead");
         }
-        if (expense.getParticipant() != null) {
-            oldExpense.setParticipant(expense.getParticipant());
+        if (expense.getCreator() != null) {
+            oldExpense.setCreator(expense.getCreator());
         }
         return ResponseEntity.ok(repo.save(oldExpense));
     }

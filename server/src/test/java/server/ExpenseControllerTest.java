@@ -17,6 +17,7 @@ import server.database.ExpenseRepository;
 import static org.hamcrest.Matchers.is;
 import jakarta.persistence.EntityNotFoundException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -45,7 +46,12 @@ public class ExpenseControllerTest {
     public void setup() {
         Participant participant = new Participant("John Doe", "john.doe@example.com", "IBAN123", "BIC456");
         participant.setId(1L);
-        testExpense = new Expense(new Event( "ABCDEF", "Event 1", LocalDateTime.now(), new HashSet<>()), participant, new Monetary(1000, "USD"));
+        testExpense = new Expense(
+            new Event("ABCDEF", "Event 1", LocalDateTime.now(), new HashSet<>()),
+            "Foo",
+            participant,
+            new Monetary(1000, "USD"),
+            LocalDate.now(), Set.of());
         testExpense.setId(1L);
     }
 
@@ -96,7 +102,7 @@ public class ExpenseControllerTest {
 
     @Test
     public void updateById_existingIdValidUpdate_shouldReturnUpdatedExpense() throws Exception {
-        Expense updatedExpense = new Expense(null, testExpense.getParticipant(), new Monetary(1500, "USD"));
+        Expense updatedExpense = new Expense(null, "Bar", testExpense.getCreator(), new Monetary(1500, "USD"), LocalDate.now(), Set.of());
         updatedExpense.setId(1L);
 
         when(expenseRepository.getReferenceById(1L)).thenReturn(testExpense);
