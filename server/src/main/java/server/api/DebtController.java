@@ -17,6 +17,9 @@ package server.api;
 
 import commons.Debt;
 
+import commons.Expense;
+import commons.Monetary;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import server.database.DebtRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -35,17 +39,19 @@ import java.util.Random;
 public class DebtController {
 
     private final Random random;
-    private final DebtRepository repo;
-
+    private static DebtRepository repo;
+    private static ExpenseController expenseController;
     /**
      * Constructs a DebtController with the specified random generator and debt repository.
-     * @param random An instance of Random for generating random values.
-     * @param repo An instance of DebtRepository for accessing debt data.
+     *
+     * @param random            An instance of Random for generating random values.
+     * @param repo              An instance of DebtRepository for accessing debt data.
+     * @param expenseController Allows us to use the expense controller
      */
-    public DebtController(Random random, DebtRepository repo) {
+    public DebtController(Random random, DebtRepository repo, ExpenseController expenseController) {
         this.random = random;
-
         this.repo = repo;
+        this.expenseController = expenseController;
     }
 
     /**
@@ -69,6 +75,14 @@ public class DebtController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(repo.findById(id).get());
+    }
+
+    public static Monetary calculateTotalDebt(@PathVariable("id") long id) {
+        List<Debt> debts = Collections.singletonList(repo.getById(id)); // Assuming you have a method to retrieve debts by event ID
+        Monetary totalDebt = debts.stream()
+                .map(Debt::getAmount)
+                .reduce(Monetary.ZERO, Monetary::add);
+        return totalDebt;
     }
 
     /**

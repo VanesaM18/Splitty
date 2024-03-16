@@ -13,6 +13,7 @@ import java.util.Currency;
 /** Abstraction for monetary values */
 @Embeddable
 public class Monetary {
+    public static final Monetary ZERO = Monetary(0);
     private long iValue;
     private Currency currency;
     // 10^(currency fraction digits)
