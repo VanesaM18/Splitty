@@ -216,6 +216,9 @@ public class MainCtrl {
         return this.currentLocale;
     }
 
+    /**
+     * Displays the open debts event
+     */
     public void showOpenDebts() {
         primaryStage.setTitle("Open Debts");
         primaryStage.setScene(openDebt);

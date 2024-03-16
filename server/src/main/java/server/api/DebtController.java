@@ -17,9 +17,8 @@ package server.api;
 
 import commons.Debt;
 
-import commons.Expense;
+
 import commons.Monetary;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -77,8 +76,14 @@ public class DebtController {
         return ResponseEntity.ok(repo.findById(id).get());
     }
 
+    /**
+     * calculate the total amount of debt
+     *
+     * @param id the debt id
+     * @return monetary total debt
+     */
     public static Monetary calculateTotalDebt(@PathVariable("id") long id) {
-        List<Debt> debts = Collections.singletonList(repo.getById(id)); // Assuming you have a method to retrieve debts by event ID
+        List<Debt> debts = Collections.singletonList(repo.getById(id));
         Monetary totalDebt = debts.stream()
                 .map(Debt::getAmount)
                 .reduce(Monetary.ZERO, Monetary::add);

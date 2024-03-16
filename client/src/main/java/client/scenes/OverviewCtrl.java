@@ -182,6 +182,10 @@ public class OverviewCtrl {
         refresh();
         //server.deleteParticipant(participant);
     }
+
+    /**
+     * Goes to open debts page
+     */
     public void settleDebt() {
         mainCtrl.showOpenDebts();
     }

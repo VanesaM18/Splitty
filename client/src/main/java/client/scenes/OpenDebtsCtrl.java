@@ -1,7 +1,6 @@
 package client.scenes;
 
 import com.google.inject.Inject;
-import commons.Monetary;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -20,19 +19,28 @@ public class OpenDebtsCtrl {
     private final MainCtrl mainCtrl;
     @FXML
     private Button clearDebtButton;
+
+    /**
+     * constructs open debts
+     * @param mainCtrl an instance of MainCtrl
+     */
     @Inject
     public OpenDebtsCtrl(MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
     }
 
+    /**
+     * Initializes the UI by fetching and displaying the total debt from the server.
+     */
     public void initialize() {
         long id = 0;
         try {
-            URL url = new URL("http://localhost:8080/debts/total"); // Adjust the URL as per your server configuration
+            URL url = new URL("http://localhost:8080/debts/total");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection
+                    .getInputStream()));
             StringBuilder response = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
@@ -53,8 +61,8 @@ public class OpenDebtsCtrl {
     }
     private void createClearDebtButton() {
         clearDebtButton = new Button("Clear Total Debt");
-        clearDebtButton.setLayoutX(200); // Adjust the layout coordinates as needed
-        clearDebtButton.setLayoutY(200); // Adjust the layout coordinates as needed
+        clearDebtButton.setLayoutX(200);
+        clearDebtButton.setLayoutY(200);
         clearDebtButton.setOnAction(event -> clearTotalDebt());
         anchorPane.getChildren().add(clearDebtButton);
     }
