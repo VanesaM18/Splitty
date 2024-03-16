@@ -18,18 +18,13 @@ package client.utils;
 import client.MyWebSocketClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.inject.Inject;
-import commons.Admin;
-import commons.Event;
-import commons.Quote;
-import commons.Participant;
+import commons.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-
-import commons.WebSocketMessage;
 
 import java.util.concurrent.ExecutionException;
 
@@ -39,7 +34,9 @@ public class ServerUtils {
     private static Optional<String> auth = Optional.empty();
 
     /**
-     * Creates an instance of ServerUtils which is used for communicating with the server
+     * Creates an instance of ServerUtils which is used for communicating with the
+     * server
+     * 
      * @param webSocketClient the websocket to communicate through
      */
     @Inject
@@ -49,7 +46,9 @@ public class ServerUtils {
     }
 
     /**
-     * gets the ObjectMapper instance for handling JSON serialization/deserialization
+     * gets the ObjectMapper instance for handling JSON
+     * serialization/deserialization
+     * 
      * @return ObjectMapper instance
      */
     public ObjectMapper getObjectMapper() {
@@ -58,6 +57,7 @@ public class ServerUtils {
 
     /**
      * gets the WebSocket client instance for communication with the server
+     * 
      * @return WebSocket client instance
      */
     public MyWebSocketClient getWebSocketClient() {
@@ -66,6 +66,7 @@ public class ServerUtils {
 
     /**
      * Adds a participant.
+     * 
      * @param p the participant to be added.
      * @return the created event with the associated id
      */
@@ -84,7 +85,32 @@ public class ServerUtils {
     }
 
     /**
+     * Gets all expenses from an event
+     *
+     * @param ev The event to get the expenses for
+     *
+     * @return The list of expenses from the event
+     */
+    public List<Expense> getAllExpensesFromEvent(Event ev) {
+        try {
+            WebSocketMessage request = new WebSocketMessage();
+            request.setEndpoint("api/expenses/by_event");
+            request.setMethod("GET");
+            request.setParameters(List.of(ev.getInviteCode()));
+            WebSocketMessage response = sendMessageWithResponse(request);
+            List<Expense> expenses = objectMapper
+                    .convertValue(response.getData(), new TypeReference<List<Expense>>() {
+                    });
+            return expenses;
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return List.of();
+    }
+
+    /**
      * Gets a participant by their id.
+     * 
      * @param id the participant's id.
      */
     public void getParticipant(long id) {
@@ -97,6 +123,7 @@ public class ServerUtils {
 
     /**
      * Deletes a participant.
+     * 
      * @param p the participant to be deleted.
      */
     public void deleteParticipant(Participant p) {
@@ -109,6 +136,7 @@ public class ServerUtils {
 
     /**
      * Edits a participant.
+     * 
      * @param newParticipant the updated participant.
      * @param oldParticipant the participant to be edited.
      */
@@ -125,6 +153,7 @@ public class ServerUtils {
 
     /**
      * Adds an admin
+     * 
      * @param admin to be added
      */
     public void addAdmin(Admin admin) {
@@ -137,6 +166,7 @@ public class ServerUtils {
 
     /**
      * For login
+     * 
      * @param admin credentials to be logged in with
      * @return if was successful or not
      */
@@ -156,6 +186,7 @@ public class ServerUtils {
 
     /**
      * Gets an event by id
+     * 
      * @param code the code of the event
      * @return the requested event or null if it does not exist
      */
@@ -177,6 +208,7 @@ public class ServerUtils {
 
     /**
      * Adds an event
+     * 
      * @param ev to be added
      * @return the event with the new inviteCode
      */
@@ -196,6 +228,7 @@ public class ServerUtils {
 
     /**
      * Updates an event
+     * 
      * @param ev to be updated
      */
     public void updateEvent(Event ev) {
@@ -208,6 +241,7 @@ public class ServerUtils {
 
     /**
      * Get all the quotes stored in the database
+     * 
      * @return all the quotes
      */
     public List<Quote> getQuotes() {
@@ -216,9 +250,10 @@ public class ServerUtils {
             request.setEndpoint("api/quotes");
             request.setMethod("GET");
 
-            WebSocketMessage response = sendMessageWithResponse( request);
+            WebSocketMessage response = sendMessageWithResponse(request);
             return objectMapper.convertValue(response.getData(),
-                new TypeReference<List<Quote>>() {});
+                    new TypeReference<List<Quote>>() {
+                    });
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -227,6 +262,7 @@ public class ServerUtils {
 
     /**
      * Add a quote
+     * 
      * @param quote to be added
      */
     public void addQuote(Quote quote) {
@@ -238,9 +274,11 @@ public class ServerUtils {
     }
 
     /**
-     * sends a JSON dump request to the server via WebSocket and waits for the response
+     * sends a JSON dump request to the server via WebSocket and waits for the
+     * response
+     * 
      * @return an Optional containing the JSON dump as a String if successful,
-     * or empty if an error occurs
+     *         or empty if an error occurs
      */
     public Optional<String> handleJsonDump() {
 
@@ -250,8 +288,7 @@ public class ServerUtils {
             requestMessage.setMethod("GET");
             WebSocketMessage response = sendMessageWithResponse(requestMessage);
             if (response.getData() != null) {
-                return Optional.
-                        of(getObjectMapper().convertValue(response.getData(), String.class));
+                return Optional.of(getObjectMapper().convertValue(response.getData(), String.class));
             } else {
                 return Optional.empty();
             }
@@ -263,13 +300,15 @@ public class ServerUtils {
     /**
      * retrieves a list of events from the server via WebSocket.
      * if authentication is successful,
-     * sends a GET request to the "api/events" endpoint with the authentication header.
+     * sends a GET request to the "api/events" endpoint with the authentication
+     * header.
      * parses and returns the list of events received in the response.
+     * 
      * @return an Optional containing the list of events if successful,
-     * otherwise an empty Optional.
+     *         otherwise an empty Optional.
      */
     public Optional<List<Event>> getAllEvents() {
-        if(isAuthenticated()) {
+        if (isAuthenticated()) {
             try {
                 WebSocketMessage requestMessage = new WebSocketMessage();
                 requestMessage.setEndpoint("api/events");
@@ -278,7 +317,8 @@ public class ServerUtils {
                 WebSocketMessage response = sendMessageWithResponse(requestMessage);
                 if (response.getData() != null) {
                     return Optional.of(getObjectMapper().convertValue(response.getData(),
-                            new TypeReference<ArrayList<Event>>() {}));
+                            new TypeReference<ArrayList<Event>>() {
+                            }));
                 }
             } catch (ExecutionException | InterruptedException e) {
                 return Optional.empty();
@@ -287,9 +327,10 @@ public class ServerUtils {
         return Optional.empty();
     }
 
-
     /**
-     * Send to the websocket the eventId to which the current client it's connected too
+     * Send to the websocket the eventId to which the current client it's connected
+     * too
+     * 
      * @param eventId the inviteCode of the event
      */
     public void sendUpdateStatus(String eventId) {
@@ -302,13 +343,14 @@ public class ServerUtils {
 
     /**
      * Send a message to the server with awaiting response
+     * 
      * @param request the message body
      * @return the response from the server
-     * @throws ExecutionException if the object mapper fails
+     * @throws ExecutionException   if the object mapper fails
      * @throws InterruptedException if the connection is closed
      */
     private WebSocketMessage sendMessageWithResponse(WebSocketMessage request)
-        throws ExecutionException, InterruptedException {
+            throws ExecutionException, InterruptedException {
         String requestId = UUID.randomUUID().toString();
         request.setId(requestId);
         CompletableFuture<WebSocketMessage> future = webSocketClient.addPendingRequests(requestId);
@@ -323,6 +365,7 @@ public class ServerUtils {
 
     /**
      * Send a message to the server without awaiting response
+     * 
      * @param request the message body
      */
     private void sendMessageWithoutResponse(WebSocketMessage request) {
@@ -338,6 +381,7 @@ public class ServerUtils {
 
     /**
      * checks if the user is a currently authenticated admin.
+     * 
      * @return true if authenticated, false otherwise.
      */
     public static boolean isAuthenticated() {
@@ -346,7 +390,9 @@ public class ServerUtils {
 
     /**
      * sets the authentication credentials using the provided username and password.
-     * encodes the credentials using Base64 and constructs the authentication header.
+     * encodes the credentials using Base64 and constructs the authentication
+     * header.
+     * 
      * @param username username for authentication.
      * @param password password for authentication.
      */
@@ -359,10 +405,12 @@ public class ServerUtils {
 
     /**
      * authenticates the application using the provided admin credentials.
-     * sets the authentication credentials based on the admin's username and password.
+     * sets the authentication credentials based on the admin's username and
+     * password.
+     * 
      * @param admin Admin object containing authentication details.
      */
-    public static void adminAuth (Admin admin) {
+    public static void adminAuth(Admin admin) {
         setAuth(admin.getUsername(), admin.getPassword());
     }
 }
