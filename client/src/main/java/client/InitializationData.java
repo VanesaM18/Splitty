@@ -15,6 +15,8 @@ public class InitializationData {
     private Pair<OverviewCtrl, Parent> overviewEvent;
     private Pair<InviteScreenCtrl, Parent> invite;
 
+    private Pair<OpenDebtsCtrl, Parent> openDebt;
+
     /**
      * Creates an instance of initialize data
      */
@@ -22,7 +24,7 @@ public class InitializationData {
 
     /**
      * Sets the settings pair
-     * 
+     *
      * @param settings pair
      */
     public void setSettings(Pair<SettingsCtrl, Parent> settings) {
@@ -31,7 +33,7 @@ public class InitializationData {
 
     /**
      * sets the management pair
-     * 
+     *
      * @param management pair
      */
     public void setManagement(Pair<ManagementCtrl, Parent> management) {
@@ -40,7 +42,7 @@ public class InitializationData {
 
     /**
      * Sets the participant pair
-     * 
+     *
      * @param participant pair
      */
     public void setParticipant(Pair<ParticipantsCtrl, Parent> participant) {
@@ -49,7 +51,7 @@ public class InitializationData {
 
     /**
      * Sets the login pair
-     * 
+     *
      * @param login pair
      */
     public void setLogin(Pair<LoginCtrl, Parent> login) {
@@ -58,7 +60,7 @@ public class InitializationData {
 
     /**
      * Sets the startPage pair
-     * 
+     *
      * @param startPage pair
      */
     public void setStartPage(Pair<StartScreenCtrl, Parent> startPage) {
@@ -67,7 +69,7 @@ public class InitializationData {
 
     /**
      * Sets the overviewEvent pair
-     * 
+     *
      * @param overviewEvent pair
      */
     public void setOverviewEvent(Pair<OverviewCtrl, Parent> overviewEvent) {
@@ -77,7 +79,7 @@ public class InitializationData {
 
     /**
      * Sets the invite pair
-     * 
+     *
      * @param invite pair
      */
     public void setInvite(Pair<InviteScreenCtrl, Parent> invite) {
@@ -85,8 +87,17 @@ public class InitializationData {
     }
 
     /**
+     * Sets the open debt pair
+     *
+     * @param openDebt pair
+     */
+    public void setOpenDebt(Pair<OpenDebtsCtrl, Parent> openDebt) {
+        this.openDebt = openDebt;
+    }
+
+    /**
      * Gets the settings pair
-     * 
+     *
      * @return settings pair
      */
     public Pair<SettingsCtrl, Parent> getSettings() {
@@ -95,7 +106,7 @@ public class InitializationData {
 
     /**
      * gets the management pair
-     * 
+     *
      * @return management pair
      */
     public Pair<ManagementCtrl, Parent> getManagement() {
@@ -104,7 +115,7 @@ public class InitializationData {
 
     /**
      * Gets the participant pair
-     * 
+     *
      * @return participant pair
      */
     public Pair<ParticipantsCtrl, Parent> getParticipant() {
@@ -113,7 +124,7 @@ public class InitializationData {
 
     /**
      * Gets the login pair
-     * 
+     *
      * @return login pair
      */
     public Pair<LoginCtrl, Parent> getLogin() {
@@ -122,7 +133,7 @@ public class InitializationData {
 
     /**
      * Gets the startPage pair
-     * 
+     *
      * @return startPage pair
      */
     public Pair<StartScreenCtrl, Parent> getStartPage() {
@@ -131,7 +142,7 @@ public class InitializationData {
 
     /**
      * Gets the overviewEvent pair
-     * 
+     *
      * @return overviewEvent pair
      */
     public Pair<OverviewCtrl, Parent> getOverviewEvent() {
@@ -146,4 +157,11 @@ public class InitializationData {
     public Pair<InviteScreenCtrl, Parent> getInvite() {
         return invite;
     }
+
+    /**
+     * Gets the open debt pair
+     *
+     * @return open debt pair
+     */
+    public Pair<OpenDebtsCtrl, Parent> getOpenDebt() { return openDebt;}
 }
