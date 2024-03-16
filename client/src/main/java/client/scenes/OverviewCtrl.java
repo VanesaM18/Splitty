@@ -44,7 +44,7 @@ public class OverviewCtrl {
 
     /**
      * Controller responsible for handling the quote overview functionality.
-     * 
+     *
      * @param server An instance of ServerUtils for server-related operations.
      * @param mainCtrl An instance of MainCtrl for coordinating with the main controller.
      */
@@ -56,7 +56,7 @@ public class OverviewCtrl {
 
     /**
      * Initialize the event data
-     * 
+     *
      * @param ev the event
      */
     public void setEvent(Event ev) {
@@ -88,7 +88,7 @@ public class OverviewCtrl {
 
     /**
      * Attaches an image to a button
-     * 
+     *
      * @param but the button to attach to
      * @param url the url to the image
      */
@@ -181,5 +181,8 @@ public class OverviewCtrl {
         mainCtrl.showOverviewEvent(ev);
         refresh();
         //server.deleteParticipant(participant);
+    }
+    public void settleDebt() {
+        mainCtrl.showOpenDebts();
     }
 }
