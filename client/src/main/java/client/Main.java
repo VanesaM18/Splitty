@@ -37,7 +37,7 @@ public class Main extends Application {
 
     /**
      * The main of our client
-     * 
+     *
      * @param args to be passed to the client
      * @throws URISyntaxException if anything happens related to URI
      * @throws IOException if anything happens related to IO
@@ -48,7 +48,7 @@ public class Main extends Application {
 
     /**
      * It starts the client
-     * 
+     *
      * @param primaryStage the primary stage for this application, onto which the application scene
      *        can be set. Applications may create other stages, if needed, but they will not be
      *        primary stages.
@@ -63,7 +63,7 @@ public class Main extends Application {
 
     /**
      * Returns an instance of our main
-     * 
+     *
      * @return the main instance
      */
     public static Optional<Main> getInstance() {
@@ -72,7 +72,7 @@ public class Main extends Application {
 
     /**
      * Updates the language of our application
-     * 
+     *
      * @param locale our language package
      * @throws IOException any IO error related
      */
@@ -91,6 +91,8 @@ public class Main extends Application {
                 FXML.load(OverviewCtrl.class, locale, "client", "scenes", "Overview.fxml");
         var invite =
                 FXML.load(InviteScreenCtrl.class, locale, "client", "scenes", "InviteScreen.fxml");
+        var openDebt =
+                FXML.load(OpenDebtsCtrl.class, locale, "client", "scenes", "OpenDebts.fxml");
 
         InitializationData data = new InitializationData();
         data.setSettings(settings);
@@ -100,6 +102,7 @@ public class Main extends Application {
         data.setStartPage(startPage);
         data.setOverviewEvent(overviewEvent);
         data.setInvite(invite);
+        data.setOpenDebt(openDebt);
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         mainCtrl.initialize(this.stage, data);
