@@ -180,6 +180,9 @@ public class OverviewCtrl {
             var name = selectedItem.getName();
             tabFrom.setText("From ".concat(name));
             tabIncluding.setText("Including ".concat(name));
+        } else {
+            tabFrom.setText("From ...");
+            tabIncluding.setText("Including ...");
         }
         expensesAllObs.clear();
         expensesFromObs.clear();
