@@ -1,6 +1,5 @@
 package client.scenes;
 
-import client.Main;
 import client.utils.ServerUtils;
 import client.utils.language.LanguageProcessor;
 import com.google.inject.Inject;
@@ -21,12 +20,16 @@ public class SettingsCtrl {
      * @param languageProcessor instance of LanguageProcessor.
      */
     @Inject
-    public SettingsCtrl(ServerUtils server, MainCtrl mainCtrl, LanguageProcessor languageProcessor) {
+    public SettingsCtrl(ServerUtils server, MainCtrl mainCtrl,
+                        LanguageProcessor languageProcessor) {
         this.mainCtrl = mainCtrl;
         this.server = server;
         this.languageProcessor = languageProcessor;
     }
 
+    /**
+     * navigates back to the previous scene
+     */
     public void goBack() {
         mainCtrl.getSceneManager().goBack();
     }

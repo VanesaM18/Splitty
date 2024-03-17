@@ -54,6 +54,7 @@ public class MainCtrl {
      *
      * @param primaryStage The primary stage of the application.
      * @param data Contains all initialized pair of views
+     * @param sceneManager The SceneManager responsible for managing scenes.
      */
     public void initialize(Stage primaryStage, InitializationData data, SceneManager sceneManager) {
         this.primaryStage = primaryStage;
@@ -93,6 +94,9 @@ public class MainCtrl {
         primaryStage.show();
     }
 
+    /**
+     * displays the application configuration view.
+     */
     public void showAppConfiguration() {
         this.sceneManager.pushScene(SceneEnum.STARTUP, null);
         primaryStage.setTitle("Application Setup");
@@ -230,6 +234,10 @@ public class MainCtrl {
         return this.currentLocale;
     }
 
+    /**
+     * gets the scene manager responsible for managing scenes in the application.
+     * @return SceneManager object.
+     */
     public SceneManager getSceneManager() {
         return this.sceneManager;
     }

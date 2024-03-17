@@ -169,6 +169,9 @@ public class StartScreenCtrl implements Initializable {
         createEventField.clear();
     }
 
+    /**
+     * opens the settings view
+     */
     public void openSettings() {
         mainCtrl.showSettings();
     }

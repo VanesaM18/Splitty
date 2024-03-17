@@ -10,6 +10,12 @@ import java.util.Locale;
 
 public abstract class LanguageTemplate implements Language {
 
+    /**
+     * executes language-specific actions, changing the application's locale
+     * and updating the user interface.
+     * retrieves the current locale, starts the main application with the specified locale,
+     * and updates the scene by popping the current one from the scene manager.
+     */
     @Override
     public void run() {
         Locale locale = this.getLocale();
@@ -42,6 +48,10 @@ public abstract class LanguageTemplate implements Language {
         return button;
     }
 
+    /**
+     * gets the text content in the specific language.
+     * @return text content.
+     */
     public abstract String getText();
 
     private Locale getLocale() {

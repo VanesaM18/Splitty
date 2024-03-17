@@ -10,6 +10,16 @@ public interface Language extends Runnable {
      * @return button
      */
     Button getButton();
+
+    /**
+     * executes language-specific actions, changing the application's locale
+     * and updating the user interface.
+     */
     void run();
+
+    /**
+     * gets the text content for the specific language.
+     * @return text content.
+     */
     String getText();
 }

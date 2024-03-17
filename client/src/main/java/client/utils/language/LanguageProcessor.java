@@ -17,6 +17,12 @@ public class LanguageProcessor {
     private final List<Language> languages;
     private final Map<String, Language> actions = new HashMap<>();;
 
+    /**
+     * constructs a LanguageProcessor instance.
+     * initializes the LanguageProcessor by finding
+     * all implementations of the Language interface
+     * and creating corresponding actions for each language.
+     */
     public LanguageProcessor() {
         this.languages = findInterfaceImplementations();
         createActions();
@@ -59,6 +65,10 @@ public class LanguageProcessor {
         return implementations;
     }
 
+    /**
+     * gets the languages supported by the LanguageProcessor.
+     * @return a list of Language objects representing the supported languages.
+     */
     public List<Language> getLanguages() {
         return new ArrayList<>(languages);
     }
@@ -68,9 +78,16 @@ public class LanguageProcessor {
                 actions.put(language.getText(), language));
     }
 
+    /**
+     * gets the language actions supported by the LanguageProcessor.
+     * map type params: the keys represent language identifiers,
+     * and the values represent corresponding actions.
+     * @return a map of language actions.
+     */
     public Map<String, Runnable> getActions() {
         return new HashMap<>(actions);
     }
+
     /**
      * VBox for displaying the language buttons
      * @return VBox populated with language buttons

@@ -129,6 +129,13 @@ public class ConfigLoader {
         return Optional.empty();
     }
 
+    /**
+     * retrieves the initial scene to be displayed based on
+     * the "startUpShown" property in the configuration.
+     * if the "startUpShown" property is "false", returns the startup scene,
+     * otherwise, returns the main start scene.
+     * @return SceneEnum representing the initial scene to be displayed.
+     */
     public SceneEnum getStartScene() {
         String startUpShown = (String) this.getProperty("startUpShown");
         return Objects.equals(startUpShown, "false") ? SceneEnum.STARTUP : SceneEnum.START;

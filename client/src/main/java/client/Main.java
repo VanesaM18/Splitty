@@ -80,23 +80,29 @@ public class Main extends Application {
         return Optional.of(instance);
     }
 
+    /**
+     * gets the scene manager
+     * @return SceneManager object
+     */
     public SceneManager getSceneManager() {
         return sceneManager;
     }
 
     /**
-     * Updates the language of our application
-     * 
-     * @param locale our language package
+     * updates the language of the application and starts the specified scene.
+     *
+     * @param locale    the locale representing the language package to be applied.
+     * @param sceneEnum the enum value representing the scene to start.
      * @throws IOException any IO error related
      */
     public void start(Locale locale, SceneEnum sceneEnum) throws IOException {
         this.configLoader.updateProperty("language", locale);
         this.configLoader.saveConfig();
-        var appConfiguration =
-                FXML.load(AppConfigurationCtrl.class, locale, "client", "scenes", "AppConfiguration.fxml");
+        var appConfiguration = FXML.load(AppConfigurationCtrl.class, locale,
+                "client", "scenes", "AppConfiguration.fxml");
         var settings = FXML.load(SettingsCtrl.class, locale, "client", "scenes", "Settings.fxml");
-        var management = FXML.load(ManagementCtrl.class, locale, "client", "scenes", "Management.fxml");
+        var management = FXML.load(ManagementCtrl.class, locale,
+                "client", "scenes", "Management.fxml");
         var loginAdmin = FXML.load(LoginCtrl.class, locale, "client", "scenes", "LoginView.fxml");
 
         var participants =
