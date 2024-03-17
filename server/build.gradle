@@ -14,6 +14,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'jakarta.websocket:jakarta.websocket-api:2.0.0'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2'
+	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.3'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2'

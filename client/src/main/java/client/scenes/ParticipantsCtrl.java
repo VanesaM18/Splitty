@@ -20,27 +20,36 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class ParticipantsCtrl {
-    @FXML private Label title;
+    @FXML
+    private Label title;
     private boolean add;
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
-    @FXML private Label warning;
+    @FXML
+    private Label warning;
 
-    @FXML private TextField name;
+    @FXML
+    private TextField name;
 
-    @FXML private TextField email;
+    @FXML
+    private TextField email;
 
-    @FXML private TextField iban;
+    @FXML
+    private TextField iban;
 
-    @FXML private TextField bic;
+    @FXML
+    private TextField bic;
     private Event ev;
 
     private Participant participantToChange;
 
     /**
-     * Controller responsible for handling the addition of participants functionality.
-     * @param server An instance of ServerUtils for server-related operations.
-     * @param mainCtrl An instance of MainCtrl for coordinating with the main controller.
+     * Controller responsible for handling the addition of participants
+     * functionality.
+     * 
+     * @param server   An instance of ServerUtils for server-related operations.
+     * @param mainCtrl An instance of MainCtrl for coordinating with the main
+     *                 controller.
      */
     @Inject
     public ParticipantsCtrl(ServerUtils server, MainCtrl mainCtrl) {
@@ -75,23 +84,23 @@ public class ParticipantsCtrl {
         Participant p = participantToChange;
         try {
             p = getParticipant();
-            if(!uniqueName(ev, p)) {
+            if (!uniqueName(ev, p)) {
                 warning.setText("Not a unique name!");
                 return;
             }
-            if(p.getName().equals("")) {
+            if (p.getName().equals("")) {
                 warning.setText("Name cannot be empty!");
                 return;
             }
-            if(p.getEmail().equals("") || !isEmailValid(p.getEmail())) {
+            if (p.getEmail().equals("") || !isEmailValid(p.getEmail())) {
                 warning.setText("Invalid email!");
                 return;
             }
-            if(p.getIban().equals("") || !isIbanValid(p.getIban())) {
+            if (p.getIban().equals("") || !isIbanValid(p.getIban())) {
                 warning.setText("Invalid IBAN!");
                 return;
             }
-            if(p.getBic().equals("") || !isIBicValid(p.getBic())) {
+            if (p.getBic().equals("") || !isIBicValid(p.getBic())) {
                 warning.setText("Invalid BIC!");
                 return;
             }
@@ -114,39 +123,45 @@ public class ParticipantsCtrl {
 
     /**
      * Checks if the participants name is unique for the event.
+     * 
      * @param ev event to be looked into.
-     * @param p participant whose name is to be checked.
+     * @param p  participant whose name is to be checked.
      * @return whether the name is unique.
      */
     private boolean uniqueName(Event ev, Participant p) {
-        if(!add) {
+        if (!add) {
             return uniqueUpdate(ev, p);
         }
         Set<Participant> participants = ev.getParticipants();
-        for(Participant participant : participants) {
-            if(participant.getName().equals(p.getName())) return false;
+        for (Participant participant : participants) {
+            if (participant.getName().equals(p.getName()))
+                return false;
         }
         return true;
     }
 
     /**
      * Checks if the participants name is only once in the event.
+     * 
      * @param ev event to be looked into.
-     * @param p participant whose name is to be checked.
+     * @param p  participant whose name is to be checked.
      * @return whether the name is unique.
      */
     private boolean uniqueUpdate(Event ev, Participant p) {
         int count = 0;
         Set<Participant> participants = ev.getParticipants();
-        for(Participant participant : participants) {
-            if(participant.getName().equals(p.getName())) count++;
-            if(count > 1) return false;
+        for (Participant participant : participants) {
+            if (participant.getName().equals(p.getName()))
+                count++;
+            if (count > 1)
+                return false;
         }
         return true;
     }
 
     /**
      * Email validator.
+     * 
      * @param emailAddress the email address to be checked.
      * @return is the email valid or not.
      */
@@ -159,12 +174,12 @@ public class ParticipantsCtrl {
 
     /**
      * IBAN validator.
+     * 
      * @param iban the IBAN to be checked.
      * @return is the IBAN valid or not.
      */
     public static boolean isIbanValid(String iban) {
-        String regexPattern =
-                "[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}";
+        String regexPattern = "[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}";
         return Pattern.compile(regexPattern)
                 .matcher(iban)
                 .matches();
@@ -172,6 +187,7 @@ public class ParticipantsCtrl {
 
     /**
      * BIC validator.
+     * 
      * @param bic the BIC to be checked.
      * @return is the BIC valid or not.
      */
@@ -184,11 +200,12 @@ public class ParticipantsCtrl {
 
     /**
      * Creates or updates a participant from the text fields.
+     * 
      * @return the created participant.
      */
     private Participant getParticipant() {
         Participant p = participantToChange;
-        if(p == null) {
+        if (p == null) {
             p = new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
         } else {
             p.setName(name.getText());
@@ -201,6 +218,7 @@ public class ParticipantsCtrl {
 
     /**
      * Event handler for pressing a key.
+     * 
      * @param e the key that is pressed
      */
     public void keyPressed(KeyEvent e) {
@@ -218,6 +236,7 @@ public class ParticipantsCtrl {
 
     /**
      * Sets the event where to add the participant
+     * 
      * @param ev the event
      */
     public void setEvent(Event ev) {
@@ -226,6 +245,7 @@ public class ParticipantsCtrl {
 
     /**
      * Checks weather the user is adding or editing participants.
+     * 
      * @return true - add / false - edit.
      */
     public boolean isAdd() {
@@ -235,22 +255,24 @@ public class ParticipantsCtrl {
     /**
      * Changes the title of the screen depending on weather
      * the user wants to edit or add a participant.
+     * 
      * @param add true - add / false - edit.
      */
     public void setAdd(boolean add) {
         this.add = add;
-        if(add) {
+        if (add) {
             title.setText("Add participant");
-        }
-        else title.setText("Edit participant");
+        } else
+            title.setText("Edit participant");
     }
 
     /**
      * Sets the fields with the details of the participant
      * we want to update.
+     * 
      * @param p
      */
-    public  void setFields (Participant p) {
+    public void setFields(Participant p) {
         iban.setText(p.getIban());
         name.setText(p.getName());
         bic.setText(p.getBic());
@@ -260,11 +282,10 @@ public class ParticipantsCtrl {
 
     /**
      * Sets the participant to be changed when editing.
+     * 
      * @param participantToChange participant to be changed.
      */
     public void setParticipantToChange(Participant participantToChange) {
         this.participantToChange = participantToChange;
     }
 }
-
-

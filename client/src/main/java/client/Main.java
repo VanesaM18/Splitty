@@ -108,6 +108,8 @@ public class Main extends Application {
         var participants =
                 FXML.load(ParticipantsCtrl.class, locale, "client", "scenes", "Participants.fxml");
 
+        var expense =
+            FXML.load(ExpenseCtrl.class, locale, "client", "scenes", "Expense.fxml");
         var startPage =
                 FXML.load(StartScreenCtrl.class, locale, "client", "scenes", "StartScreen.fxml");
         var overviewEvent =
@@ -121,6 +123,7 @@ public class Main extends Application {
         data.setManagement(management);
         data.setLogin(loginAdmin);
         data.setParticipant(participants);
+        data.setExpense(expense);
         data.setStartPage(startPage);
         data.setOverviewEvent(overviewEvent);
         data.setInvite(invite);
