@@ -4,13 +4,13 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OpenDebtsCtrl">
+<AnchorPane fx:id="anchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OpenDebtsCtrl">
     <children>
-        <Accordion layoutX="97.0" layoutY="86.0">
+        <Accordion fx:id="debtAccordion" layoutX="97.0" layoutY="86.0">
             <panes>
-                <TitledPane animated="false" text="untitled 1">
+                <TitledPane animated="false" text="Debt">
                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="60.0" prefWidth="200.0">
                             <children>
                                 <Accordion layoutX="-1.0" layoutY="14.0" />
                             </children></AnchorPane>
@@ -18,14 +18,12 @@
                 </TitledPane>
             </panes>
         </Accordion>
-        <ToggleButton layoutX="340.0" layoutY="86.0" mnemonicParsing="false" prefWidth="89.0" text="ToggleButton" />
-        <Label layoutX="216.0" layoutY="14.0" text="Open Debts">
+        <Button fx:id="markReceived" layoutX="329.0" layoutY="86.0" mnemonicParsing="false" onAction="#clearTotalDebt" prefHeight="26.0" prefWidth="110.0" text="Mark Received" />
+        <Label layoutX="97.0" layoutY="14.0" text="Open Debts">
             <font>
-                <Font name="Arial Nova Cond" size="36.0" />
+                <Font name="System Bold" size="31.0" />
             </font>
         </Label>
         <Button layoutX="339.0" layoutY="318.0" mnemonicParsing="false" onAction="#back" prefHeight="26.0" prefWidth="90.0" text="back" />
-        <Label fx:id="totalDebtLabel" layoutX="97.0" layoutY="126.0" text="Total_debt" />
-        <Button layoutX="200" layoutY="200" onAction="#clearTotalDebt" text="Clear Total Debt" />
     </children>
 </AnchorPane>
