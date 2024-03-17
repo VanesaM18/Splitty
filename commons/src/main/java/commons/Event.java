@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -229,5 +230,9 @@ public class Event {
     @Override
     public int hashCode() {
         return Objects.hash(getName(), getInviteCode(), getDateTime(), getParticipants());
+    }
+
+    public List<Debt> calculateDebts(Event event){
+
     }
 }

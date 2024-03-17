@@ -23,6 +23,10 @@ public class Debt {
         this.creditor = creditor;
     }
 
+    public Debt() {
+
+    }
+
     /**
      * Gets the debtor
      *

@@ -38,8 +38,8 @@ import java.util.Random;
 public class DebtController {
 
     private final Random random;
-    private static DebtRepository repo;
-    private static ExpenseController expenseController;
+    private final DebtRepository repo;
+    private final ExpenseController expenseController;
     /**
      * Constructs a DebtController with the specified random generator and debt repository.
      *
@@ -82,7 +82,7 @@ public class DebtController {
      * @param id the debt id
      * @return monetary total debt
      */
-    public static Monetary calculateTotalDebt(@PathVariable("id") long id) {
+    public Monetary calculateTotalDebt(@PathVariable("id") long id) {
         List<Debt> debts = Collections.singletonList(repo.getById(id));
         Monetary totalDebt = debts.stream()
                 .map(Debt::getAmount)
