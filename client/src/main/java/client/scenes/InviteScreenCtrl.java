@@ -41,7 +41,8 @@ public class InviteScreenCtrl {
      * Return to the event overview screen
      */
     public void goBack() {
-        mainCtrl.showOverviewEvent(null);
+        mainCtrl.getSceneManager().goBack();
+        //mainCtrl.showOverviewEvent(null);
     }
 
     /**

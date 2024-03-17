@@ -159,7 +159,7 @@ public class OverviewCtrl {
      * Goes back to the starting page.
      */
     public void back() {
-        mainCtrl.showStartScreen();
+        mainCtrl.getSceneManager().goBack();
     }
 
     /**
