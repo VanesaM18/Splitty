@@ -7,5 +7,6 @@
    <children>
       <VBox fx:id="languages" layoutY="93.0" prefHeight="200.0" prefWidth="347.0" />
       <Label layoutX="256.0" layoutY="23.0" prefHeight="52.0" prefWidth="89.0" text="%key1" />
+      <Button layoutY="0.0" mnemonicParsing="false" onAction="#goBack" text="%back_button" />
    </children>
 </AnchorPane>
