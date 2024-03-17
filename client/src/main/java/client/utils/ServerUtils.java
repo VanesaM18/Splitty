@@ -274,6 +274,25 @@ public class ServerUtils {
     }
 
     /**
+     * Add expense
+     * 
+     * @param expense The expense to add
+     * @throws InterruptedException
+     * @throws ExecutionException
+     */
+    public void addExpense(Expense expense) throws ExecutionException, InterruptedException {
+        WebSocketMessage request = new WebSocketMessage();
+        request.setEndpoint("api/expenses");
+        request.setMethod("POST");
+        request.setData(expense);
+        try {
+            sendMessageWithResponse(request);
+        } catch (ExecutionException | InterruptedException e) {
+            return;
+        }
+    }
+
+    /**
      * sends a JSON dump request to the server via WebSocket and waits for the
      * response
      * 

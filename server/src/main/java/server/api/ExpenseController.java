@@ -24,6 +24,7 @@ public class ExpenseController {
 
     /**
      * Get all the expenses belonging to an event
+     * 
      * @param eventId The id of the event containing the expenses
      * @return The expenses belonging to the provided event or 404 if empty
      */
@@ -38,14 +39,15 @@ public class ExpenseController {
 
     /**
      * Create a new expense
+     * 
      * @param newExpense the expense to add
      * @return 204 No content if successful, else 400 bad request
      */
     @PostMapping("/")
     public ResponseEntity<String> addExpense(@RequestBody Expense newExpense) {
         if (newExpense == null
-            || newExpense.getCreator() == null
-            || newExpense.getEvent() == null || newExpense.getAmount() == null) {
+                || newExpense.getCreator() == null
+                || newExpense.getEvent() == null || newExpense.getAmount() == null) {
             return ResponseEntity.badRequest().body("POSTed expense is incomplete");
         }
         repo.save(newExpense);
@@ -54,8 +56,10 @@ public class ExpenseController {
 
     /**
      * Get an expense by id
+     * 
      * @param id The id of the expense to fetch
-     * @return The expense belonging to the id, 400 when id is negative, or 404 when not found
+     * @return The expense belonging to the id, 400 when id is negative, or 404 when
+     *         not found
      */
     @GetMapping("/{id}")
     public ResponseEntity<Expense> getById(@PathVariable("id") long id) {
@@ -72,14 +76,15 @@ public class ExpenseController {
 
     /**
      * Update by id
-     * @param id The expense to update
+     * 
+     * @param id      The expense to update
      * @param expense The partial expense
      * @return the updated expense if successful,
-     * else 404 for not found or 400 for badly formatted request
+     *         else 404 for not found or 400 for badly formatted request
      */
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateById(@PathVariable("id") long id,
-                                             @RequestBody Expense expense) {
+            @RequestBody Expense expense) {
         if (id < 0) {
             return ResponseEntity.badRequest().build();
         }
@@ -94,20 +99,21 @@ public class ExpenseController {
         }
         if (expense.getEvent() != null) {
             return ResponseEntity
-                .badRequest()
-                .body("Cannot change event of expense, delete this and create a new one instead");
+                    .badRequest()
+                    .body("Cannot change event of expense, delete this and create a new one instead");
         }
         if (expense.getCreator() != null) {
-            oldExpense.setCreator(expense.getCreator());
+            oldExpense.setReceiver(expense.getCreator());
         }
         return ResponseEntity.ok(repo.save(oldExpense));
     }
 
     /**
      * Delete an expense by id
+     * 
      * @param id The id to delete
      * @return 204 if deleted successfully, 404 if not found
-     * and 400 if id incorrect
+     *         and 400 if id incorrect
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@PathVariable("id") long id) {

@@ -190,8 +190,16 @@ public class OverviewCtrl {
      * participant window.
      */
     public void addParticipant() {
-        mainCtrl.showParticipants(this.ev, true, "");
+        mainCtrl.showParticipants(this.ev, true, null);
         refresh();
+    }
+
+    public void addExpense() {
+        if (participantComboBox.getSelectionModel().getSelectedItem() == null) {
+            // TODO: Add separate warning label
+            warning.setText("First choose a participant");
+        }
+        mainCtrl.showExpense(this.ev, participantComboBox.getSelectionModel().getSelectedItem(), null);
     }
 
     /**
@@ -207,8 +215,7 @@ public class OverviewCtrl {
         mainCtrl.showParticipants(this.ev, false,
                 participantNames
                         .getSelectionModel()
-                        .getSelectedItem()
-                        .getName());
+                        .getSelectedItem());
     }
 
     /**

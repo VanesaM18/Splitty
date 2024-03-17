@@ -29,10 +29,9 @@ public class Expense {
     private Long id;
     @Embedded
     @AttributeOverrides({
-        @AttributeOverride(name = "value", column = @Column(name = "amount_value")),
-        @AttributeOverride(name = "currency", column = @Column(name = "amount_currency")),
-        @AttributeOverride(name = "fractionDivider",
-                           column = @Column(name = "amount_fraction_divider"))
+            @AttributeOverride(name = "value", column = @Column(name = "amount_value")),
+            @AttributeOverride(name = "currency", column = @Column(name = "amount_currency")),
+            @AttributeOverride(name = "fractionDivider", column = @Column(name = "amount_fraction_divider"))
     })
     private Monetary amount;
     @ManyToOne(optional = false)
@@ -83,6 +82,7 @@ public class Expense {
 
     /**
      * Gets the name of the expense
+     * 
      * @return The name of the expense
      */
     public String getName() {
@@ -91,6 +91,7 @@ public class Expense {
 
     /**
      * Sets the name of the expense
+     * 
      * @param name The name of the expense
      */
     public void setName(String name) {
@@ -204,11 +205,11 @@ public class Expense {
     }
 
     /**
-     * Set the associated participant
+     * Set the participant that will receive the payment
      * 
-     * @param participant The associated participant
+     * @param participant The participant that will receive the payment
      */
-    public void setCreator(Participant participant) {
+    public void setReceiver(Participant participant) {
         this.creator = participant;
     }
 
