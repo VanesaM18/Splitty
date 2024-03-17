@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 public class Event {
@@ -232,7 +230,44 @@ public class Event {
         return Objects.hash(getName(), getInviteCode(), getDateTime(), getParticipants());
     }
 
-    public List<Debt> calculateDebts(Event event){
+    public Map<Map<Participant, Participant>, Monetary> calculatePayments(Event event){
+        Set<Expense> eventExpenses = event.getExpenses();
+        Iterator<Expense> iteratorExpense = eventExpenses.iterator();
+        Map<Map<Participant, Participant>, Monetary> allDebts = new HashMap<>();
+        while(iteratorExpense.hasNext()){
+            Expense expense = iteratorExpense.next();
+            Set<Participant> debtors = expense.getSplitBetween();
+            long amount = expense.getAmount().getInternalValue() / debtors.size();
+            Participant creditor = expense.getCreator();
+            Iterator<Participant> iteratorDebtors = debtors.iterator();
+            while(iteratorDebtors.hasNext()){
+                Map<Participant, Participant> currentMap = new HashMap<Participant, Participant>();
+                currentMap.put(iteratorDebtors.next(), creditor);
+                Monetary currentMonetary = new Monetary(amount);
+                if(allDebts.get(currentMap) == null) {
+                    allDebts.put(currentMap, currentMonetary);
+                } else {
+                    Monetary newMonetary = allDebts.get(currentMap);
+                    allDebts.put(currentMap, Monetary.add(currentMonetary, newMonetary));
+                }
+            }
+        }
+        return  allDebts;
+    }
+
+    public List<Debt> paymentsToDebt(Event event){
+        Map<Map<Participant, Participant>, Monetary> allDebts = calculatePayments(event);
+        List<Debt> listDebt = new ArrayList<>();
+        allDebts.entrySet().forEach(entry -> {
+            Map<Participant, Participant> pair = entry.getKey();
+            Monetary monetaryValue = entry.getValue();
+            pair.entrySet().forEach(innerEntry -> {
+                Participant debtorId = innerEntry.getKey();
+                Participant creditorId = innerEntry.getValue();
+                listDebt.add(new Debt(debtorId, monetaryValue, creditorId));
+            });
+        });
+        return listDebt;
 
     }
 }

@@ -39,18 +39,15 @@ public class DebtController {
 
     private final Random random;
     private final DebtRepository repo;
-    private final ExpenseController expenseController;
     /**
      * Constructs a DebtController with the specified random generator and debt repository.
      *
      * @param random            An instance of Random for generating random values.
      * @param repo              An instance of DebtRepository for accessing debt data.
-     * @param expenseController Allows us to use the expense controller
      */
-    public DebtController(Random random, DebtRepository repo, ExpenseController expenseController) {
+    public DebtController(Random random, DebtRepository repo) {
         this.random = random;
         this.repo = repo;
-        this.expenseController = expenseController;
     }
 
     /**
@@ -74,20 +71,6 @@ public class DebtController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(repo.findById(id).get());
-    }
-
-    /**
-     * calculate the total amount of debt
-     *
-     * @param id the debt id
-     * @return monetary total debt
-     */
-    public Monetary calculateTotalDebt(@PathVariable("id") long id) {
-        List<Debt> debts = Collections.singletonList(repo.getById(id));
-        Monetary totalDebt = debts.stream()
-                .map(Debt::getAmount)
-                .reduce(Monetary.ZERO, Monetary::add);
-        return totalDebt;
     }
 
     /**

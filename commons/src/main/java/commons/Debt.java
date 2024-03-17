@@ -45,15 +45,6 @@ public class Debt {
         return amount;
     }
 
-    /**
-     * Calculates the total amount of debt
-     *
-     * @param total total amount of debt
-     * @return the total amount of debt
-     */
-    public Monetary totalAmount(Monetary total){
-        return total;
-    }
 
     /**
      * Gets the creditor

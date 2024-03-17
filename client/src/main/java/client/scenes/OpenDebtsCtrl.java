@@ -33,9 +33,9 @@ public class OpenDebtsCtrl {
      * Initializes the UI by fetching and displaying the total debt from the server.
      */
     public void initialize() {
-        long id = 0;
+
         try {
-            URL url = new URL("http://localhost:8080/debts/total");
+            URL url = new URL("http://localhost:8080/debts/event");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
