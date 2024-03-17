@@ -94,7 +94,7 @@
           </Tab>
             <Tab text="From x">
                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                 <ListView fx:id="expensesAll" />
+                 <ListView fx:id="expensesFrom" />
                </AnchorPane>
             </Tab>
             <Tab text="Including x">

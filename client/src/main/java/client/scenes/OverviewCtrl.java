@@ -96,35 +96,16 @@ public class OverviewCtrl {
         }
     }
 
-    private void refreshParticipants() {
-        var cb = new Callback<ListView<Participant>, ListCell<Participant>>() {
-            @Override
-            public ListCell<Participant> call(ListView<Participant> listView) {
-                return new ListCell<Participant>() {
-                    @Override
-                    protected void updateItem(Participant item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item == null || empty) {
-                            setGraphic(null);
-                            return;
-                        }
-                        setGraphic(new Text(item.getName()));
-                    }
-                };
-            }
-        };
-
-        for (Participant p : this.ev.getParticipants()) {
-            participantsObs.add(p);
-        }
-        participantComboBox.setCellFactory(cb);
-        participantComboBox.setButtonCell(cb.call(null));
-        participantNames.setCellFactory(cb);
-        participantComboBox.setItems(participantsObs);
-        participantNames.setItems(participantsObs);
+    /**
+     * Inialize callback from FXML
+     */
+    @FXML
+    public void initialize() {
+        initExpenses();
+        initParticipants();
     }
 
-    private void refreshExpenses() {
+    private void initExpenses() {
         var cb = new Callback<ListView<Expense>, ListCell<Expense>>() {
             @Override
             public ListCell<Expense> call(ListView<Expense> listView) {
@@ -142,18 +123,54 @@ public class OverviewCtrl {
                 };
             }
         };
-        if (expensesAll != null)
-            expensesAll.setCellFactory(cb);
-        if (expensesFrom != null)
-            expensesFrom.setCellFactory(cb);
-        if (expensesIncluding != null)
-            expensesIncluding.setCellFactory(cb);
+        expensesAll.setCellFactory(cb);
+        expensesFrom.setCellFactory(cb);
+        expensesIncluding.setCellFactory(cb);
+        expensesAll.setItems(expensesAllObs);
+        expensesFrom.setItems(expensesFromObs);
+        expensesIncluding.setItems(expensesIncludingObs);
+    }
+
+    private void initParticipants() {
+        var cb = new Callback<ListView<Participant>, ListCell<Participant>>() {
+            @Override
+            public ListCell<Participant> call(ListView<Participant> listView) {
+                return new ListCell<Participant>() {
+                    @Override
+                    protected void updateItem(Participant item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item == null || empty) {
+                            setGraphic(null);
+                            return;
+                        }
+                        setGraphic(new Text(item.getName()));
+                    }
+                };
+            }
+        };
+        participantComboBox.setCellFactory(cb);
+        participantComboBox.setButtonCell(cb.call(null));
+        participantNames.setCellFactory(cb);
+        participantComboBox.setItems(participantsObs);
+        participantNames.setItems(participantsObs);
+    }
+
+    private void refreshParticipants() {
+
+        participantsObs.clear();
+        for (Participant p : this.ev.getParticipants()) {
+            participantsObs.add(p);
+        }
+    }
+
+    private void refreshExpenses() {
         expensesAllObs.clear();
         expensesFromObs.clear();
         expensesIncludingObs.clear();
 
         Participant selectedParticipant = participantComboBox.getSelectionModel().getSelectedItem();
         for (Expense e : this.ev.getExpenses()) {
+            System.out.println(e);
             expensesAllObs.add(e);
             if (Objects.equals(e.getCreator(), participantComboBox.getSelectionModel().getSelectedItem())) {
                 expensesFromObs.add(e);
