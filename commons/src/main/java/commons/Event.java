@@ -48,7 +48,9 @@ public class Event {
         this.expenses = expenses;
     }
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "event")
+    @OneToMany(fetch = FetchType.EAGER,
+        cascade = { CascadeType.PERSIST, CascadeType.MERGE },
+        mappedBy = "event")
     @JsonManagedReference
     private Set<Expense> expenses;
 

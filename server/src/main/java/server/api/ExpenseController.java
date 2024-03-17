@@ -21,6 +21,7 @@ public class ExpenseController {
      * Create a new expenses controller. This controller manages expenses for events
      *
      * @param repo The expense repository
+     * @param eventRepo The event repository
      */
     public ExpenseController(ExpenseRepository repo, EventRepository eventRepo) {
         this.repo = repo;
@@ -46,6 +47,7 @@ public class ExpenseController {
      * Create a new expense, supplying the event id in the URL
      * 
      * @param newExpense the expense to add
+     * @param eventId the ID of the event
      * @return 204 No content if successful, else 400 bad request
      */
     @PostMapping("/by_event/{id}")
@@ -124,8 +126,8 @@ public class ExpenseController {
         }
         if (expense.getEvent() != null) {
             return ResponseEntity
-                    .badRequest()
-                    .body("Cannot change event of expense, delete this and create a new one instead");
+                .badRequest()
+                .body("Cannot change event of expense, delete this and create a new one instead");
         }
         if (expense.getCreator() != null) {
             oldExpense.setReceiver(expense.getCreator());

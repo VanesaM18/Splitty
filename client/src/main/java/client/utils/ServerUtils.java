@@ -308,7 +308,8 @@ public class ServerUtils {
             requestMessage.setMethod("GET");
             WebSocketMessage response = sendMessageWithResponse(requestMessage);
             if (response.getData() != null) {
-                return Optional.of(getObjectMapper().convertValue(response.getData(), String.class));
+                return Optional.of(
+                    getObjectMapper().convertValue(response.getData(), String.class));
             } else {
                 return Optional.empty();
             }

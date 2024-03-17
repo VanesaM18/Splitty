@@ -66,6 +66,12 @@ public class ExpenseCtrl {
 
     private Expense updateExpense;
 
+    /**
+     * Construct an ExpenseCtrl
+     *
+     * @param server The server utilities (gets injected)
+     * @param mainCtrl The main controller (gets injected)
+     */
     @Inject
     public ExpenseCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
@@ -83,10 +89,20 @@ public class ExpenseCtrl {
         initSelectParticipants();
     }
 
+    /**
+     * Get the event currently linked to the controller
+     *
+     * @return The event
+     */
     public Event getEvent() {
         return event;
     }
 
+    /**
+     * Link a new event to the controller
+     *
+     * @param event The event to link
+     */
     public void setEvent(Event event) {
         this.event = event;
         clearFields();
@@ -95,6 +111,11 @@ public class ExpenseCtrl {
         }
     }
 
+    /**
+     * Set updateExpense
+     *
+     * @param e The expense to set
+     */
     public void setUpdateExpense(Expense e) {
         this.updateExpense = e;
     }

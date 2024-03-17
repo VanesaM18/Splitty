@@ -100,7 +100,16 @@ public class WebSocketHandler extends TextWebSocketHandler {
             handleParticipantsApi(session, request);
         } else if (endPoint.contains("/client")) {
             handleClientUpdate(session, request);
-        } else if (endPoint.contains("/expenses")) {
+        } else {
+            handleRequest2(session, request);
+        }
+    }
+    /** FIXME: Hack for checkstyle cyclomatic complexity
+     */
+    private void handleRequest2(WebSocketSession session,
+            WebSocketMessage request) throws Exception {
+        String endPoint = request.getEndpoint();
+        if (endPoint.contains("/expenses")) {
             handleExpensesApi(session, request);
         } else if (endPoint.contains("/")) {
             updateClients(session, request);
@@ -134,7 +143,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
         returnResult(session, request, savedExpense.getBody());
     }
 
-    private void handleExpenseByEventId(WebSocketSession session, WebSocketMessage request) throws IOException {
+    private void handleExpenseByEventId(WebSocketSession session, WebSocketMessage request)
+        throws IOException {
         var meth = request.getMethod();
         if (!("GET".equals(meth) || "POST".equals(meth))) {
             return;

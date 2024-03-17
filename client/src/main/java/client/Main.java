@@ -79,16 +79,24 @@ public class Main extends Application {
      * @throws IOException any IO error related
      */
     public void start(Locale locale) throws IOException {
-        var settings = FXML.load(SettingsCtrl.class, locale, "client", "scenes", "Settings.fxml");
-        var management = FXML.load(ManagementCtrl.class, locale, "client", "scenes", "Management.fxml");
-        var loginAdmin = FXML.load(LoginCtrl.class, locale, "client", "scenes", "LoginView.fxml");
+        var settings =
+            FXML.load(SettingsCtrl.class, locale, "client", "scenes", "Settings.fxml");
+        var management =
+            FXML.load(ManagementCtrl.class, locale, "client", "scenes", "Management.fxml");
+        var loginAdmin =
+            FXML.load(LoginCtrl.class, locale, "client", "scenes", "LoginView.fxml");
 
-        var participants = FXML.load(ParticipantsCtrl.class, locale, "client", "scenes", "Participants.fxml");
+        var participants =
+            FXML.load(ParticipantsCtrl.class, locale, "client", "scenes", "Participants.fxml");
 
-        var expense = FXML.load(ExpenseCtrl.class, locale, "client", "scenes", "Expense.fxml");
-        var startPage = FXML.load(StartScreenCtrl.class, locale, "client", "scenes", "StartScreen.fxml");
-        var overviewEvent = FXML.load(OverviewCtrl.class, locale, "client", "scenes", "Overview.fxml");
-        var invite = FXML.load(InviteScreenCtrl.class, locale, "client", "scenes", "InviteScreen.fxml");
+        var expense =
+            FXML.load(ExpenseCtrl.class, locale, "client", "scenes", "Expense.fxml");
+        var startPage =
+            FXML.load(StartScreenCtrl.class, locale, "client", "scenes", "StartScreen.fxml");
+        var overviewEvent =
+            FXML.load(OverviewCtrl.class, locale, "client", "scenes", "Overview.fxml");
+        var invite =
+            FXML.load(InviteScreenCtrl.class, locale, "client", "scenes", "InviteScreen.fxml");
 
         InitializationData data = new InitializationData();
         data.setSettings(settings);

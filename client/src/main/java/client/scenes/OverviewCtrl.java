@@ -35,7 +35,8 @@ public class OverviewCtrl {
 
     private final ObservableList<Expense> expensesAllObs = FXCollections.observableArrayList();
     private final ObservableList<Expense> expensesFromObs = FXCollections.observableArrayList();
-    private final ObservableList<Expense> expensesIncludingObs = FXCollections.observableArrayList();
+    private final ObservableList<Expense> expensesIncludingObs =
+        FXCollections.observableArrayList();
 
     private Event ev;
 
@@ -187,7 +188,9 @@ public class OverviewCtrl {
         Participant selectedParticipant = participantComboBox.getSelectionModel().getSelectedItem();
         for (Expense e : this.ev.getExpenses()) {
             expensesAllObs.add(e);
-            if (Objects.equals(e.getCreator(), participantComboBox.getSelectionModel().getSelectedItem())) {
+            if (Objects.equals(e.getCreator(),
+                               participantComboBox.getSelectionModel().getSelectedItem())
+            ) {
                 expensesFromObs.add(e);
             }
             if (e.getSplitBetween().contains(selectedParticipant)) {
@@ -226,12 +229,12 @@ public class OverviewCtrl {
         refresh();
     }
 
+    /**
+     * Trigger the new expense dialog
+     */
     public void addExpense() {
-        // if (participantComboBox.getSelectionModel().getSelectedItem() == null) {
-        // // TODO: Add separate warning label
-        // warning.setText("First choose a participant");
-        // }
-        mainCtrl.showExpense(this.ev, participantComboBox.getSelectionModel().getSelectedItem(), null);
+        mainCtrl.showExpense(this.ev,
+                             participantComboBox.getSelectionModel().getSelectedItem(), null);
         refresh();
     }
 

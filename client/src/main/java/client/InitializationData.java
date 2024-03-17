@@ -24,10 +24,20 @@ public class InitializationData {
     public InitializationData() {
     }
 
+    /**
+     * Get expense pair
+     *
+     * @return the expense pair
+     */
     public Pair<ExpenseCtrl, Parent> getExpense() {
         return expense;
     }
 
+    /**
+     * Set expense pair
+     *
+     * @param expense The expense pair
+     */
     public void setExpense(Pair<ExpenseCtrl, Parent> expense) {
         this.expense = expense;
     }

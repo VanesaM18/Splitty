@@ -10,7 +10,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
@@ -32,9 +31,10 @@ public class Expense {
     private Long id;
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "internalValue", column = @Column(name = "amount_value")),
-            @AttributeOverride(name = "currency", column = @Column(name = "amount_currency")),
-            @AttributeOverride(name = "fractionDivider", column = @Column(name = "amount_fraction_divider"))
+        @AttributeOverride(name = "internalValue", column = @Column(name = "amount_value")),
+        @AttributeOverride(name = "currency", column = @Column(name = "amount_currency")),
+        @AttributeOverride(name = "fractionDivider",
+                           column = @Column(name = "amount_fraction_divider"))
     })
     private Monetary amount;
     @ManyToOne(optional = false)
