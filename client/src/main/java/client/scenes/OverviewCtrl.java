@@ -27,7 +27,11 @@ public class OverviewCtrl {
     @FXML
     private ListView<Expense> expensesFrom;
     @FXML
+    private Tab tabFrom;
+    @FXML
     private ListView<Expense> expensesIncluding;
+    @FXML
+    private Tab tabIncluding;
 
     private final ObservableList<Expense> expensesAllObs = FXCollections.observableArrayList();
     private final ObservableList<Expense> expensesFromObs = FXCollections.observableArrayList();
@@ -148,6 +152,9 @@ public class OverviewCtrl {
                 };
             }
         };
+        var selectedParticipant = participantComboBox.getSelectionModel().selectedItemProperty();
+        selectedParticipant.subscribe(participant -> refreshExpenses());
+
         participantComboBox.setCellFactory(cb);
         participantComboBox.setButtonCell(cb.call(null));
         participantNames.setCellFactory(cb);
@@ -164,13 +171,21 @@ public class OverviewCtrl {
     }
 
     private void refreshExpenses() {
+        if (this.ev == null) {
+            return;
+        }
+        var selectedItem = participantComboBox.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            var name = selectedItem.getName();
+            tabFrom.setText("From ".concat(name));
+            tabIncluding.setText("Including ".concat(name));
+        }
         expensesAllObs.clear();
         expensesFromObs.clear();
         expensesIncludingObs.clear();
 
         Participant selectedParticipant = participantComboBox.getSelectionModel().getSelectedItem();
         for (Expense e : this.ev.getExpenses()) {
-            System.out.println(e);
             expensesAllObs.add(e);
             if (Objects.equals(e.getCreator(), participantComboBox.getSelectionModel().getSelectedItem())) {
                 expensesFromObs.add(e);

@@ -31,6 +31,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 
 public class ExpenseCtrl {
     @FXML
@@ -194,10 +195,10 @@ public class ExpenseCtrl {
 
     private void initSelectParticipants() {
         var getSelectedProperty = new Callback<Participant, ObservableValue<Boolean>>() {
-            private final SimpleBooleanProperty prop = new SimpleBooleanProperty();
 
             @Override
             public ObservableValue<Boolean> call(Participant participant) {
+                final SimpleBooleanProperty prop = new SimpleBooleanProperty();
                 prop.subscribe((Boolean value) -> {
                     if (value) {
                         selectParticipantsObs.add(participant);
@@ -209,7 +210,19 @@ public class ExpenseCtrl {
             }
 
         };
-        selectParticipant.setCellFactory(CheckBoxListCell.forListView(getSelectedProperty));
+        selectParticipant.setCellFactory(CheckBoxListCell.forListView(getSelectedProperty,
+                new StringConverter<Participant>() {
+                    @Override
+                    public String toString(Participant participant) {
+                        return participant.getName();
+                    }
+
+                    @Override
+                    public Participant fromString(String string) {
+                        throw new UnsupportedOperationException("Not needed");
+                    }
+
+                }));
         selectParticipant.setItems(participantsObs);
     }
 
