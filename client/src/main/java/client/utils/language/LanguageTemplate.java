@@ -10,6 +10,21 @@ import java.util.Locale;
 
 public abstract class LanguageTemplate implements Language {
 
+    @Override
+    public void run() {
+        Locale locale = this.getLocale();
+        var optionalMain = Main.getInstance();
+        if (optionalMain.isPresent()) {
+            try {
+                var main = optionalMain.get();
+                main.start(locale, main.getSceneManager().popScene());
+
+            } catch (IOException e) {
+                //TODO log error
+            }
+        }
+    }
+
     /**
      * Activates the change of language
      * @return button of the language
@@ -17,25 +32,17 @@ public abstract class LanguageTemplate implements Language {
     public Button getButton() {
         Button button = new Button();
         button.setText(this.getText());
-        Locale locale = this.getLocale();
+        Runnable action = this;
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                var optionalMain = Main.getInstance();
-                if (optionalMain.isPresent()) {
-                    try {
-                        optionalMain.get().start(locale);
-
-                    } catch (IOException e) {
-                        //TODO log error
-                    }
-                }
+                action.run();
             }
         });
         return button;
     }
 
-    protected abstract String getText();
+    public abstract String getText();
 
     private Locale getLocale() {
         return Locale.of(getLanguage(), getCountry());

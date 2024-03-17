@@ -6,7 +6,7 @@ public class English extends LanguageTemplate {
 
 
     @Override
-    protected String getText() {
+    public String getText() {
         return "English";
     }
 
@@ -14,7 +14,6 @@ public class English extends LanguageTemplate {
     protected String getLanguage() {
         return "en";
     }
-
     @Override
     protected String getCountry() {
         return "EN";

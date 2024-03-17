@@ -4,7 +4,7 @@ import client.utils.language.LanguageTemplate;
 
 public class Nederlands extends LanguageTemplate {
     @Override
-    protected String getText() {
+    public String getText() {
         return "Nederlands";
     }
 
