@@ -3,25 +3,41 @@ package client.scenes;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
+import commons.Expense;
 import commons.Participant;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.text.Text;
+import javafx.util.Callback;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.Optional;
 
 public class OverviewCtrl {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
+    @FXML
+    private ListView<Expense> expensesAll;
+    @FXML
+    private ListView<Expense> expensesFrom;
+    @FXML
+    private Tab tabFrom;
+    @FXML
+    private ListView<Expense> expensesIncluding;
+    @FXML
+    private Tab tabIncluding;
+
+    private final ObservableList<Expense> expensesAllObs = FXCollections.observableArrayList();
+    private final ObservableList<Expense> expensesFromObs = FXCollections.observableArrayList();
+    private final ObservableList<Expense> expensesIncludingObs =
+        FXCollections.observableArrayList();
+
     private Event ev;
 
     @FXML
@@ -35,18 +51,19 @@ public class OverviewCtrl {
     @FXML
     private Button editParticipantButton;
     @FXML
-    private ListView<String> participantNames;
-    private final ObservableList<String> participantNamesObs = FXCollections.observableArrayList();
+    private ListView<Participant> participantNames;
+    private final ObservableList<Participant> participantsObs = FXCollections.observableArrayList();
     @FXML
-    private ComboBox<String> participantComboBox;
+    private ComboBox<Participant> participantComboBox;
     @FXML
     private Label warning;
 
     /**
      * Controller responsible for handling the quote overview functionality.
      * 
-     * @param server An instance of ServerUtils for server-related operations.
-     * @param mainCtrl An instance of MainCtrl for coordinating with the main controller.
+     * @param server   An instance of ServerUtils for server-related operations.
+     * @param mainCtrl An instance of MainCtrl for coordinating with the main
+     *                 controller.
      */
     @Inject
     public OverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
@@ -77,12 +94,111 @@ public class OverviewCtrl {
         this.attachImage(deleteParticipantButton, "/assets/bin.png");
         if (this.ev != null) {
             this.ev = server.getEventById(ev.getInviteCode());
-            participantNamesObs.clear();
-            for (Participant p : this.ev.getParticipants()) {
-                participantNamesObs.add(p.getName());
+            participantsObs.clear();
+            refreshParticipants();
+            participantNames.setItems(participantsObs);
+            this.refreshExpenses();
+        }
+    }
+
+    /**
+     * Inialize callback from FXML
+     */
+    @FXML
+    public void initialize() {
+        initExpenses();
+        initParticipants();
+    }
+
+    private void initExpenses() {
+        var cb = new Callback<ListView<Expense>, ListCell<Expense>>() {
+            @Override
+            public ListCell<Expense> call(ListView<Expense> listView) {
+                return new ListCell<Expense>() {
+                    @Override
+                    protected void updateItem(Expense item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item == null || empty) {
+                            setGraphic(null);
+                            return;
+                        }
+                        // TODO: Make this more detailed
+                        setGraphic(new Text(item.getName()));
+                    }
+                };
             }
-            participantNames.setItems(participantNamesObs);
-            participantComboBox.setItems(participantNamesObs);
+        };
+        expensesAll.setCellFactory(cb);
+        expensesFrom.setCellFactory(cb);
+        expensesIncluding.setCellFactory(cb);
+        expensesAll.setItems(expensesAllObs);
+        expensesFrom.setItems(expensesFromObs);
+        expensesIncluding.setItems(expensesIncludingObs);
+    }
+
+    private void initParticipants() {
+        var cb = new Callback<ListView<Participant>, ListCell<Participant>>() {
+            @Override
+            public ListCell<Participant> call(ListView<Participant> listView) {
+                return new ListCell<Participant>() {
+                    @Override
+                    protected void updateItem(Participant item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item == null || empty) {
+                            setGraphic(null);
+                            return;
+                        }
+                        setGraphic(new Text(item.getName()));
+                    }
+                };
+            }
+        };
+        var selectedParticipant = participantComboBox.getSelectionModel().selectedItemProperty();
+        selectedParticipant.subscribe(participant -> refreshExpenses());
+
+        participantComboBox.setCellFactory(cb);
+        participantComboBox.setButtonCell(cb.call(null));
+        participantNames.setCellFactory(cb);
+        participantComboBox.setItems(participantsObs);
+        participantNames.setItems(participantsObs);
+    }
+
+    private void refreshParticipants() {
+
+        participantsObs.clear();
+        for (Participant p : this.ev.getParticipants()) {
+            participantsObs.add(p);
+        }
+    }
+
+    private void refreshExpenses() {
+        if (this.ev == null) {
+            return;
+        }
+        var selectedItem = participantComboBox.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            var name = selectedItem.getName();
+            tabFrom.setText("From ".concat(name));
+            tabIncluding.setText("Including ".concat(name));
+        } else {
+            tabFrom.setText("From ...");
+            tabIncluding.setText("Including ...");
+        }
+        expensesAllObs.clear();
+        expensesFromObs.clear();
+        expensesIncludingObs.clear();
+
+        Participant selectedParticipant = participantComboBox.getSelectionModel().getSelectedItem();
+        for (Expense e : this.ev.getExpenses()) {
+            expensesAllObs.add(e);
+            if (Objects.equals(e.getCreator(),
+                               participantComboBox.getSelectionModel().getSelectedItem())
+            ) {
+                expensesFromObs.add(e);
+            }
+            if (e.getSplitBetween().contains(selectedParticipant)) {
+                expensesIncludingObs.add(e);
+            }
         }
     }
 
@@ -108,11 +224,20 @@ public class OverviewCtrl {
     }
 
     /**
-     * Method to add a new participant. This method triggers the display of the add participant
-     * window.
+     * Method to add a new participant. This method triggers the display of the add
+     * participant window.
      */
     public void addParticipant() {
-        mainCtrl.showParticipants(this.ev, true, "");
+        mainCtrl.showParticipants(this.ev, true, null);
+        refresh();
+    }
+
+    /**
+     * Trigger the new expense dialog
+     */
+    public void addExpense() {
+        mainCtrl.showExpense(this.ev,
+                             participantComboBox.getSelectionModel().getSelectedItem(), null);
         refresh();
     }
 
@@ -121,13 +246,15 @@ public class OverviewCtrl {
      * This method triggers the display of the edit participant window.
      */
     public void editParticipant() {
-        if(participantNames.getSelectionModel().getSelectedItem() == null) {
+        if (participantNames.getSelectionModel().getSelectedItem() == null) {
             warning.setText("First chose a participant.");
             return;
         }
         warning.setText("");
         mainCtrl.showParticipants(this.ev, false,
-                participantNames.getSelectionModel().getSelectedItem());
+                participantNames
+                        .getSelectionModel()
+                        .getSelectedItem());
     }
 
     /**
@@ -138,8 +265,10 @@ public class OverviewCtrl {
     }
 
     /**
-     * Open a dialog with an input box to allow the user to enter a new event name. The name that is
-     * entered is made to be new event name. If the user cancels the dialog, no action is performed.
+     * Open a dialog with an input box to allow the user to enter a new event name.
+     * The name that is
+     * entered is made to be new event name. If the user cancels the dialog, no
+     * action is performed.
      */
     public void editTitle() {
         TextInputDialog dialog = new TextInputDialog(ev.getName());
@@ -163,23 +292,18 @@ public class OverviewCtrl {
     }
 
     /**
-     *  Deletes a participant from the event.
+     * Deletes a participant from the event.
      */
     public void deleteParticipant() {
-        if(participantNames.getSelectionModel().getSelectedItem() == null) {
+        if (participantNames.getSelectionModel().getSelectedItem() == null) {
             warning.setText("First chose a participant.");
             return;
         }
         warning.setText("");
-        String name = participantNames.getSelectionModel().getSelectedItem();
-        Participant participant = null;
-        for(Participant p : ev.getParticipants()) {
-            if (p.getName().equals(name)) participant = p;
-        }
-        ev.removeParticipant(participant);
+        ev.removeParticipant(participantNames.getSelectionModel().getSelectedItem());
         server.updateEvent(ev);
         mainCtrl.showOverviewEvent(ev);
         refresh();
-        //server.deleteParticipant(participant);
+        // server.deleteParticipant(participant);
     }
 }

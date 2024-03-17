@@ -9,6 +9,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -29,7 +31,7 @@ public class Expense {
     private Long id;
     @Embedded
     @AttributeOverrides({
-        @AttributeOverride(name = "value", column = @Column(name = "amount_value")),
+        @AttributeOverride(name = "internalValue", column = @Column(name = "amount_value")),
         @AttributeOverride(name = "currency", column = @Column(name = "amount_currency")),
         @AttributeOverride(name = "fractionDivider",
                            column = @Column(name = "amount_fraction_divider"))
@@ -41,6 +43,7 @@ public class Expense {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "event_id", nullable = false)
+    @JsonBackReference
     private Event event;
 
     private String name;
@@ -83,6 +86,7 @@ public class Expense {
 
     /**
      * Gets the name of the expense
+     * 
      * @return The name of the expense
      */
     public String getName() {
@@ -91,6 +95,7 @@ public class Expense {
 
     /**
      * Sets the name of the expense
+     * 
      * @param name The name of the expense
      */
     public void setName(String name) {
@@ -204,11 +209,11 @@ public class Expense {
     }
 
     /**
-     * Set the associated participant
+     * Set the participant that will receive the payment
      * 
-     * @param participant The associated participant
+     * @param participant The participant that will receive the payment
      */
-    public void setCreator(Participant participant) {
+    public void setReceiver(Participant participant) {
         this.creator = participant;
     }
 
