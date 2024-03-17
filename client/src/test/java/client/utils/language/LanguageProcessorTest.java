@@ -8,7 +8,8 @@ class LanguageProcessorTest {
 
     @Test
     void getInterfaceImplementations() {
-        var implementations = LanguageProcessor.getInterfaceImplementations();
+        LanguageProcessor languageProcessor = new LanguageProcessor();
+        var implementations = languageProcessor.getInterfaceImplementations();
         System.out.println(implementations);
         assertEquals(true, implementations.size() != 0);
     }

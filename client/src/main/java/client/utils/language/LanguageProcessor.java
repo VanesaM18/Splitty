@@ -8,16 +8,25 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LanguageProcessor {
 
+    private final List<Language> languages;
+    private final Map<String, Language> actions = new HashMap<>();;
+
+    public LanguageProcessor() {
+        this.languages = findInterfaceImplementations();
+        createActions();
+    }
     /**
      * Inject the languages by using the ClassPathScanner
      * @return list of language objects
      * @param <T> wildcard standing for the common class for the injected objects
      */
-    public static <T> List<T> getInterfaceImplementations() {
+    private <T> List<T> findInterfaceImplementations() {
         List<T> implementations = new ArrayList<>();
         var interfaceClass = Language.class;
         var packageName = "client.utils.language.implementations";
@@ -50,13 +59,25 @@ public class LanguageProcessor {
         return implementations;
     }
 
+    public List<Language> getLanguages() {
+        return new ArrayList<>(languages);
+    }
+
+    private void createActions() {
+        this.languages.forEach(language ->
+                actions.put(language.getText(), language));
+    }
+
+    public Map<String, Runnable> getActions() {
+        return new HashMap<>(actions);
+    }
     /**
      * VBox for displaying the language buttons
      * @return VBox populated with language buttons
      */
-    public static VBox getButtons() {
+    public VBox getButtons() {
         VBox root = new VBox(20);
-        HBox bbox = new HBox(toArray(getInterfaceImplementations()));
+        HBox bbox = new HBox(toArray(this.languages));
         root.getChildren().add(bbox);
         root.getChildren().add(new StackPane());
         return root;
