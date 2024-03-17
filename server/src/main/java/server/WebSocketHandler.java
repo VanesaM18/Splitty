@@ -120,7 +120,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         if ("api/expenses".equals(endpoint)) {
             handleExpense(session, request);
         } else if (endpoint.equals("api/expenses/by_event")) {
-            handleGetExpenseByEventId(session, request);
+            handleExpenseByEventId(session, request);
         }
     }
 
@@ -134,16 +134,22 @@ public class WebSocketHandler extends TextWebSocketHandler {
         returnResult(session, request, savedExpense.getBody());
     }
 
-    private void handleGetExpenseByEventId(WebSocketSession session, WebSocketMessage request) throws IOException {
-        if (!"GET".equals(request.getMethod())) {
+    private void handleExpenseByEventId(WebSocketSession session, WebSocketMessage request) throws IOException {
+        var meth = request.getMethod();
+        if (!("GET".equals(meth) || "POST".equals(meth))) {
             return;
         }
 
         String id = objectMapper.convertValue(request.getParameters().get(0), String.class);
+        if ("GET".equals(meth)) {
+            List<Expense> expenses = expenseController.getByEvent(id).getBody();
+            returnResult(session, request, expenses);
+        } else {
+            Expense expense = objectMapper.convertValue(request.getData(), Expense.class);
+            String res = expenseController.addExpenseByEventId(id, expense).getBody();
+            returnResult(session, request, res);
+        }
 
-        List<Expense> expenses = expenseController.getByEvent(id).getBody();
-
-        returnResult(session, request, expenses);
     }
 
     /**

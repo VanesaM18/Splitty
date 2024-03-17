@@ -235,7 +235,6 @@ public class MainCtrl {
             expenseCtrl.setEvent(ev);
         }
         expenseCtrl.setUpdateExpense(edit);
-        participantsCtrl.setParticipantToChange(null);
         primaryStage.setTitle((edit == null ? "Add" : "Edit").concat(" Expense"));
         primaryStage.setScene(expense);
         participants.setOnKeyPressed(e -> expenseCtrl.keyPressed(e));

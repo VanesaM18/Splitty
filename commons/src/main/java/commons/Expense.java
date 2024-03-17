@@ -9,6 +9,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -29,7 +32,7 @@ public class Expense {
     private Long id;
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "value", column = @Column(name = "amount_value")),
+            @AttributeOverride(name = "internalValue", column = @Column(name = "amount_value")),
             @AttributeOverride(name = "currency", column = @Column(name = "amount_currency")),
             @AttributeOverride(name = "fractionDivider", column = @Column(name = "amount_fraction_divider"))
     })
@@ -40,6 +43,7 @@ public class Expense {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "event_id", nullable = false)
+    @JsonBackReference
     private Event event;
 
     private String name;

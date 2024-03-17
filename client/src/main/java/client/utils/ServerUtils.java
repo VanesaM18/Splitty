@@ -282,9 +282,10 @@ public class ServerUtils {
      */
     public void addExpense(Expense expense) throws ExecutionException, InterruptedException {
         WebSocketMessage request = new WebSocketMessage();
-        request.setEndpoint("api/expenses");
+        request.setEndpoint("api/expenses/by_event");
         request.setMethod("POST");
         request.setData(expense);
+        request.setParameters(List.of(expense.getEvent().getInviteCode()));
         try {
             sendMessageWithResponse(request);
         } catch (ExecutionException | InterruptedException e) {

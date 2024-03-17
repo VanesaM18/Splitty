@@ -1,9 +1,12 @@
 package server.api;
 
+import commons.Event;
 import commons.Expense;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import server.database.EventRepository;
 import server.database.ExpenseRepository;
 
 import java.util.List;
@@ -12,14 +15,16 @@ import java.util.List;
 @RequestMapping("/api/expenses")
 public class ExpenseController {
     private final ExpenseRepository repo;
+    private final EventRepository eventRepo;
 
     /**
      * Create a new expenses controller. This controller manages expenses for events
      *
      * @param repo The expense repository
      */
-    public ExpenseController(ExpenseRepository repo) {
+    public ExpenseController(ExpenseRepository repo, EventRepository eventRepo) {
         this.repo = repo;
+        this.eventRepo = eventRepo;
     }
 
     /**
@@ -35,6 +40,26 @@ public class ExpenseController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(expenses);
+    }
+
+    /**
+     * Create a new expense, supplying the event id in the URL
+     * 
+     * @param newExpense the expense to add
+     * @return 204 No content if successful, else 400 bad request
+     */
+    @PostMapping("/by_event/{id}")
+    public ResponseEntity<String> addExpenseByEventId(@PathVariable("id") String eventId,
+            @RequestBody Expense newExpense) {
+        if (newExpense == null
+                || newExpense.getCreator() == null
+                || newExpense.getAmount() == null) {
+            return ResponseEntity.badRequest().body("POSTed expense is incomplete");
+        }
+        Event event = eventRepo.getReferenceById(eventId);
+        newExpense.setEvent(event);
+        repo.save(newExpense);
+        return ResponseEntity.noContent().build();
     }
 
     /**

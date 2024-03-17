@@ -195,11 +195,12 @@ public class OverviewCtrl {
     }
 
     public void addExpense() {
-        if (participantComboBox.getSelectionModel().getSelectedItem() == null) {
-            // TODO: Add separate warning label
-            warning.setText("First choose a participant");
-        }
+        // if (participantComboBox.getSelectionModel().getSelectedItem() == null) {
+        // // TODO: Add separate warning label
+        // warning.setText("First choose a participant");
+        // }
         mainCtrl.showExpense(this.ev, participantComboBox.getSelectionModel().getSelectedItem(), null);
+        refresh();
     }
 
     /**

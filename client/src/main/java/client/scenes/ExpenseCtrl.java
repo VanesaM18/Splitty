@@ -3,16 +3,17 @@ package client.scenes;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.Currency;
+import java.util.HashSet;
+
+import com.google.inject.Inject;
 
 import client.utils.ServerUtils;
 import commons.Event;
 import commons.Expense;
 import commons.Monetary;
 import commons.Participant;
-import jakarta.ws.rs.WebApplicationException;
-import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,6 +21,7 @@ import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -41,7 +43,7 @@ public class ExpenseCtrl {
     private TextField amount;
 
     @FXML
-    private TextField date;
+    private DatePicker date;
 
     @FXML
     private Label warning;
@@ -63,13 +65,21 @@ public class ExpenseCtrl {
 
     private Expense updateExpense;
 
+    @Inject
     public ExpenseCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
+
+    }
+
+    /**
+     * Initialize the controller
+     */
+    @FXML
+    public void initialize() {
         selectParticipant.setItems(participantsObs);
         initReceiverCombobox();
         initSelectParticipants();
-
     }
 
     public Event getEvent() {
@@ -94,6 +104,7 @@ public class ExpenseCtrl {
     public void abort() {
         clearFields();
         warning.setText("");
+        mainCtrl.showOverviewEvent(null);
     }
 
     /**
@@ -126,10 +137,12 @@ public class ExpenseCtrl {
         }
 
         try {
-            expense.setAmount(validateAmount());
-            expense.setDate(validateDate());
-            expense.setName(validateName());
+            expense.setAmount(getAmount());
+            expense.setDate(getDate());
+            expense.setName(getName());
             expense.setReceiver(validateReceiver());
+            expense.setEvent(this.event);
+            expense.setSplitBetween(new HashSet<>(selectParticipantsObs));
         } catch (Exception ex) {
             warning.setText(ex.getMessage());
             return;
@@ -137,7 +150,12 @@ public class ExpenseCtrl {
 
         warning.setText("");
         try {
-        } catch (WebApplicationException err) {
+            if (newExpense) {
+                server.addExpense(expense);
+            } else {
+                // do nothing for now
+            }
+        } catch (Exception err) {
 
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initModality(Modality.APPLICATION_MODAL);
@@ -170,16 +188,26 @@ public class ExpenseCtrl {
 
         receiver.setCellFactory(cb);
         receiver.setButtonCell(cb.call(null));
+        receiver.setItems(participantsObs);
 
     }
 
     private void initSelectParticipants() {
         var getSelectedProperty = new Callback<Participant, ObservableValue<Boolean>>() {
+            private final SimpleBooleanProperty prop = new SimpleBooleanProperty();
+
             @Override
             public ObservableValue<Boolean> call(Participant participant) {
-                return Bindings.createBooleanBinding(
-                        () -> selectParticipantsObs.contains(participant), selectParticipantsObs);
+                prop.subscribe((Boolean value) -> {
+                    if (value) {
+                        selectParticipantsObs.add(participant);
+                    } else {
+                        selectParticipantsObs.remove(participant);
+                    }
+                });
+                return prop;
             }
+
         };
         selectParticipant.setCellFactory(CheckBoxListCell.forListView(getSelectedProperty));
         selectParticipant.setItems(participantsObs);
@@ -188,18 +216,13 @@ public class ExpenseCtrl {
     private void clearFields() {
         description.clear();
         amount.clear();
-        date.clear();
+        date.setValue(null);
         selectParticipantsObs.clear();
         participantsObs.clear();
     }
 
-    private LocalDate validateDate() throws Exception {
-        try {
-            return LocalDate.parse(date.getText());
-        } catch (DateTimeParseException ex) {
-            // TODO: Add language support
-            throw new Exception("Invalid Date");
-        }
+    private LocalDate getDate() throws Exception {
+        return date.getValue();
     }
 
     private long pow(long input) {
@@ -210,7 +233,7 @@ public class ExpenseCtrl {
         return out;
     }
 
-    private Monetary validateAmount() throws Exception {
+    private Monetary getAmount() throws Exception {
         BigDecimal amount;
         try {
             amount = new BigDecimal(this.amount.getText());
@@ -227,7 +250,7 @@ public class ExpenseCtrl {
 
     }
 
-    private String validateName() throws Exception {
+    private String getName() throws Exception {
         String name = this.description.getText();
         if ("".equals(name.strip())) {
             throw new Exception("Name must not be empty");
