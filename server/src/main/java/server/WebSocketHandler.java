@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.websocket.server.ServerEndpoint;
 import server.api.AdminController;
 import server.api.EventController;
+import server.api.ExpenseController;
 import server.api.ParticipantController;
 
 import java.io.IOException;
@@ -33,6 +34,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private EventController eventController;
     @Autowired
     private ParticipantController participantController;
+    @Autowired
+    private ExpenseController expenseController;
 
     /**
      * Creates a class for handling the websocket connection
@@ -43,6 +46,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     /**
      * Adds a new client to the lists of clients
+     * 
      * @param session the client session
      */
     @Override
@@ -52,69 +56,132 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     /**
      * Removes a client from the list of clients if he disconnected or errored
+     * 
      * @param session the client session
-     * @param status the closed status
+     * @param status  the closed status
      */
     @Override
     public void afterConnectionClosed(WebSocketSession session,
-                                      CloseStatus status) throws Exception {
+            CloseStatus status) throws Exception {
         connectionToEvent.remove(session);
         sessions.remove(session);
     }
 
     /**
      * Handles requests from clients
+     * 
      * @param session the channel used to communicate
      * @param message the message received through the channel
      * @throws Exception if the message can't be parsed
      */
     @Override
     protected void handleTextMessage(WebSocketSession session,
-                                     TextMessage message) throws Exception {
+            TextMessage message) throws Exception {
         WebSocketMessage request = objectMapper.readValue(message.getPayload(),
-            WebSocketMessage.class);
+                WebSocketMessage.class);
         handleRequest(session, request);
     }
 
     /**
      * Handles the request
+     * 
      * @param session the channel used to communicate
      * @param request the parsed request
      * @throws Exception if the message can't be parsed
      */
     private void handleRequest(WebSocketSession session,
-                               WebSocketMessage request) throws Exception {
+            WebSocketMessage request) throws Exception {
         String endPoint = request.getEndpoint();
         if (endPoint.contains("/admin")) {
             handleAdminApi(session, request);
         } else if (endPoint.contains("/events")) {
             handleEventsApi(session, request);
         } else if (endPoint.contains("/participants")) {
-            handleParticipantsApi (session, request);
+            handleParticipantsApi(session, request);
         } else if (endPoint.contains("/client")) {
             handleClientUpdate(session, request);
+        } else {
+            handleRequest2(session, request);
         }
-        updateClients(session, request);
+    }
+    /** FIXME: Hack for checkstyle cyclomatic complexity
+     */
+    private void handleRequest2(WebSocketSession session,
+            WebSocketMessage request) throws Exception {
+        String endPoint = request.getEndpoint();
+        if (endPoint.contains("/expenses")) {
+            handleExpensesApi(session, request);
+        } else if (endPoint.contains("/")) {
+            updateClients(session, request);
+        }
     }
 
     /**
-     * Send requests to refresh views to all clients that are in the same event as the current one
+     * Handle expenses api for websockets
+     * 
+     * @param session The websocket session
+     * @param request The request
+     * @throws IOException if the object mapper fails
+     */
+    private void handleExpensesApi(WebSocketSession session, WebSocketMessage request)
+            throws Exception {
+        String endpoint = request.getEndpoint();
+        if ("api/expenses".equals(endpoint)) {
+            handleExpense(session, request);
+        } else if (endpoint.equals("api/expenses/by_event")) {
+            handleExpenseByEventId(session, request);
+        }
+    }
+
+    private void handleExpense(WebSocketSession session, WebSocketMessage request)
+            throws Exception {
+        if (!"POST".equals(request.getMethod())) {
+            return;
+        }
+        Expense expense = objectMapper.convertValue(request.getData(), Expense.class);
+        ResponseEntity<String> savedExpense = expenseController.addExpense(expense);
+        returnResult(session, request, savedExpense.getBody());
+    }
+
+    private void handleExpenseByEventId(WebSocketSession session, WebSocketMessage request)
+        throws IOException {
+        var meth = request.getMethod();
+        if (!("GET".equals(meth) || "POST".equals(meth))) {
+            return;
+        }
+
+        String id = objectMapper.convertValue(request.getParameters().get(0), String.class);
+        if ("GET".equals(meth)) {
+            List<Expense> expenses = expenseController.getByEvent(id).getBody();
+            returnResult(session, request, expenses);
+        } else {
+            Expense expense = objectMapper.convertValue(request.getData(), Expense.class);
+            String res = expenseController.addExpenseByEventId(id, expense).getBody();
+            returnResult(session, request, res);
+        }
+
+    }
+
+    /**
+     * Send requests to refresh views to all clients that are in the same event as
+     * the current one
      * Only if the request was POST/PUT/DELETE which means an update
+     * 
      * @param session the session of the current user
      * @param request the request from the current user
      * @throws IOException if the object mapper fails
      */
     private void updateClients(WebSocketSession session,
-                               WebSocketMessage request) throws IOException {
+            WebSocketMessage request) throws IOException {
         if (connectionToEvent.containsKey(session) && !Objects.equals(request.getMethod(), "GET")) {
             WebSocketMessage toUpdate = new WebSocketMessage();
             toUpdate.setEndpoint("events/refresh");
             TextMessage convMessage = new TextMessage(objectMapper.writeValueAsString(toUpdate));
             String inviteCode = connectionToEvent.get(session);
-            for (WebSocketSession ses: sessions) {
+            for (WebSocketSession ses : sessions) {
                 if (connectionToEvent.containsKey(ses)
-                    && connectionToEvent.get(ses).equals(inviteCode)
-                    && ses != session) {
+                        && connectionToEvent.get(ses).equals(inviteCode)
+                        && ses != session) {
                     ses.sendMessage(convMessage);
                 }
             }
@@ -123,54 +190,56 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     /**
      * Process the special requests from the client
+     * 
      * @param session the client session used to identify the client
      * @param request the request message
      */
     private void handleClientUpdate(WebSocketSession session, WebSocketMessage request) {
         if (Objects.equals(request.getEndpoint(), "api/client")) {
             if ("POST".equals(request.getMethod())) {
-                connectionToEvent.put(session, (String)request.getData());
+                connectionToEvent.put(session, (String) request.getData());
             }
         }
     }
 
     /**
      * Handles the event specific to /api/event
+     * 
      * @param session the channel used to communicate
      * @param request the parsed request
      * @throws Exception if the message can't be parsed
      */
-//    private void handleEventsApi(WebSocketSession session,
-//                                 WebSocketMessage request) throws Exception {
-//        switch (request.getEndpoint()) {
-//            case "api/events" -> {
-//                if ("POST".equals(request.getMethod())) {
-//                    Event event = objectMapper.convertValue(request.getData(), Event.class);
-//                    ResponseEntity<Event> savedEvent = eventController.add(event);
-//                    this.returnResult(session, request, savedEvent.getBody());
-//                } else if ("PUT".equals(request.getMethod())) {
-//                    Event event = objectMapper.convertValue(request.getData(), Event.class);
-//                    ResponseEntity<Event> savedEvent =
-//                        eventController.update(event.getInviteCode(), event);
-//                    this.returnResult(session, request, savedEvent.getBody());
-//                }
-//            }
-//            case "api/events/id" -> {
-//                if ("GET".equals(request.getMethod())) {
-//                    List<Object> parameters = request.getParameters();
-//                    String id = (String) parameters.get(0);
-//                    ResponseEntity<Event> event = eventController.getById(id);
-//                    this.returnResult(session, request, event.getBody());
-//                }
-//            }
-//            case "api/events/jsonDump" -> {
-//                handleJsonDumpApi(session, request);
-//            }
-//        }
-//    }
+    // private void handleEventsApi(WebSocketSession session,
+    // WebSocketMessage request) throws Exception {
+    // switch (request.getEndpoint()) {
+    // case "api/events" -> {
+    // if ("POST".equals(request.getMethod())) {
+    // Event event = objectMapper.convertValue(request.getData(), Event.class);
+    // ResponseEntity<Event> savedEvent = eventController.add(event);
+    // this.returnResult(session, request, savedEvent.getBody());
+    // } else if ("PUT".equals(request.getMethod())) {
+    // Event event = objectMapper.convertValue(request.getData(), Event.class);
+    // ResponseEntity<Event> savedEvent =
+    // eventController.update(event.getInviteCode(), event);
+    // this.returnResult(session, request, savedEvent.getBody());
+    // }
+    // }
+    // case "api/events/id" -> {
+    // if ("GET".equals(request.getMethod())) {
+    // List<Object> parameters = request.getParameters();
+    // String id = (String) parameters.get(0);
+    // ResponseEntity<Event> event = eventController.getById(id);
+    // this.returnResult(session, request, event.getBody());
+    // }
+    // }
+    // case "api/events/jsonDump" -> {
+    // handleJsonDumpApi(session, request);
+    // }
+    // }
+    // }
 
     private void handleEventsApi(WebSocketSession session,
-                                 WebSocketMessage request) throws Exception {
+            WebSocketMessage request) throws Exception {
         String endpoint = request.getEndpoint();
         String method = request.getMethod();
 
@@ -182,7 +251,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     }
 
     private void handleEventsEndpoint(WebSocketSession session,
-                                      WebSocketMessage request, String method) throws Exception {
+            WebSocketMessage request, String method) throws Exception {
         switch (method) {
             case "POST" -> handleAddEvent(session, request);
             case "PUT" -> handleUpdateEvent(session, request);
@@ -190,31 +259,30 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-
     private void handleEventsByIdEndpoint(WebSocketSession session,
-                                          WebSocketMessage request,
-                                          String method) throws Exception {
+            WebSocketMessage request,
+            String method) throws Exception {
         if ("GET".equals(method)) {
             handleGetEventById(session, request);
         }
     }
 
     private void handleAddEvent(WebSocketSession session,
-                                WebSocketMessage request) throws Exception {
+            WebSocketMessage request) throws Exception {
         Event event = objectMapper.convertValue(request.getData(), Event.class);
         ResponseEntity<Event> savedEvent = eventController.add(event);
         returnResult(session, request, savedEvent.getBody());
     }
 
     private void handleUpdateEvent(WebSocketSession session,
-                                   WebSocketMessage request) throws Exception {
+            WebSocketMessage request) throws Exception {
         Event event = objectMapper.convertValue(request.getData(), Event.class);
         ResponseEntity<Event> savedEvent = eventController.update(event.getInviteCode(), event);
         returnResult(session, request, savedEvent.getBody());
     }
 
     private void handleGetEvents(WebSocketSession session,
-                                 WebSocketMessage request) throws Exception {
+            WebSocketMessage request) throws Exception {
         String authHeader = request.getAuthHeader();
         ResponseEntity<List<Event>> events = eventController.getAll(authHeader);
         if (events != null) {
@@ -223,7 +291,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     }
 
     private void handleGetEventById(WebSocketSession session,
-                                    WebSocketMessage request) throws Exception {
+            WebSocketMessage request) throws Exception {
         List<Object> parameters = request.getParameters();
         String id = (String) parameters.get(0);
 
@@ -232,7 +300,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     }
 
     private void handleJsonDumpApi(WebSocketSession session,
-                                   WebSocketMessage request) throws Exception {
+            WebSocketMessage request) throws Exception {
         if ("GET".equals(request.getMethod())) {
             ResponseEntity<String> jsonDumpResponse = eventController.getJsonDump();
             if (jsonDumpResponse.getStatusCode().is2xxSuccessful()) {
@@ -243,12 +311,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     /**
      * Handles the event specific to /api/admin
+     * 
      * @param session the channel used to communicate
      * @param request the parsed request
      * @throws Exception if the message can't be parsed
      */
     private void handleAdminApi(WebSocketSession session,
-                                WebSocketMessage request) throws Exception {
+            WebSocketMessage request) throws Exception {
         switch (request.getEndpoint()) {
             case "api/admin" -> {
                 if ("POST".equals(request.getMethod())) {
@@ -269,12 +338,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     /**
      * Handles the participants specific to /api/participants
+     * 
      * @param session the channel used to communicate
      * @param request the parsed request
      * @throws Exception if the message can't be parsed
      */
     private void handleParticipantsApi(WebSocketSession session,
-                                 WebSocketMessage request) throws Exception {
+            WebSocketMessage request) throws Exception {
         switch (request.getEndpoint()) {
             case "api/participants" -> {
                 if ("GET".equals(request.getMethod())) {
@@ -294,18 +364,18 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     /**
      * Handles the participants specific to /api/participants/id
+     * 
      * @param session the channel used to communicate
      * @param request the parsed request
      * @throws Exception if the message can't be parsed
      */
     private void handleParticipantsApiByID(WebSocketSession session,
-                                           WebSocketMessage request) throws Exception {
+            WebSocketMessage request) throws Exception {
         if ("DELETE".equals(request.getMethod())) {
             long participantId = (Long) request.getData();
             ResponseEntity<String> response = participantController.delete(participantId);
             this.returnResult(session, request, response.getBody());
-        }
-        else if ("PUT".equals(request.getMethod())) {
+        } else if ("PUT".equals(request.getMethod())) {
             Participant[] participants = objectMapper.convertValue(
                     request.getData(), Participant[].class);
             Participant oldParticipant = participants[1];
@@ -313,8 +383,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             ResponseEntity<String> response = participantController.update(
                     oldParticipant.getId(), newParticipant);
             this.returnResult(session, request, response.getBody());
-        }
-        else if ("GET".equals(request.getMethod())) {
+        } else if ("GET".equals(request.getMethod())) {
             long id = (long) request.getData();
             ResponseEntity<Participant> response = participantController.getById(id);
             this.returnResult(session, request, response.getBody());
@@ -324,13 +393,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
     /**
      * Returns through the same channel the requested resource (to be used only
      * if it's expected to get a result, if not this call can be ignored)
+     * 
      * @param session the channel used to communicate
      * @param request the parsed request
-     * @param obj the data to be sent back
-     * @throws Exception if the message can't be parsed
+     * @param obj     the data to be sent back
+     * @throws IOException if the message can't be parsed
      */
     private void returnResult(WebSocketSession session,
-                              WebSocketMessage request, Object obj) throws Exception {
+            WebSocketMessage request, Object obj) throws IOException {
         WebSocketMessage messageBack = new WebSocketMessage();
         messageBack.setId(request.getId());
         messageBack.setData(obj);

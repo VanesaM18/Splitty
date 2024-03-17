@@ -40,7 +40,7 @@ public class Main extends Application {
      *
      * @param args to be passed to the client
      * @throws URISyntaxException if anything happens related to URI
-     * @throws IOException if anything happens related to IO
+     * @throws IOException        if anything happens related to IO
      */
     public static void main(String[] args) throws URISyntaxException, IOException {
         launch();
@@ -48,10 +48,19 @@ public class Main extends Application {
 
     /**
      * It starts the client
+<<<<<<< HEAD
      *
      * @param primaryStage the primary stage for this application, onto which the application scene
      *        can be set. Applications may create other stages, if needed, but they will not be
      *        primary stages.
+=======
+     * 
+     * @param primaryStage the primary stage for this application, onto which the
+     *                     application scene
+     *                     can be set. Applications may create other stages, if
+     *                     needed, but they will not be
+     *                     primary stages.
+>>>>>>> main
      * @throws IOException any IO related error
      */
     @Override
@@ -77,28 +86,34 @@ public class Main extends Application {
      * @throws IOException any IO error related
      */
     public void start(Locale locale) throws IOException {
-        var settings = FXML.load(SettingsCtrl.class, locale, "client", "scenes", "Settings.fxml");
+        var settings =
+            FXML.load(SettingsCtrl.class, locale, "client", "scenes", "Settings.fxml");
         var management =
-                FXML.load(ManagementCtrl.class, locale, "client", "scenes", "Management.fxml");
-        var loginAdmin = FXML.load(LoginCtrl.class, locale, "client", "scenes", "LoginView.fxml");
+            FXML.load(ManagementCtrl.class, locale, "client", "scenes", "Management.fxml");
+        var loginAdmin =
+            FXML.load(LoginCtrl.class, locale, "client", "scenes", "LoginView.fxml");
 
         var participants =
-                FXML.load(ParticipantsCtrl.class, locale, "client", "scenes", "Participants.fxml");
+            FXML.load(ParticipantsCtrl.class, locale, "client", "scenes", "Participants.fxml");
 
+        var expense =
+            FXML.load(ExpenseCtrl.class, locale, "client", "scenes", "Expense.fxml");
         var startPage =
-                FXML.load(StartScreenCtrl.class, locale, "client", "scenes", "StartScreen.fxml");
+            FXML.load(StartScreenCtrl.class, locale, "client", "scenes", "StartScreen.fxml");
         var overviewEvent =
-                FXML.load(OverviewCtrl.class, locale, "client", "scenes", "Overview.fxml");
+            FXML.load(OverviewCtrl.class, locale, "client", "scenes", "Overview.fxml");
         var invite =
-                FXML.load(InviteScreenCtrl.class, locale, "client", "scenes", "InviteScreen.fxml");
+            FXML.load(InviteScreenCtrl.class, locale, "client", "scenes", "InviteScreen.fxml");
         var openDebt =
-                FXML.load(OpenDebtsCtrl.class, locale, "client", "scenes", "OpenDebts.fxml");
+            FXML.load(OpenDebtsCtrl.class, locale, "client", "scenes", "OpenDebts.fxml");
+
 
         InitializationData data = new InitializationData();
         data.setSettings(settings);
         data.setManagement(management);
         data.setLogin(loginAdmin);
         data.setParticipant(participants);
+        data.setExpense(expense);
         data.setStartPage(startPage);
         data.setOverviewEvent(overviewEvent);
         data.setInvite(invite);

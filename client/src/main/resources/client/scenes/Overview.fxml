@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="581.0" prefWidth="513.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OverviewCtrl">
+<AnchorPane prefHeight="581.0" prefWidth="513.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OverviewCtrl">
    <children>
       <HBox alignment="CENTER_LEFT" layoutX="45.0" layoutY="43.0" prefHeight="46.0" prefWidth="422.0">
          <children>
@@ -74,23 +74,25 @@
          </font>
       </Label>
       <ComboBox fx:id="participantComboBox" layoutX="45.0" layoutY="223.0" prefHeight="25.0" prefWidth="161.0" visibleRowCount="2" />
-      <Button layoutX="360.0" layoutY="221.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="102.0" text="Add expense" />
+      <Button fx:id="addExpenseButton" layoutX="360.0" layoutY="221.0" mnemonicParsing="false" onAction="#addExpense" prefHeight="30.0" prefWidth="102.0" text="Add expense" />
       <TabPane layoutX="45.0" layoutY="311.0" prefHeight="200.0" prefWidth="421.0" style="-fx-border-width: 2; -fx-border-color: black;" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="All">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <ListView fx:id="expensesAll" prefHeight="169.0" prefWidth="248.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </AnchorPane>
             </content>
           </Tab>
-          <Tab text="From x">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-            </content>
-          </Tab>
-            <Tab text="Including x">
-               <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-               </content>
+            <Tab fx:id="tabFrom" text="From ...">
+               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                 <ListView fx:id="expensesFrom" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </AnchorPane>
+            </Tab>
+            <Tab fx:id="tabIncluding" text="Including ...">
+               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <ListView fx:id="expensesIncluding" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </AnchorPane>
             </Tab>
         </tabs>
       </TabPane>

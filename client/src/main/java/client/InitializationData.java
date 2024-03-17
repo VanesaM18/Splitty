@@ -9,9 +9,12 @@ public class InitializationData {
     private Pair<ManagementCtrl, Parent> management;
 
     private Pair<ParticipantsCtrl, Parent> participant;
+    private Pair<ExpenseCtrl, Parent> expense;
 
     private Pair<LoginCtrl, Parent> login;
+
     private Pair<StartScreenCtrl, Parent> startPage;
+
     private Pair<OverviewCtrl, Parent> overviewEvent;
     private Pair<InviteScreenCtrl, Parent> invite;
 
@@ -20,7 +23,26 @@ public class InitializationData {
     /**
      * Creates an instance of initialize data
      */
-    public InitializationData() {}
+    public InitializationData() {
+    }
+
+    /**
+     * Get expense pair
+     *
+     * @return the expense pair
+     */
+    public Pair<ExpenseCtrl, Parent> getExpense() {
+        return expense;
+    }
+
+    /**
+     * Set expense pair
+     *
+     * @param expense The expense pair
+     */
+    public void setExpense(Pair<ExpenseCtrl, Parent> expense) {
+        this.expense = expense;
+    }
 
     /**
      * Sets the settings pair
@@ -75,7 +97,6 @@ public class InitializationData {
     public void setOverviewEvent(Pair<OverviewCtrl, Parent> overviewEvent) {
         this.overviewEvent = overviewEvent;
     }
-
 
     /**
      * Sets the invite pair

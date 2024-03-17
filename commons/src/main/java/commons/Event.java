@@ -2,9 +2,15 @@ package commons;
 
 import jakarta.persistence.*;
 
+import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
+
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class Event {
@@ -41,7 +47,10 @@ public class Event {
         this.expenses = expenses;
     }
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @OneToMany(fetch = FetchType.EAGER,
+        cascade = { CascadeType.PERSIST, CascadeType.MERGE },
+        mappedBy = "event")
+    @JsonManagedReference
     private Set<Expense> expenses;
 
     /**
@@ -144,6 +153,7 @@ public class Event {
     /**
      * Get the invite code for this event.
      * This code can be used to join this event.
+     * 
      * @return the invite code for this event.
      */
     public String getInviteCode() {
@@ -231,6 +241,7 @@ public class Event {
     }
 
     /**
+<<<<<<< HEAD
      * maps and calculates the payments
      * @param event the current event
      * @return a map that maps the debtor, amount owed and creditor to each other
@@ -265,7 +276,7 @@ public class Event {
      * @param event the current event
      * @return list of all debts
      */
-    public List<Debt> paymentsToDebt(Event event){
+    public List<Debt> paymentsToDebt(Event event) {
         Map<Map<Participant, Participant>, Monetary> allDebts = calculatePayments(event);
         List<Debt> listDebt = new ArrayList<>();
         allDebts.entrySet().forEach(entry -> {
@@ -278,6 +289,14 @@ public class Event {
             });
         });
         return listDebt;
+    }
 
+     /** turns this into a readable string
+     *
+     * @return string representation of the monetary value
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
     }
 }
