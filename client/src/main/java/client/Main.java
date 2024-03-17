@@ -17,6 +17,8 @@ import static com.google.inject.Guice.createInjector;
 
 import client.scenes.*;
 
+import client.utils.SceneEnum;
+import client.utils.SceneManager;
 import com.google.inject.Injector;
 
 import javafx.application.Application;
@@ -36,8 +38,11 @@ public class Main extends Application {
     private Stage stage;
     private final ConfigLoader configLoader;
 
+    private final SceneManager sceneManager;
+
     {
         this.configLoader = INJECTOR.getInstance(ConfigLoader.class);
+        this.sceneManager = INJECTOR.getInstance(SceneManager.class);
     }
 
     /**
@@ -63,7 +68,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws IOException {
         instance = this;
         this.stage = primaryStage;
-        this.start(configLoader.getLanguage());
+        this.start(configLoader.getLanguage(), configLoader.getStartScene());
     }
 
     /**
@@ -75,18 +80,23 @@ public class Main extends Application {
         return Optional.of(instance);
     }
 
+    public SceneManager getSceneManager() {
+        return sceneManager;
+    }
+
     /**
      * Updates the language of our application
      * 
      * @param locale our language package
      * @throws IOException any IO error related
      */
-    public void start(Locale locale) throws IOException {
+    public void start(Locale locale, SceneEnum sceneEnum) throws IOException {
         this.configLoader.updateProperty("language", locale);
         this.configLoader.saveConfig();
+        var appConfiguration =
+                FXML.load(AppConfigurationCtrl.class, locale, "client", "scenes", "AppConfiguration.fxml");
         var settings = FXML.load(SettingsCtrl.class, locale, "client", "scenes", "Settings.fxml");
-        var management =
-                FXML.load(ManagementCtrl.class, locale, "client", "scenes", "Management.fxml");
+        var management = FXML.load(ManagementCtrl.class, locale, "client", "scenes", "Management.fxml");
         var loginAdmin = FXML.load(LoginCtrl.class, locale, "client", "scenes", "LoginView.fxml");
 
         var participants =
@@ -100,6 +110,7 @@ public class Main extends Application {
                 FXML.load(InviteScreenCtrl.class, locale, "client", "scenes", "InviteScreen.fxml");
 
         InitializationData data = new InitializationData();
+        data.setAppConfiguration(appConfiguration);
         data.setSettings(settings);
         data.setManagement(management);
         data.setLogin(loginAdmin);
@@ -109,7 +120,9 @@ public class Main extends Application {
         data.setInvite(invite);
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(this.stage, data);
+        sceneManager.setMainCtrl(mainCtrl);
+        sceneManager.pushScene(sceneEnum);
+        mainCtrl.initialize(this.stage, data, sceneManager);
 
     }
 }

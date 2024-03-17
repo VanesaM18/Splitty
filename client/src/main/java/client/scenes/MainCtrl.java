@@ -14,6 +14,8 @@
 package client.scenes;
 
 import client.InitializationData;
+import client.utils.SceneEnum;
+import client.utils.SceneManager;
 import commons.Event;
 import commons.Participant;
 import javafx.scene.Scene;
@@ -25,23 +27,23 @@ import java.util.Optional;
 public class MainCtrl {
 
     private Stage primaryStage;
+    private SceneManager sceneManager;
+    private AppConfigurationCtrl appConfigurationCtrl;
+    private Scene appConfiguration;
     private SettingsCtrl settingsCtrl;
     private Scene settings;
-
     private ManagementCtrl managementCtrl;
     private Scene management;
     private Scene overview;
     private Scene add;
     private ParticipantsCtrl participantsCtrl;
     private Scene participants;
-
     private LoginCtrl loginCtrl;
     private Scene login;
     private StartScreenCtrl startPageCtrl;
     private Scene startPage;
     private OverviewCtrl overviewEventCtrl;
     private Scene overviewEvent;
-
     private InviteScreenCtrl inviteScreenCtrl;
     private Scene invite;
     private Optional<Locale> currentLocale = Optional.empty();
@@ -53,8 +55,12 @@ public class MainCtrl {
      * @param primaryStage The primary stage of the application.
      * @param data Contains all initialized pair of views
      */
-    public void initialize(Stage primaryStage, InitializationData data) {
+    public void initialize(Stage primaryStage, InitializationData data, SceneManager sceneManager) {
         this.primaryStage = primaryStage;
+        this.sceneManager = sceneManager;
+
+        this.appConfigurationCtrl = data.getAppConfiguration().getKey();
+        this.appConfiguration = new Scene(data.getAppConfiguration().getValue());
 
         this.settingsCtrl = data.getSettings().getKey();
         this.settings = new Scene(data.getSettings().getValue());
@@ -82,17 +88,25 @@ public class MainCtrl {
         });
 
         // showLogin();
-        showStartScreen();
+        settingsCtrl.make();
+        sceneManager.showCurrentScene();
         primaryStage.show();
     }
 
+    public void showAppConfiguration() {
+        this.sceneManager.pushScene(SceneEnum.STARTUP, null);
+        primaryStage.setTitle("Application Setup");
+        primaryStage.setScene(appConfiguration);
+        appConfigurationCtrl.make();
+        appConfigurationCtrl.refresh();
+    }
     /**
      * Prepares and displays the settings
      */
     public void showSettings() {
+        this.sceneManager.pushScene(SceneEnum.SETTINGS, null);
         primaryStage.setTitle("Settings");
         primaryStage.setScene(settings);
-        settingsCtrl.make();
         settingsCtrl.refresh();
     }
 
@@ -100,6 +114,7 @@ public class MainCtrl {
      * displays the management overview
      */
     public void showManagementOverview() {
+        this.sceneManager.pushScene(SceneEnum.MANAGEMENT, null);
         primaryStage.setTitle("Management Overview");
         primaryStage.setScene(management);
         managementCtrl.refresh();
@@ -110,6 +125,7 @@ public class MainCtrl {
      * and sets the scene to the login scene.
      */
     public void showLogin() {
+        this.sceneManager.pushScene(SceneEnum.LOGIN, null);
         primaryStage.setTitle("Login: Admin");
         primaryStage.setScene(login);
         loginCtrl.clearFields();
@@ -120,6 +136,7 @@ public class MainCtrl {
      * page" and sets the scene to the login scene.
      */
     public void showStartScreen() {
+        this.sceneManager.pushScene(SceneEnum.START, null);
         primaryStage.setTitle("Start page");
         primaryStage.setScene(startPage);
         startPageCtrl.clearFields();
@@ -162,6 +179,7 @@ public class MainCtrl {
      * @param e the event to update
      */
     public void showOverviewEvent(Event e) {
+        this.sceneManager.pushScene(SceneEnum.OVERVIEW, e);
         if (e == null) {
             primaryStage.setTitle("Event: Overview");
             primaryStage.setScene(overviewEvent);
@@ -182,7 +200,7 @@ public class MainCtrl {
     public void showInviteScreen(Event ev) {
         if (ev == null)
             throw new IllegalArgumentException("Event may not be null");
-
+        this.sceneManager.pushScene(SceneEnum.INVITE, ev);
         primaryStage.setTitle("Invite participants");
         inviteScreenCtrl.setEvent(ev);
         primaryStage.setScene(invite);
@@ -210,5 +228,9 @@ public class MainCtrl {
      */
     public Optional<Locale> getCurrentLocale() {
         return this.currentLocale;
+    }
+
+    public SceneManager getSceneManager() {
+        return this.sceneManager;
     }
 }
