@@ -230,6 +230,11 @@ public class Event {
         return Objects.hash(getName(), getInviteCode(), getDateTime(), getParticipants());
     }
 
+    /**
+     * maps and calculates the payments
+     * @param event the current event
+     * @return a map that maps the debtor, amount owed and creditor to each other
+     */
     public Map<Map<Participant, Participant>, Monetary> calculatePayments(Event event){
         Set<Expense> eventExpenses = event.getExpenses();
         Iterator<Expense> iteratorExpense = eventExpenses.iterator();
@@ -255,6 +260,11 @@ public class Event {
         return  allDebts;
     }
 
+    /**
+     * converts the map into a list of debts
+     * @param event the current event
+     * @return list of all debts
+     */
     public List<Debt> paymentsToDebt(Event event){
         Map<Map<Participant, Participant>, Monetary> allDebts = calculatePayments(event);
         List<Debt> listDebt = new ArrayList<>();

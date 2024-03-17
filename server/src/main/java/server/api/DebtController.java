@@ -18,7 +18,6 @@ package server.api;
 import commons.Debt;
 
 
-import commons.Monetary;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import server.database.DebtRepository;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 

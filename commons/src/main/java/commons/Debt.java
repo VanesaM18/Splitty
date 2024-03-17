@@ -23,6 +23,9 @@ public class Debt {
         this.creditor = creditor;
     }
 
+    /**
+     * empty constructor
+     */
     public Debt() {
 
     }
