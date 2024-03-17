@@ -30,36 +30,6 @@ public class OpenDebtsCtrl {
         this.mainCtrl = mainCtrl;
     }
 
-    /**
-     * Initializes the UI by fetching and displaying the total debt from the server.
-     */
-    public void initialize() {
-
-//        try {
-//            URL url = new URL("http://localhost:8080/debts/event");
-//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//            connection.setRequestMethod("GET");
-//
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(connection
-//                    .getInputStream()));
-//            StringBuilder response = new StringBuilder();
-//            String line;
-//            while ((line = reader.readLine()) != null) {
-//                response.append(line);
-//            }
-//            reader.close();
-//
-//            String totalDebt = response.toString();
-//            totalDebtLabel.setText(totalDebt);
-//            createClearDebtButton();
-//
-//            connection.disconnect();
-//        } catch (Exception e) {
-//            showErrorDialog("Failed to retrieve total debt. Please try again later.");
-//            e.printStackTrace();
-//        }
-
-    }
 
     @FXML
     private void clearTotalDebt() {
