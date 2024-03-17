@@ -60,13 +60,6 @@ public class OpenDebtsCtrl {
 //        }
 
     }
-//    private void createClearDebtButton() {
-//        clearDebtButton = new Button("Clear Total Debt");
-//        clearDebtButton.setLayoutX(200);
-//        clearDebtButton.setLayoutY(200);
-//        clearDebtButton.setOnAction(event -> clearTotalDebt());
-//        anchorPane.getChildren().add(clearDebtButton);
-//    }
 
     @FXML
     private void clearTotalDebt() {

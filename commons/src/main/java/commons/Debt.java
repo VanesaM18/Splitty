@@ -73,6 +73,8 @@ public class Debt {
                 && Objects.equals(creditor, debt.creditor);
     }
 
+
+
     /**
      * Generates a hashcode for the object
      *
@@ -90,6 +92,6 @@ public class Debt {
      */
     @Override
     public String toString() {
-        return  debtor + " gives" + amount + "to" + creditor;
+        return  debtor + " gives " + amount + " to " + creditor;
     }
 }

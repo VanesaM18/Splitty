@@ -246,15 +246,16 @@ public class Event {
      * @param event the current event
      * @return a map that maps the debtor, amount owed and creditor to each other
      */
-    public Map<Map<Participant, Participant>, Monetary> calculatePayments(Event event){
+    public static Map<Map<Participant, Participant>, Monetary> calculatePayments(Event event){
         Set<Expense> eventExpenses = event.getExpenses();
         Iterator<Expense> iteratorExpense = eventExpenses.iterator();
         Map<Map<Participant, Participant>, Monetary> allDebts = new HashMap<>();
         while(iteratorExpense.hasNext()){
             Expense expense = iteratorExpense.next();
             Set<Participant> debtors = expense.getSplitBetween();
-            long amount = expense.getAmount().getInternalValue() / debtors.size();
+            long amount = expense.getAmount().getInternalValue() / (debtors.size() + 1);
             Participant creditor = expense.getCreator();
+//            System.out.println("Expense: " + expense + ", Debtors: " + debtors + ", Amount: " + amount);
             Iterator<Participant> iteratorDebtors = debtors.iterator();
             while(iteratorDebtors.hasNext()){
                 Map<Participant, Participant> currentMap = new HashMap<Participant, Participant>();
@@ -268,6 +269,7 @@ public class Event {
                 }
             }
         }
+//        System.out.println("All Debts: " + allDebts);
         return  allDebts;
     }
 
@@ -276,7 +278,7 @@ public class Event {
      * @param event the current event
      * @return list of all debts
      */
-    public List<Debt> paymentsToDebt(Event event) {
+    public static List<Debt> paymentsToDebt(Event event) {
         Map<Map<Participant, Participant>, Monetary> allDebts = calculatePayments(event);
         List<Debt> listDebt = new ArrayList<>();
         allDebts.entrySet().forEach(entry -> {
