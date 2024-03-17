@@ -255,7 +255,6 @@ public class Event {
             Set<Participant> debtors = expense.getSplitBetween();
             long amount = expense.getAmount().getInternalValue() / (debtors.size() + 1);
             Participant creditor = expense.getCreator();
-//            System.out.println("Expense: " + expense + ", Debtors: " + debtors + ", Amount: " + amount);
             Iterator<Participant> iteratorDebtors = debtors.iterator();
             while(iteratorDebtors.hasNext()){
                 Map<Participant, Participant> currentMap = new HashMap<Participant, Participant>();
@@ -269,7 +268,6 @@ public class Event {
                 }
             }
         }
-//        System.out.println("All Debts: " + allDebts);
         return  allDebts;
     }
 

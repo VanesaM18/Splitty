@@ -60,16 +60,10 @@ public class OverviewCtrl {
 
     /**
      * Controller responsible for handling the quote overview functionality.
-<<<<<<< HEAD
-     *
-     * @param server An instance of ServerUtils for server-related operations.
-     * @param mainCtrl An instance of MainCtrl for coordinating with the main controller.
-=======
      * 
      * @param server   An instance of ServerUtils for server-related operations.
      * @param mainCtrl An instance of MainCtrl for coordinating with the main
      *                 controller.
->>>>>>> main
      */
     @Inject
     public OverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
