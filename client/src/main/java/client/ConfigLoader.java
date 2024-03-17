@@ -1,5 +1,6 @@
 package client;
 
+import client.utils.SceneEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -44,6 +45,7 @@ public class ConfigLoader {
                 configMap.put("address", "ws://localhost:8080/ws");
                 configMap.put("recentEvents", new ArrayList<String>());
                 configMap.put("language", Main.DEFAULT_LOCALE);
+                configMap.put("startUpShown", "false");
                 saveConfig();
             } else {
                 configMap = objectMapper.readValue(configPath.toFile(), new TypeReference<>() {});
@@ -127,4 +129,8 @@ public class ConfigLoader {
         return Optional.empty();
     }
 
+    public SceneEnum getStartScene() {
+        String startUpShown = (String) this.getProperty("startUpShown");
+        return Objects.equals(startUpShown, "false") ? SceneEnum.STARTUP : SceneEnum.START;
+    }
 }
