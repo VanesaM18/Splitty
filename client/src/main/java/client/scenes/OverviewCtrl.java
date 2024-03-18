@@ -141,7 +141,7 @@ public class OverviewCtrl {
                             textBoldP2, new Text(" for "), textBoldP3);
                         Text smallText = OverviewCtrl.getText(item);
                         smallText.setFont(Font.font("System", FontWeight.NORMAL, 10));
-                        smallText.setFill(Color.GRAY);
+                        smallText.setFill(Color.GRAY.darker().darker());
 
                         VBox vbox = new VBox(mainTextFlow, smallText);
                         vbox.setSpacing(5);
