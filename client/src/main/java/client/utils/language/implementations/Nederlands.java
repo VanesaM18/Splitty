@@ -3,8 +3,13 @@ package client.utils.language.implementations;
 import client.utils.language.LanguageTemplate;
 
 public class Nederlands extends LanguageTemplate {
+
+    /**
+     * gets the text content for Dutch.
+     * @return text content.
+     */
     @Override
-    protected String getText() {
+    public String getText() {
         return "Nederlands";
     }
 

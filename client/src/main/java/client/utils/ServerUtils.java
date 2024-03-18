@@ -109,6 +109,19 @@ public class ServerUtils {
     }
 
     /**
+     * Deletes an expense.
+     *
+     * @param e the expense to be deleted.
+     */
+    public void deleteExpense(Expense e) {
+        WebSocketMessage request = new WebSocketMessage();
+        request.setEndpoint("api/expenses/id");
+        request.setMethod("DELETE");
+        request.setData(e.getId());
+        sendMessageWithoutResponse(request);
+    }
+
+    /**
      * Gets a participant by their id.
      * 
      * @param id the participant's id.

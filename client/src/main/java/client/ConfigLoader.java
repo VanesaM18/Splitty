@@ -1,5 +1,6 @@
 package client;
 
+import client.utils.SceneEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -7,9 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ConfigLoader {
     private Map<String, Object> configMap;
@@ -45,6 +44,8 @@ public class ConfigLoader {
             if (!Files.exists(configPath)) {
                 configMap.put("address", "ws://localhost:8080/ws");
                 configMap.put("recentEvents", new ArrayList<String>());
+                configMap.put("language", Main.DEFAULT_LOCALE);
+                configMap.put("startUpShown", "false");
                 saveConfig();
             } else {
                 configMap = objectMapper.readValue(configPath.toFile(), new TypeReference<>() {});
@@ -95,5 +96,48 @@ public class ConfigLoader {
      */
     public void updateProperty(String key, Object value) {
         configMap.put(key, value);
+    }
+
+    /**
+     * gets the language stored in the config file and parses it to a Locale
+     * @return the Locale of the language if parsing is possible,
+     * the default Locale otherwise
+     */
+    public Locale getLanguage() {
+        var props = this.getProperty("language");
+        try {
+            return (Locale) props;
+        } catch (ClassCastException e) {
+            try {
+                String localeString = (String) props;
+                var optionalLocale = parseLocale(localeString);
+                if (optionalLocale.isPresent()) {
+                    return optionalLocale.get();
+                }
+            } catch (ClassCastException ee) {
+
+            }
+        }
+        return Main.DEFAULT_LOCALE;
+    }
+
+    private static Optional<Locale> parseLocale(String localeString) {
+        String[] parts = localeString.split("_");
+        if (parts.length == 2) {
+            return Optional.of(new Locale(parts[0], parts[1]));
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * retrieves the initial scene to be displayed based on
+     * the "startUpShown" property in the configuration.
+     * if the "startUpShown" property is "false", returns the startup scene,
+     * otherwise, returns the main start scene.
+     * @return SceneEnum representing the initial scene to be displayed.
+     */
+    public SceneEnum getStartScene() {
+        String startUpShown = (String) this.getProperty("startUpShown");
+        return Objects.equals(startUpShown, "false") ? SceneEnum.STARTUP : SceneEnum.START;
     }
 }

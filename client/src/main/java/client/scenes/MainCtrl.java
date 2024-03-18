@@ -14,6 +14,8 @@
 package client.scenes;
 
 import client.InitializationData;
+import client.utils.SceneEnum;
+import client.utils.SceneManager;
 import commons.Event;
 import commons.Expense;
 import commons.Participant;
@@ -26,19 +28,19 @@ import java.util.Optional;
 public class MainCtrl {
 
     private Stage primaryStage;
+    private SceneManager sceneManager;
+    private AppConfigurationCtrl appConfigurationCtrl;
+    private Scene appConfiguration;
     private SettingsCtrl settingsCtrl;
     private Scene settings;
-
     private ManagementCtrl managementCtrl;
     private Scene management;
     private Scene overview;
     private Scene add;
     private ParticipantsCtrl participantsCtrl;
     private Scene participants;
-
     private Scene expense;
     private ExpenseCtrl expenseCtrl;
-
     private LoginCtrl loginCtrl;
     private Scene login;
     private StartScreenCtrl startPageCtrl;
@@ -51,15 +53,20 @@ public class MainCtrl {
     private Scene invite;
     private Optional<Locale> currentLocale = Optional.empty();
 
+
     /**
-     * Initializes the app with the specified primary stage and scenes for various
-     * controllers.
+     * Initializes the app with the specified primary stage and scenes for various controllers.
      *
      * @param primaryStage The primary stage of the application.
-     * @param data         Contains all initialized pair of views
+     * @param data Contains all initialized pair of views
+     * @param sceneManager The SceneManager responsible for managing scenes.
      */
-    public void initialize(Stage primaryStage, InitializationData data) {
+    public void initialize(Stage primaryStage, InitializationData data, SceneManager sceneManager) {
         this.primaryStage = primaryStage;
+        this.sceneManager = sceneManager;
+
+        this.appConfigurationCtrl = data.getAppConfiguration().getKey();
+        this.appConfiguration = new Scene(data.getAppConfiguration().getValue());
 
         this.settingsCtrl = data.getSettings().getKey();
         this.settings = new Scene(data.getSettings().getValue());
@@ -93,17 +100,28 @@ public class MainCtrl {
         });
 
         // showLogin();
-        showStartScreen();
+        settingsCtrl.make();
+        sceneManager.showCurrentScene();
         primaryStage.show();
     }
 
     /**
+     * displays the application configuration view.
+     */
+    public void showAppConfiguration() {
+        this.sceneManager.pushScene(SceneEnum.STARTUP, null);
+        primaryStage.setTitle("Application Setup");
+        primaryStage.setScene(appConfiguration);
+        appConfigurationCtrl.make();
+        appConfigurationCtrl.refresh();
+    }
+    /**
      * Prepares and displays the settings
      */
     public void showSettings() {
+        this.sceneManager.pushScene(SceneEnum.SETTINGS, null);
         primaryStage.setTitle("Settings");
         primaryStage.setScene(settings);
-        settingsCtrl.make();
         settingsCtrl.refresh();
     }
 
@@ -111,28 +129,29 @@ public class MainCtrl {
      * displays the management overview
      */
     public void showManagementOverview() {
+        this.sceneManager.pushScene(SceneEnum.MANAGEMENT, null);
         primaryStage.setTitle("Management Overview");
         primaryStage.setScene(management);
         managementCtrl.refresh();
     }
 
     /**
-     * Displays the login view. This method sets the title of the primary stage to
-     * "Login: Admin"
+     * Displays the login view. This method sets the title of the primary stage to "Login: Admin"
      * and sets the scene to the login scene.
      */
     public void showLogin() {
+        this.sceneManager.pushScene(SceneEnum.LOGIN, null);
         primaryStage.setTitle("Login: Admin");
         primaryStage.setScene(login);
         loginCtrl.clearFields();
     }
 
     /**
-     * Displays the startScreen view. This method sets the title of the primary
-     * stage to "Start
+     * Displays the startScreen view. This method sets the title of the primary stage to "Start
      * page" and sets the scene to the login scene.
      */
     public void showStartScreen() {
+        this.sceneManager.pushScene(SceneEnum.START, null);
         primaryStage.setTitle("Start page");
         primaryStage.setScene(startPage);
         startPageCtrl.clearFields();
@@ -144,9 +163,8 @@ public class MainCtrl {
      * This method sets the title of the primary stage to "Participants: Overview",
      * sets the scene to the participants scene
      * and sets a key pressed event handler for the participant's controller.
-     * 
-     * @param ev     event where to add/edit participants
-     * @param add    true - add / false - edit.
+     * @param ev event where to add/edit participants
+     * @param add true - add / false - edit.
      * @param change the name of the participant to be edited.
      */
     public void showParticipants(Event ev, boolean add, Participant change) {
@@ -167,21 +185,15 @@ public class MainCtrl {
     }
 
     /**
-<<<<<<< HEAD
-     * Displays the overview of the event. This method sets the title of the primary stage to
-     * "Event", sets the scene to the overview scene and refreshes the content of the overview
-     * controller if it's a new event, or keeps the data if it is the old one
-     *
-=======
      * Displays the overview of the event. This method sets the title of the
      * primary stage to "Event", sets the scene to the overview scene and
      * refreshes the content of the overview controller if it's a new event, or
      * keeps the data if it is the old one
-     * 
->>>>>>> main
+     *
      * @param e the event to update
      */
     public void showOverviewEvent(Event e) {
+        this.sceneManager.pushScene(SceneEnum.OVERVIEW, e);
         if (e == null) {
             primaryStage.setTitle("Event: Overview");
             primaryStage.setScene(overviewEvent);
@@ -193,6 +205,7 @@ public class MainCtrl {
         }
     }
 
+
     /**
      * Displays the invite code of the vent.
      *
@@ -201,7 +214,7 @@ public class MainCtrl {
     public void showInviteScreen(Event ev) {
         if (ev == null)
             throw new IllegalArgumentException("Event may not be null");
-
+        this.sceneManager.pushScene(SceneEnum.INVITE, ev);
         primaryStage.setTitle("Invite participants");
         inviteScreenCtrl.setEvent(ev);
         primaryStage.setScene(invite);
@@ -217,7 +230,6 @@ public class MainCtrl {
 
     /**
      * sets the current locale of the application
-     * 
      * @param locale current locale of the application
      */
     public void setCurrentLocale(Locale locale) {
@@ -226,7 +238,6 @@ public class MainCtrl {
 
     /**
      * gets the current locale of the application
-     * 
      * @return current locale of the application
      */
     public Optional<Locale> getCurrentLocale() {
@@ -253,6 +264,15 @@ public class MainCtrl {
 
 
      /** Show expense view.
+     * gets the scene manager responsible for managing scenes in the application.
+     * @return SceneManager object.
+     */
+    public SceneManager getSceneManager() {
+        return this.sceneManager;
+    }
+
+    /**
+     * Show expense view.
      *
      * @param ev           The event to show the expense view for
      * @param selectedItem The selected participant to show the expense for, can be

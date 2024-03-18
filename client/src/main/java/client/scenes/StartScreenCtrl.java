@@ -170,6 +170,13 @@ public class StartScreenCtrl implements Initializable {
     }
 
     /**
+     * opens the settings view
+     */
+    public void openSettings() {
+        mainCtrl.showSettings();
+    }
+
+    /**
      * Updates the config after the client entered an event or created a new one
      */
     public void updateConfig() {

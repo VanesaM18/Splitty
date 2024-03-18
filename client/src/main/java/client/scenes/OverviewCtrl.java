@@ -9,14 +9,21 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.util.Callback;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.net.URL;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class OverviewCtrl {
 
@@ -94,6 +101,7 @@ public class OverviewCtrl {
         this.attachImage(deleteParticipantButton, "/assets/bin.png");
         if (this.ev != null) {
             this.ev = server.getEventById(ev.getInviteCode());
+            title.setText(ev.getName());
             participantsObs.clear();
             refreshParticipants();
             participantNames.setItems(participantsObs);
@@ -102,7 +110,7 @@ public class OverviewCtrl {
     }
 
     /**
-     * Inialize callback from FXML
+     * Initialize callback from FXML
      */
     @FXML
     public void initialize() {
@@ -122,8 +130,33 @@ public class OverviewCtrl {
                             setGraphic(null);
                             return;
                         }
-                        // TODO: Make this more detailed
-                        setGraphic(new Text(item.getName()));
+                        Text textBoldP1 = new Text(item.getCreator().getName());
+                        Text textBoldP2 = new Text("" + item.getAmount().getInternalValue()
+                            + item.getAmount().getCurrency().getSymbol());
+                        Text textBoldP3 = new Text(item.getName());
+                        textBoldP1.setFont(Font.font("System", FontWeight.BOLD, 12));
+                        textBoldP2.setFont(Font.font("System", FontWeight.BOLD, 12));
+                        textBoldP3.setFont(Font.font("System", FontWeight.BOLD, 12));
+                        TextFlow mainTextFlow = new TextFlow(textBoldP1, new Text(" paid "),
+                            textBoldP2, new Text(" for "), textBoldP3);
+                        Text smallText = OverviewCtrl.getText(item);
+                        smallText.setFont(Font.font("System", FontWeight.NORMAL, 10));
+                        smallText.setFill(Color.GRAY.darker().darker());
+
+                        VBox vbox = new VBox(mainTextFlow, smallText);
+                        vbox.setSpacing(5);
+
+                        Text dateText = new Text(item.getDate().toString());
+                        dateText.setFont(Font.font("System", FontWeight.NORMAL, 12));
+                        Region region = new Region();
+                        HBox.setHgrow(region, Priority.ALWAYS);
+                        Button editButton = new Button();
+                        editButton.setOnAction(e -> mainCtrl.showExpense(item.getEvent(),
+                            participantComboBox.getSelectionModel().getSelectedItem(), item));
+                        attachImage(editButton, "/assets/pen-solid.png");
+                        HBox element = new HBox(dateText, vbox, region, editButton);
+                        element.setSpacing(15);
+                        setGraphic(element);
                     }
                 };
             }
@@ -134,6 +167,24 @@ public class OverviewCtrl {
         expensesAll.setItems(expensesAllObs);
         expensesFrom.setItems(expensesFromObs);
         expensesIncluding.setItems(expensesIncludingObs);
+    }
+
+    /**
+     * Returns a nice formatted text of the participants in the expense
+     * @param item the expense
+     * @return the nice formatted text
+     */
+    private static Text getText(Expense item) {
+        Set<Participant> participantSet = item.getSplitBetween();
+        StringBuilder s = new StringBuilder();
+        Iterator<Participant> it = participantSet.iterator();
+        for (int i = 0; i < participantSet.size(); ++i) {
+            s.append(it.next().getName());
+            if (i != participantSet.size() - 1) {
+                s.append(", ");
+            }
+        }
+        return new Text("(" + s + ")");
     }
 
     private void initParticipants() {
@@ -288,7 +339,7 @@ public class OverviewCtrl {
      * Goes back to the starting page.
      */
     public void back() {
-        mainCtrl.showStartScreen();
+        mainCtrl.getSceneManager().goBack();
     }
 
     /**

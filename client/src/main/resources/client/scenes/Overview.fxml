@@ -5,11 +5,11 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="581.0" prefWidth="513.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OverviewCtrl">
+<AnchorPane prefHeight="581.0" prefWidth="513.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OverviewCtrl">
    <children>
       <HBox alignment="CENTER_LEFT" layoutX="45.0" layoutY="43.0" prefHeight="46.0" prefWidth="422.0">
          <children>
-            <Label fx:id="title" prefHeight="46.0" text="Event name">
+            <Label fx:id="title" prefHeight="46.0" text="%event_name">
                <font>
                   <Font name="System Bold" size="31.0" />
                </font>
@@ -25,12 +25,12 @@
                </graphic>
             </Button>
             <Region prefHeight="200.0" HBox.hgrow="ALWAYS" />
-            <Button minWidth="102.0" mnemonicParsing="false" onAction="#sendInvites" prefHeight="30.0" prefWidth="102.0" text="Send invites" />
+            <Button minWidth="102.0" mnemonicParsing="false" onAction="#sendInvites" prefHeight="30.0" text="%send_invites" />
          </children>
       </HBox>
       <HBox alignment="CENTER_LEFT" layoutX="48.0" layoutY="93.0" prefHeight="39.0" prefWidth="422.0">
          <children>
-            <Label prefHeight="39.0" text="Participants">
+            <Label prefHeight="39.0" text="%participants">
                <font>
                   <Font name="System Bold" size="20.0" />
                </font>
@@ -68,16 +68,16 @@
          </children>
       </HBox>
       <ListView fx:id="participantNames" layoutX="45.0" layoutY="141.0" orientation="HORIZONTAL" prefHeight="25.0" prefWidth="421.0" />
-      <Label layoutX="45.0" layoutY="184.0" prefHeight="39.0" prefWidth="119.0" text="Expenses">
+      <Label layoutX="45.0" layoutY="184.0" prefHeight="39.0" text="%expenses">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
       </Label>
       <ComboBox fx:id="participantComboBox" layoutX="45.0" layoutY="223.0" prefHeight="25.0" prefWidth="161.0" visibleRowCount="2" />
-      <Button fx:id="addExpenseButton" layoutX="360.0" layoutY="221.0" mnemonicParsing="false" onAction="#addExpense" prefHeight="30.0" prefWidth="102.0" text="Add expense" />
+      <Button fx:id="addExpenseButton" layoutX="350.0" layoutY="221.0" mnemonicParsing="false"  onAction="#addExpense"  prefHeight="30.0" text="%add_expense" />
       <TabPane layoutX="45.0" layoutY="311.0" prefHeight="200.0" prefWidth="421.0" style="-fx-border-width: 2; -fx-border-color: black;" tabClosingPolicy="UNAVAILABLE">
         <tabs>
-          <Tab text="All">
+          <Tab text="%tab_all">
             <content>
                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <ListView fx:id="expensesAll" prefHeight="169.0" prefWidth="248.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
@@ -96,8 +96,8 @@
             </Tab>
         </tabs>
       </TabPane>
-      <Button layoutX="364.0" layoutY="523.0" mnemonicParsing="false" onAction="#settleDebt" prefHeight="30.0" prefWidth="102.0" text="Settle Debts" />
-      <Button layoutX="45.0" layoutY="523.0" mnemonicParsing="false" onAction="#back" prefHeight="30.0" prefWidth="102.0" text="Back" />
+      <Button layoutX="355.0" layoutY="523.0" mnemonicParsing="false" onAction="#settleDebt" prefHeight="30.0" text="%settle_debts" />
+      <Button layoutX="45.0" layoutY="523.0" mnemonicParsing="false" onAction="#back" prefHeight="30.0" text="%back" />
       <Label fx:id="warning" layoutX="297.0" layoutY="104.0" prefHeight="24.0" prefWidth="170.0" textFill="RED">
          <font>
             <Font size="14.0" />

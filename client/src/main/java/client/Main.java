@@ -17,6 +17,8 @@ import static com.google.inject.Guice.createInjector;
 
 import client.scenes.*;
 
+import client.utils.SceneEnum;
+import client.utils.SceneManager;
 import com.google.inject.Injector;
 
 import javafx.application.Application;
@@ -31,16 +33,24 @@ public class Main extends Application {
 
     private static final Injector INJECTOR = createInjector(new MyModule());
     private static final MyFXML FXML = new MyFXML(INJECTOR);
-    private static final Locale DEFAULT_LOCALE = Locale.of("en", "EN");
+    public static final Locale DEFAULT_LOCALE = Locale.of("en", "EN");
     private static Main instance;
     private Stage stage;
+    private final ConfigLoader configLoader;
+
+    private final SceneManager sceneManager;
+
+    {
+        this.configLoader = INJECTOR.getInstance(ConfigLoader.class);
+        this.sceneManager = INJECTOR.getInstance(SceneManager.class);
+    }
 
     /**
      * The main of our client
      *
      * @param args to be passed to the client
      * @throws URISyntaxException if anything happens related to URI
-     * @throws IOException        if anything happens related to IO
+     * @throws IOException if anything happens related to IO
      */
     public static void main(String[] args) throws URISyntaxException, IOException {
         launch();
@@ -49,18 +59,16 @@ public class Main extends Application {
     /**
      * It starts the client
      * 
-     * @param primaryStage the primary stage for this application, onto which the
-     *                     application scene
-     *                     can be set. Applications may create other stages, if
-     *                     needed, but they will not be
-     *                     primary stages.
+     * @param primaryStage the primary stage for this application, onto which the application scene
+     *        can be set. Applications may create other stages, if needed, but they will not be
+     *        primary stages.
      * @throws IOException any IO related error
      */
     @Override
     public void start(Stage primaryStage) throws IOException {
         instance = this;
         this.stage = primaryStage;
-        this.start(DEFAULT_LOCALE);
+        this.start(configLoader.getLanguage(), configLoader.getStartScene());
     }
 
     /**
@@ -73,35 +81,46 @@ public class Main extends Application {
     }
 
     /**
-     * Updates the language of our application
+     * gets the scene manager
+     * @return SceneManager object
+     */
+    public SceneManager getSceneManager() {
+        return sceneManager;
+    }
+
+    /**
+     * updates the language of the application and starts the specified scene.
      *
-     * @param locale our language package
+     * @param locale    the locale representing the language package to be applied.
+     * @param sceneEnum the enum value representing the scene to start.
      * @throws IOException any IO error related
      */
-    public void start(Locale locale) throws IOException {
-        var settings =
-            FXML.load(SettingsCtrl.class, locale, "client", "scenes", "Settings.fxml");
-        var management =
-            FXML.load(ManagementCtrl.class, locale, "client", "scenes", "Management.fxml");
-        var loginAdmin =
-            FXML.load(LoginCtrl.class, locale, "client", "scenes", "LoginView.fxml");
+    public void start(Locale locale, SceneEnum sceneEnum) throws IOException {
+        this.configLoader.updateProperty("language", locale);
+        this.configLoader.saveConfig();
+        var appConfiguration = FXML.load(AppConfigurationCtrl.class, locale,
+                "client", "scenes", "AppConfiguration.fxml");
+        var settings = FXML.load(SettingsCtrl.class, locale, "client", "scenes", "Settings.fxml");
+        var management = FXML.load(ManagementCtrl.class, locale,
+                "client", "scenes", "Management.fxml");
+        var loginAdmin = FXML.load(LoginCtrl.class, locale, "client", "scenes", "LoginView.fxml");
 
         var participants =
-            FXML.load(ParticipantsCtrl.class, locale, "client", "scenes", "Participants.fxml");
+                FXML.load(ParticipantsCtrl.class, locale, "client", "scenes", "Participants.fxml");
 
         var expense =
             FXML.load(ExpenseCtrl.class, locale, "client", "scenes", "Expense.fxml");
         var startPage =
-            FXML.load(StartScreenCtrl.class, locale, "client", "scenes", "StartScreen.fxml");
+                FXML.load(StartScreenCtrl.class, locale, "client", "scenes", "StartScreen.fxml");
         var overviewEvent =
-            FXML.load(OverviewCtrl.class, locale, "client", "scenes", "Overview.fxml");
+                FXML.load(OverviewCtrl.class, locale, "client", "scenes", "Overview.fxml");
         var invite =
             FXML.load(InviteScreenCtrl.class, locale, "client", "scenes", "InviteScreen.fxml");
         var openDebt =
             FXML.load(OpenDebtsCtrl.class, locale, "client", "scenes", "OpenDebts.fxml");
 
-
         InitializationData data = new InitializationData();
+        data.setAppConfiguration(appConfiguration);
         data.setSettings(settings);
         data.setManagement(management);
         data.setLogin(loginAdmin);
@@ -113,7 +132,9 @@ public class Main extends Application {
         data.setOpenDebt(openDebt);
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(this.stage, data);
+        sceneManager.setMainCtrl(mainCtrl);
+        sceneManager.pushScene(sceneEnum);
+        mainCtrl.initialize(this.stage, data, sceneManager);
 
     }
 }
