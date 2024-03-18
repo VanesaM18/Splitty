@@ -135,9 +135,9 @@ class EventTest {
         Expense expense3 = new Expense(event1, "expense3", participant1, amount3, date, set3);
         Set<Expense> setExpense = new HashSet<>(List.of(expense1, expense2, expense3));
         event1.setExpenses(setExpense);
-        Debt debt1 = new Debt(participant1, new Monetary(10), participant2);
-        Debt debt2 = new Debt(participant2, new Monetary(25), participant1);
-        Debt debt3 = new Debt(participant3, new Monetary(5), participant1);
+        Debt debt1 = new Debt(participant2, new Monetary(25), participant1);
+        Debt debt2 = new Debt(participant3, new Monetary(5), participant1);
+        Debt debt3 = new Debt(participant1, new Monetary(10), participant2);
         Debt debt4 = new Debt(participant4, new Monetary(20), participant1);
         Debt debt5 = new Debt(participant4, new Monetary(10), participant2);
         List<Debt> expected = new ArrayList<>(List.of(debt1, debt2, debt3, debt4, debt5));
