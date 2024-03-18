@@ -23,10 +23,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.net.URL;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class OverviewCtrl {
 
@@ -104,6 +101,7 @@ public class OverviewCtrl {
         this.attachImage(deleteParticipantButton, "/assets/bin.png");
         if (this.ev != null) {
             this.ev = server.getEventById(ev.getInviteCode());
+            title.setText(ev.getName());
             participantsObs.clear();
             refreshParticipants();
             participantNames.setItems(participantsObs);
@@ -112,7 +110,7 @@ public class OverviewCtrl {
     }
 
     /**
-     * Inialize callback from FXML
+     * Initialize callback from FXML
      */
     @FXML
     public void initialize() {
@@ -150,16 +148,14 @@ public class OverviewCtrl {
 
                         Text dateText = new Text(item.getDate().toString());
                         dateText.setFont(Font.font("System", FontWeight.NORMAL, 12));
-
                         Region region = new Region();
                         HBox.setHgrow(region, Priority.ALWAYS);
-
                         Button editButton = new Button();
+                        editButton.setOnAction(e -> mainCtrl.showExpense(item.getEvent(),
+                            participantComboBox.getSelectionModel().getSelectedItem(), item));
                         attachImage(editButton, "/assets/pen-solid.png");
-
                         HBox element = new HBox(dateText, vbox, region, editButton);
                         element.setSpacing(15);
-
                         setGraphic(element);
                     }
                 };
@@ -358,6 +354,13 @@ public class OverviewCtrl {
         ev.removeParticipant(participantNames.getSelectionModel().getSelectedItem());
         server.updateEvent(ev);
         mainCtrl.showOverviewEvent(ev);
+        /*
+        List<Expense> all = server.getAllExpensesFromEvent(this.ev);
+        for (Expense ex: all) {
+            server.deleteExpense(ex);
+        }
+        */
+         */
         refresh();
         // server.deleteParticipant(participant);
     }

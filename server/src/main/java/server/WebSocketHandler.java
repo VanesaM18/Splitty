@@ -100,9 +100,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
             handleParticipantsApi(session, request);
         } else if (endPoint.contains("/client")) {
             handleClientUpdate(session, request);
-        } else {
-            handleRequest2(session, request);
         }
+        handleRequest2(session, request);
     }
     /** FIXME: Hack for checkstyle cyclomatic complexity
      */
@@ -111,7 +110,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
         String endPoint = request.getEndpoint();
         if (endPoint.contains("/expenses")) {
             handleExpensesApi(session, request);
-        } else if (endPoint.contains("/")) {
+        }
+        if (endPoint.contains("/expenses") || endPoint.contains("/events") || endPoint.contains("/participants")) {
             updateClients(session, request);
         }
     }
@@ -136,6 +136,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private void handleExpense(WebSocketSession session, WebSocketMessage request)
             throws Exception {
         if (!"POST".equals(request.getMethod())) {
+            return;
+        }
+        if ("DELETE".equals(request.getMethod())) {
+            long expenseId = (Long) request.getData();
+            ResponseEntity<String> deletedExpense = expenseController.deleteById(expenseId);
+            returnResult(session, request, deletedExpense.getBody());
             return;
         }
         Expense expense = objectMapper.convertValue(request.getData(), Expense.class);
