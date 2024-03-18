@@ -9,14 +9,21 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.util.Callback;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.net.URL;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 public class OverviewCtrl {
 
@@ -122,8 +129,32 @@ public class OverviewCtrl {
                             setGraphic(null);
                             return;
                         }
-                        // TODO: Make this more detailed
-                        setGraphic(new Text(item.getName()));
+                        Text textBoldP1 = new Text(item.getCreator().getName());
+                        Text textBoldP2 = new Text("" + item.getAmount().getInternalValue()
+                            + item.getAmount().getCurrency().getSymbol());
+                        Text textBoldP3 = new Text(item.getName());
+                        textBoldP1.setFont(Font.font("System", FontWeight.BOLD, 12));
+                        textBoldP2.setFont(Font.font("System", FontWeight.BOLD, 12));
+                        textBoldP3.setFont(Font.font("System", FontWeight.BOLD, 12));
+                        TextFlow mainTextFlow = new TextFlow(textBoldP1, new Text(" paid "),
+                            textBoldP2, new Text(" for "), textBoldP3);
+                        Set<Participant> participantSet = item.getSplitBetween();
+                        StringBuilder s = new StringBuilder();
+                        Iterator<Participant> it = participantSet.iterator();
+                        for (int i = 0; i < participantSet.size(); ++i) {
+                            s.append(it.next().getName());
+                            if (i != participantSet.size() - 1) {
+                                s.append(", ");
+                            }
+                        }
+                        Text smallText = new Text("(" + s + ")");
+                        smallText.setFont(Font.font("System", FontWeight.NORMAL, 10));
+                        smallText.setFill(Color.GRAY);
+
+                        VBox vbox = new VBox(mainTextFlow, smallText);
+                        vbox.setSpacing(5);
+
+                        setGraphic(vbox);
                     }
                 };
             }
