@@ -5,6 +5,7 @@ import javafx.scene.Parent;
 import javafx.util.Pair;
 
 public class InitializationData {
+    private Pair<AppConfigurationCtrl, Parent> appConfiguration;
     private Pair<SettingsCtrl, Parent> settings;
     private Pair<ManagementCtrl, Parent> management;
 
@@ -42,6 +43,13 @@ public class InitializationData {
         this.expense = expense;
     }
 
+    /**
+     * sets the appConfiguration pair
+     * @param appConfiguration pair
+     */
+    public void setAppConfiguration(Pair<AppConfigurationCtrl, Parent> appConfiguration) {
+        this.appConfiguration = appConfiguration;
+    }
     /**
      * Sets the settings pair
      * 
@@ -103,6 +111,14 @@ public class InitializationData {
      */
     public void setInvite(Pair<InviteScreenCtrl, Parent> invite) {
         this.invite = invite;
+    }
+
+    /**
+     * gets the appConfiguration pair
+     * @return appConfiguration pair
+     */
+    public Pair<AppConfigurationCtrl, Parent> getAppConfiguration() {
+        return appConfiguration;
     }
 
     /**

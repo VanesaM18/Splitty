@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="250.0" prefWidth="250.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AppConfigurationCtrl">
+   <children>
+      <ChoiceBox fx:id="choiceBox" layoutX="25.0" layoutY="113.0" prefWidth="200.0" />
+      <Text layoutX="35.0" layoutY="43.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%startup_welcome" wrappingWidth="200.0" />
+      <Text layoutX="35.0" layoutY="70.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%startup_title" wrappingWidth="200.0" />
+      <Button layoutX="68.0" layoutY="212.0" mnemonicParsing="false" onAction="#onSave" text="%startup_save" />
+   </children>
+</AnchorPane>

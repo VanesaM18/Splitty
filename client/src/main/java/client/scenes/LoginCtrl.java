@@ -117,6 +117,6 @@ public class LoginCtrl {
      * Goes back to the starting page.
      */
     public void back() {
-        mainCtrl.showStartScreen();
+        mainCtrl.getSceneManager().goBack();
     }
 }

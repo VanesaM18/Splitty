@@ -4,9 +4,12 @@ import client.utils.language.LanguageTemplate;
 
 public class English extends LanguageTemplate {
 
-
+    /**
+     * getrieves the text content for English.
+     * @return text content for English.
+     */
     @Override
-    protected String getText() {
+    public String getText() {
         return "English";
     }
 
@@ -14,7 +17,6 @@ public class English extends LanguageTemplate {
     protected String getLanguage() {
         return "en";
     }
-
     @Override
     protected String getCountry() {
         return "EN";
