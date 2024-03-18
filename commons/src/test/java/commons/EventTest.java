@@ -117,9 +117,9 @@ class EventTest {
         Participant participant2 = new Participant("participant2", "email2", "iban2", "bic2");
         Participant participant3 = new Participant("participant3", "email3", "iban3", "bic3");
         Participant participant4 = new Participant("participant4", "email4", "iban4", "bic4");
-        Monetary amount1 = new Monetary(9);
-        Monetary amount2 = new Monetary(21);
-        Monetary amount3 = new Monetary(45);
+        Monetary amount1 = new Monetary(10);
+        Monetary amount2 = new Monetary(20);
+        Monetary amount3 = new Monetary(40);
         var date = LocalDate.now();
         Set<Participant> set1 = new HashSet<>();
         set1.add(participant2);
@@ -135,11 +135,11 @@ class EventTest {
         Expense expense3 = new Expense(event1, "expense3", participant1, amount3, date, set3);
         Set<Expense> setExpense = new HashSet<>(List.of(expense1, expense2, expense3));
         event1.setExpenses(setExpense);
-        Debt debt1 = new Debt(participant2, new Monetary(18), participant1);
-        Debt debt2 = new Debt(participant3, new Monetary(3), participant1);
-        Debt debt3 = new Debt(participant1, new Monetary(7), participant2);
-        Debt debt4 = new Debt(participant4, new Monetary(15), participant1);
-        Debt debt5 = new Debt(participant4, new Monetary(7), participant2);
+        Debt debt1 = new Debt(participant1, new Monetary(10), participant2);
+        Debt debt2 = new Debt(participant2, new Monetary(25), participant1);
+        Debt debt3 = new Debt(participant3, new Monetary(5), participant1);
+        Debt debt4 = new Debt(participant4, new Monetary(20), participant1);
+        Debt debt5 = new Debt(participant4, new Monetary(10), participant2);
         List<Debt> expected = new ArrayList<>(List.of(debt1, debt2, debt3, debt4, debt5));
         assertEquals(expected, Event.paymentsToDebt(event1));
     }
