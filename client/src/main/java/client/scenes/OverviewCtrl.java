@@ -354,13 +354,6 @@ public class OverviewCtrl {
         ev.removeParticipant(participantNames.getSelectionModel().getSelectedItem());
         server.updateEvent(ev);
         mainCtrl.showOverviewEvent(ev);
-        /*
-        List<Expense> all = server.getAllExpensesFromEvent(this.ev);
-        for (Expense ex: all) {
-            server.deleteExpense(ex);
-        }
-        */
-         */
         refresh();
         // server.deleteParticipant(participant);
     }
