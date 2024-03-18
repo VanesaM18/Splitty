@@ -111,7 +111,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
         if (endPoint.contains("/expenses")) {
             handleExpensesApi(session, request);
         }
-        if (endPoint.contains("/expenses") || endPoint.contains("/events") || endPoint.contains("/participants")) {
+        if (endPoint.contains("/expenses") || endPoint.contains("/events")
+            || endPoint.contains("/participants")) {
             updateClients(session, request);
         }
     }
