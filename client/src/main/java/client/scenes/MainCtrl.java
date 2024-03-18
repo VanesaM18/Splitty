@@ -236,9 +236,17 @@ public class MainCtrl {
     /**
      * Displays the open debts event
      */
-    public void showOpenDebts() {
-        primaryStage.setTitle("Open Debts");
-        primaryStage.setScene(openDebt);
+    public void showOpenDebts(Event e) {
+        if (e == null) {
+            primaryStage.setTitle("Open Debts");
+            primaryStage.setScene(openDebt);
+        } else {
+            primaryStage.setTitle("Open Debt");
+            primaryStage.setScene(openDebt);
+            openDebtsCtrl.initialize(e);
+
+        }
+
     }
 
 

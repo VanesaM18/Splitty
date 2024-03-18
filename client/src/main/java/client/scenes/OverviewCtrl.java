@@ -311,6 +311,10 @@ public class OverviewCtrl {
      * Goes to open debts page
      */
     public void settleDebt() {
-        mainCtrl.showOpenDebts();
+        mainCtrl.showOpenDebts(this.ev);
+    }
+
+    public Event getEv(){
+        return ev;
     }
 }

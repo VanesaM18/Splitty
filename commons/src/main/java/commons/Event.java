@@ -250,16 +250,19 @@ public class Event {
         Set<Expense> eventExpenses = event.getExpenses();
         Iterator<Expense> iteratorExpense = eventExpenses.iterator();
         Map<Map<Participant, Participant>, Monetary> allDebts = new HashMap<>();
+
         while(iteratorExpense.hasNext()){
             Expense expense = iteratorExpense.next();
             Set<Participant> debtors = expense.getSplitBetween();
-            long amount = expense.getAmount().getInternalValue() / (debtors.size() + 1);
+            long amount = expense.getAmount().getInternalValue() / (debtors.size());
             Participant creditor = expense.getCreator();
             Iterator<Participant> iteratorDebtors = debtors.iterator();
+
             while(iteratorDebtors.hasNext()){
                 Map<Participant, Participant> currentMap = new HashMap<Participant, Participant>();
                 currentMap.put(iteratorDebtors.next(), creditor);
                 Monetary currentMonetary = new Monetary(amount);
+
                 if(allDebts.get(currentMap) == null) {
                     allDebts.put(currentMap, currentMonetary);
                 } else {
@@ -279,9 +282,11 @@ public class Event {
     public static List<Debt> paymentsToDebt(Event event) {
         Map<Map<Participant, Participant>, Monetary> allDebts = calculatePayments(event);
         List<Debt> listDebt = new ArrayList<>();
+
         allDebts.entrySet().forEach(entry -> {
             Map<Participant, Participant> pair = entry.getKey();
             Monetary monetaryValue = entry.getValue();
+
             pair.entrySet().forEach(innerEntry -> {
                 Participant debtorId = innerEntry.getKey();
                 Participant creditorId = innerEntry.getValue();

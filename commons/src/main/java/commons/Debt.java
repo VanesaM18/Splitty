@@ -73,7 +73,13 @@ public class Debt {
                 && Objects.equals(creditor, debt.creditor);
     }
 
-
+    /**
+     * gets the debt id
+     * @return id of debts
+     */
+    public long getId(){
+        return id;
+    }
 
     /**
      * Generates a hashcode for the object
