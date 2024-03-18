@@ -9,6 +9,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -138,23 +141,26 @@ public class OverviewCtrl {
                         textBoldP3.setFont(Font.font("System", FontWeight.BOLD, 12));
                         TextFlow mainTextFlow = new TextFlow(textBoldP1, new Text(" paid "),
                             textBoldP2, new Text(" for "), textBoldP3);
-                        Set<Participant> participantSet = item.getSplitBetween();
-                        StringBuilder s = new StringBuilder();
-                        Iterator<Participant> it = participantSet.iterator();
-                        for (int i = 0; i < participantSet.size(); ++i) {
-                            s.append(it.next().getName());
-                            if (i != participantSet.size() - 1) {
-                                s.append(", ");
-                            }
-                        }
-                        Text smallText = new Text("(" + s + ")");
+                        Text smallText = OverviewCtrl.getText(item);
                         smallText.setFont(Font.font("System", FontWeight.NORMAL, 10));
                         smallText.setFill(Color.GRAY);
 
                         VBox vbox = new VBox(mainTextFlow, smallText);
                         vbox.setSpacing(5);
 
-                        setGraphic(vbox);
+                        Text dateText = new Text(item.getDate().toString());
+                        dateText.setFont(Font.font("System", FontWeight.NORMAL, 12));
+
+                        Region region = new Region();
+                        HBox.setHgrow(region, Priority.ALWAYS);
+
+                        Button editButton = new Button();
+                        attachImage(editButton, "/assets/pen-solid.png");
+
+                        HBox element = new HBox(dateText, vbox, region, editButton);
+                        element.setSpacing(15);
+
+                        setGraphic(element);
                     }
                 };
             }
@@ -165,6 +171,24 @@ public class OverviewCtrl {
         expensesAll.setItems(expensesAllObs);
         expensesFrom.setItems(expensesFromObs);
         expensesIncluding.setItems(expensesIncludingObs);
+    }
+
+    /**
+     * Returns a nice formatted text of the participants in the expense
+     * @param item the expense
+     * @return the nice formatted text
+     */
+    private static Text getText(Expense item) {
+        Set<Participant> participantSet = item.getSplitBetween();
+        StringBuilder s = new StringBuilder();
+        Iterator<Participant> it = participantSet.iterator();
+        for (int i = 0; i < participantSet.size(); ++i) {
+            s.append(it.next().getName());
+            if (i != participantSet.size() - 1) {
+                s.append(", ");
+            }
+        }
+        return new Text("(" + s + ")");
     }
 
     private void initParticipants() {
