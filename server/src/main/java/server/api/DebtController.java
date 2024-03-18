@@ -69,6 +69,8 @@ public class DebtController {
      * Deletes a debt by its ID.
      *
      * @param id The ID of the debt to delete.
+     * @return 204 if deleted successfully, 404 if not found
+     * and 400 if id incorrect
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@PathVariable("id") long id) {
@@ -83,7 +85,7 @@ public class DebtController {
     }
 
     /**
-     * Adds a new quote.
+     * Adds a new debt.
      *
      * @param debt The Debts object to add.
      *

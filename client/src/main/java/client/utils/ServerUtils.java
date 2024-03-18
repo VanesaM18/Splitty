@@ -205,13 +205,6 @@ public class ServerUtils {
         }
         return null;
     }
-    public void removeDebt(long id) {
-        WebSocketMessage request = new WebSocketMessage();
-        request.setEndpoint("api/debts/id");
-        request.setMethod("DELETE");
-        request.setData(id);
-        sendMessageWithoutResponse(request);
-    }
 
     /**
      * Adds an event

@@ -235,6 +235,8 @@ public class MainCtrl {
 
     /**
      * Displays the open debts event
+     *
+     * @param e the current event
      */
     public void showOpenDebts(Event e) {
         if (e == null) {

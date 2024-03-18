@@ -314,7 +314,4 @@ public class OverviewCtrl {
         mainCtrl.showOpenDebts(this.ev);
     }
 
-    public Event getEv(){
-        return ev;
-    }
 }
