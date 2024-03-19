@@ -21,8 +21,6 @@ public class OpenDebtsCtrl {
     private final ServerUtils server;
     @FXML
     private VBox debtContainer;
-    @FXML
-    private ScrollPane scrollPane;
 
     /**
      * constructs open debts
@@ -87,12 +85,6 @@ public class OpenDebtsCtrl {
                 debtContainer.getChildren().add(hbox);
             }
         }
-
-        scrollPane.setPrefViewportHeight(100);
-        scrollPane.setPrefViewportWidth(100);
-        scrollPane.setContent(debtContainer);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setFitToHeight(true);
     }
 
     /**
