@@ -17,13 +17,9 @@ package server.api;
 
 import commons.Debt;
 
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import server.database.DebtRepository;
 
@@ -36,15 +32,14 @@ public class DebtController {
 
     private final Random random;
     private final DebtRepository repo;
-
     /**
      * Constructs a DebtController with the specified random generator and debt repository.
-     * @param random An instance of Random for generating random values.
-     * @param repo An instance of DebtRepository for accessing debt data.
+     *
+     * @param random            An instance of Random for generating random values.
+     * @param repo              An instance of DebtRepository for accessing debt data.
      */
     public DebtController(Random random, DebtRepository repo) {
         this.random = random;
-
         this.repo = repo;
     }
 
@@ -70,9 +65,27 @@ public class DebtController {
         }
         return ResponseEntity.ok(repo.findById(id).get());
     }
+    /**
+     * Deletes a debt by its ID.
+     *
+     * @param id The ID of the debt to delete.
+     * @return 204 if deleted successfully, 404 if not found
+     * and 400 if id incorrect
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteById(@PathVariable("id") long id) {
+        if (id < 0) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (!repo.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        repo.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 
     /**
-     * Adds a new quote.
+     * Adds a new debt.
      *
      * @param debt The Debts object to add.
      *

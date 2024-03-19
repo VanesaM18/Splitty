@@ -47,6 +47,8 @@ public class MainCtrl {
     private Scene startPage;
     private OverviewCtrl overviewEventCtrl;
     private Scene overviewEvent;
+    private OpenDebtsCtrl openDebtsCtrl;
+    private Scene openDebt;
     private InviteScreenCtrl inviteScreenCtrl;
     private Scene invite;
     private Optional<Locale> currentLocale = Optional.empty();
@@ -89,6 +91,9 @@ public class MainCtrl {
 
         this.inviteScreenCtrl = data.getInvite().getKey();
         this.invite = new Scene(data.getInvite().getValue());
+
+        this.openDebtsCtrl = data.getOpenDebt().getKey();
+        this.openDebt = new Scene(data.getOpenDebt().getValue());
 
         primaryStage.setOnCloseRequest(event -> {
             startPageCtrl.updateConfig();
@@ -183,7 +188,7 @@ public class MainCtrl {
      * primary stage to "Event", sets the scene to the overview scene and
      * refreshes the content of the overview controller if it's a new event, or
      * keeps the data if it is the old one
-     * 
+     *
      * @param e the event to update
      */
     public void showOverviewEvent(Event e) {
@@ -239,6 +244,25 @@ public class MainCtrl {
     }
 
     /**
+     * Displays the open debts event
+     *
+     * @param e the current event
+     */
+    public void showOpenDebts(Event e) {
+        if (e == null) {
+            primaryStage.setTitle("Open Debts");
+            primaryStage.setScene(openDebt);
+        } else {
+            primaryStage.setTitle("Open Debt");
+            primaryStage.setScene(openDebt);
+            openDebtsCtrl.initialize(e);
+
+        }
+
+    }
+
+
+     /** Show expense view.
      * gets the scene manager responsible for managing scenes in the application.
      * @return SceneManager object.
      */

@@ -6,8 +6,7 @@ import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -242,7 +241,62 @@ public class Event {
     }
 
     /**
-     * turns this into a readable string
+<<<<<<< HEAD
+     * maps and calculates the payments
+     * @param event the current event
+     * @return a map that maps the debtor, amount owed and creditor to each other
+     */
+    public static Map<Map<Participant, Participant>, Monetary> calculatePayments(Event event){
+        Set<Expense> eventExpenses = event.getExpenses();
+        Iterator<Expense> iteratorExpense = eventExpenses.iterator();
+        Map<Map<Participant, Participant>, Monetary> allDebts = new HashMap<>();
+
+        while(iteratorExpense.hasNext()){
+            Expense expense = iteratorExpense.next();
+            Set<Participant> debtors = expense.getSplitBetween();
+            long amount = expense.getAmount().getInternalValue() / (debtors.size());
+            Participant creditor = expense.getCreator();
+            Iterator<Participant> iteratorDebtors = debtors.iterator();
+
+            while(iteratorDebtors.hasNext()){
+                Map<Participant, Participant> currentMap = new HashMap<Participant, Participant>();
+                currentMap.put(iteratorDebtors.next(), creditor);
+                Monetary currentMonetary = new Monetary(amount);
+
+                if(allDebts.get(currentMap) == null) {
+                    allDebts.put(currentMap, currentMonetary);
+                } else {
+                    Monetary newMonetary = allDebts.get(currentMap);
+                    allDebts.put(currentMap, Monetary.add(currentMonetary, newMonetary));
+                }
+            }
+        }
+        return  allDebts;
+    }
+
+    /**
+     * converts the map into a list of debts
+     * @param event the current event
+     * @return list of all debts
+     */
+    public static List<Debt> paymentsToDebt(Event event) {
+        Map<Map<Participant, Participant>, Monetary> allDebts = calculatePayments(event);
+        List<Debt> listDebt = new ArrayList<>();
+
+        allDebts.entrySet().forEach(entry -> {
+            Map<Participant, Participant> pair = entry.getKey();
+            Monetary monetaryValue = entry.getValue();
+
+            pair.entrySet().forEach(innerEntry -> {
+                Participant debtorId = innerEntry.getKey();
+                Participant creditorId = innerEntry.getValue();
+                listDebt.add(new Debt(debtorId, monetaryValue, creditorId));
+            });
+        });
+        return listDebt;
+    }
+
+     /** turns this into a readable string
      *
      * @return string representation of the monetary value
      */

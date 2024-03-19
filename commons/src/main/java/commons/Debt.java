@@ -24,6 +24,13 @@ public class Debt {
     }
 
     /**
+     * empty constructor
+     */
+    public Debt() {
+
+    }
+
+    /**
      * Gets the debtor
      *
      * @return the participant in debt
@@ -41,15 +48,6 @@ public class Debt {
         return amount;
     }
 
-    /**
-     * Calculates the total amount of debt
-     *
-     * @param total total amount of debt
-     * @return the total amount of debt
-     */
-    public Monetary totalAmount(Monetary total){
-        return total;
-    }
 
     /**
      * Gets the creditor
@@ -76,6 +74,14 @@ public class Debt {
     }
 
     /**
+     * gets the debt id
+     * @return id of debts
+     */
+    public long getId(){
+        return id;
+    }
+
+    /**
      * Generates a hashcode for the object
      *
      * @return a hashcode for the debt object
@@ -92,6 +98,6 @@ public class Debt {
      */
     @Override
     public String toString() {
-        return  debtor + " gives" + amount + "to" + creditor;
+        return  debtor + " gives " + amount + " to " + creditor;
     }
 }

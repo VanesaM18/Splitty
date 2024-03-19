@@ -80,7 +80,7 @@ public class OverviewCtrl {
 
     /**
      * Initialize the event data
-     * 
+     *
      * @param ev the event
      */
     public void setEvent(Event ev) {
@@ -255,7 +255,7 @@ public class OverviewCtrl {
 
     /**
      * Attaches an image to a button
-     * 
+     *
      * @param but the button to attach to
      * @param url the url to the image
      */
@@ -357,4 +357,12 @@ public class OverviewCtrl {
         refresh();
         // server.deleteParticipant(participant);
     }
+
+    /**
+     * Goes to open debts page
+     */
+    public void settleDebt() {
+        mainCtrl.showOpenDebts(this.ev);
+    }
+
 }

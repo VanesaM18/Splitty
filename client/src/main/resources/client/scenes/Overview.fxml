@@ -128,7 +128,7 @@
                <children>
                   <Button mnemonicParsing="false" onAction="#back" prefHeight="30.0" text="%back" />
                   <Region HBox.hgrow="ALWAYS" />
-                  <Button mnemonicParsing="false" prefHeight="30.0" text="%settle_debts" />
+                  <Button mnemonicParsing="false" onAction="#settleDebt" prefHeight="30.0" text="%settle_debts" />
                </children>
             </HBox>
          </children>

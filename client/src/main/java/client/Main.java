@@ -48,7 +48,7 @@ public class Main extends Application {
 
     /**
      * The main of our client
-     * 
+     *
      * @param args to be passed to the client
      * @throws URISyntaxException if anything happens related to URI
      * @throws IOException if anything happens related to IO
@@ -75,7 +75,7 @@ public class Main extends Application {
 
     /**
      * Returns an instance of our main
-     * 
+     *
      * @return the main instance
      */
     public static Optional<Main> getInstance() {
@@ -117,7 +117,9 @@ public class Main extends Application {
         var overviewEvent =
                 FXML.load(OverviewCtrl.class, locale, "client", "scenes", "Overview.fxml");
         var invite =
-                FXML.load(InviteScreenCtrl.class, locale, "client", "scenes", "InviteScreen.fxml");
+            FXML.load(InviteScreenCtrl.class, locale, "client", "scenes", "InviteScreen.fxml");
+        var openDebt =
+            FXML.load(OpenDebtsCtrl.class, locale, "client", "scenes", "OpenDebts.fxml");
 
         InitializationData data = new InitializationData();
         data.setAppConfiguration(appConfiguration);
@@ -129,6 +131,7 @@ public class Main extends Application {
         data.setStartPage(startPage);
         data.setOverviewEvent(overviewEvent);
         data.setInvite(invite);
+        data.setOpenDebt(openDebt);
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         sceneManager.setMainCtrl(mainCtrl);
