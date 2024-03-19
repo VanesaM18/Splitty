@@ -8,7 +8,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -21,8 +20,6 @@ public class OpenDebtsCtrl {
     private final ServerUtils server;
     @FXML
     private VBox debtContainer;
-    @FXML
-    private ScrollPane scrollPane;
 
     /**
      * constructs open debts
@@ -87,12 +84,6 @@ public class OpenDebtsCtrl {
                 debtContainer.getChildren().add(hbox);
             }
         }
-
-        scrollPane.setPrefViewportHeight(100);
-        scrollPane.setPrefViewportWidth(100);
-        scrollPane.setContent(debtContainer);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setFitToHeight(true);
     }
 
     /**
