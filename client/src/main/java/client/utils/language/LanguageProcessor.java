@@ -95,6 +95,7 @@ public class LanguageProcessor {
     public VBox getButtons() {
         VBox root = new VBox(20);
         HBox bbox = new HBox(toArray(this.languages));
+        bbox.setSpacing(10);
         root.getChildren().add(bbox);
         root.getChildren().add(new StackPane());
         return root;

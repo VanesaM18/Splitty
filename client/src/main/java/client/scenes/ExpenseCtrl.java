@@ -35,9 +35,6 @@ import javafx.util.StringConverter;
 
 public class ExpenseCtrl {
     @FXML
-    private Label title;
-
-    @FXML
     private TextField description;
 
     @FXML
@@ -57,8 +54,7 @@ public class ExpenseCtrl {
     @FXML
     private ListView<Participant> selectParticipant;
 
-    private final ObservableSet<Participant> selectParticipantsObs = FXCollections
-            .observableSet();
+    private final ObservableSet<Participant> selectParticipantsObs = FXCollections.observableSet();
 
     private final MainCtrl mainCtrl;
     private final ServerUtils server;

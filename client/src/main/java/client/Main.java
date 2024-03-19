@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Locale;
 import java.util.Optional;
+import atlantafx.base.theme.CupertinoLight;
 
 public class Main extends Application {
 
@@ -68,6 +69,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws IOException {
         instance = this;
         this.stage = primaryStage;
+        Application.setUserAgentStylesheet(new CupertinoLight().getUserAgentStylesheet());
         this.start(configLoader.getLanguage(), configLoader.getStartScene());
     }
 

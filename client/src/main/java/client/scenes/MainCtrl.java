@@ -170,9 +170,8 @@ public class MainCtrl {
     public void showParticipants(Event ev, boolean add, Participant change) {
         participantsCtrl.setAdd(add);
         participantsCtrl.setParticipantToChange(null);
-        if (!add)
-            editParticipant(ev, change);
-        primaryStage.setTitle("Participants: Overview");
+        if (!add) editParticipant(ev, change);
+        primaryStage.setTitle((add ? "Add" : "Edit").concat(" participant"));
         primaryStage.setScene(participants);
         participantsCtrl.setEvent(ev);
         participants.setOnKeyPressed(e -> participantsCtrl.keyPressed(e));
