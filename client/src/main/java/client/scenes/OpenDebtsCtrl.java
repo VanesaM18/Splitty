@@ -60,6 +60,7 @@ public class OpenDebtsCtrl {
                 hbox.setId(hboxId);
                 TitledPane titledPane = new TitledPane();
                 titledPane.setExpanded(false);
+                titledPane.setMaxWidth(Double.MAX_VALUE);
                 titledPane.setText(debt.getCreditor().getName() + " gives "
                         + debt.getAmount().getInternalValue()
                         + " to " + debt.getDebtor().getName());
@@ -74,7 +75,6 @@ public class OpenDebtsCtrl {
 
                 Button markReceivedButton = new Button("Mark Received");
                 markReceivedButton.setOnAction(event -> {
-//                server.removeDebt(debt.getId());
                     Node parentHBox = markReceivedButton.getParent();
                     if (parentHBox instanceof HBox) {
                         debtContainer.getChildren().remove(parentHBox);
@@ -87,8 +87,11 @@ public class OpenDebtsCtrl {
                 debtContainer.getChildren().add(hbox);
             }
         }
-        scrollPane.setContent(debtContainer); // Set the VBox as the content of the ScrollPane
-        scrollPane.setFitToWidth(true); // Adjusts the width of the scroll pane to its content
+
+        scrollPane.setPrefViewportHeight(100);
+        scrollPane.setPrefViewportWidth(100);
+        scrollPane.setContent(debtContainer);
+        scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
     }
 
