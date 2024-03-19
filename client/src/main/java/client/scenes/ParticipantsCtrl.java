@@ -20,8 +20,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class ParticipantsCtrl {
-    @FXML
-    private Label title;
     private boolean add;
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
@@ -253,17 +251,12 @@ public class ParticipantsCtrl {
     }
 
     /**
-     * Changes the title of the screen depending on weather
-     * the user wants to edit or add a participant.
+     * Set whether or not we are editing or adding a participant.
      * 
      * @param add true - add / false - edit.
      */
     public void setAdd(boolean add) {
         this.add = add;
-        if (add) {
-            title.setText("Add participant");
-        } else
-            title.setText("Edit participant");
     }
 
     /**
