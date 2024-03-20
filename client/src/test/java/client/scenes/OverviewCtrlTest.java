@@ -1,11 +1,15 @@
+
 package client.scenes;
 
-import static com.google.inject.Guice.createInjector;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.Set;
+import client.MyModule;
+import com.google.inject.Injector;
+import commons.Event;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,22 +17,21 @@ import org.testfx.api.FxRobot;
 import org.testfx.assertions.api.Assertions;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
-import com.google.inject.Injector;
-import client.MyModule;
-import commons.Event;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.Set;
+
+import static com.google.inject.Guice.createInjector;
 
 @ExtendWith(ApplicationExtension.class)
-class InviteScreenCtrlTest {
-
+public class OverviewCtrlTest {
     private final Event event = new Event("testCode", "name", LocalDateTime.now(), Set.of());
 
     Pane pane;
-    InviteScreenCtrl controller;
+    OverviewCtrl controller;
 
     @BeforeAll
     static void setup() {
@@ -50,11 +53,10 @@ class InviteScreenCtrlTest {
     private void start(Stage stage) throws IOException {
         // We need to load the fxml file in this complicated manner because we need to give it
         // access to an injector.
-        FXMLLoader loader =
-                new FXMLLoader(getClass().getResource("/client/scenes/InviteScreen.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/Overview.fxml"));
         Locale locale = Locale.of("en", "EN");
         loader.setResources(ResourceBundle.getBundle("bundles.Splitty", locale));
-        Injector injector = createInjector(new MyModule());
+        Injector injector = createInjector(new TestModule());
         loader.setControllerFactory(injector::getInstance);
 
         // Actually load the file, and also save the controller.
@@ -69,7 +71,7 @@ class InviteScreenCtrlTest {
      * @param robot - Will be injected by the test runner.
      */
     @Test
-    void inviteCodeIsDisplayed(FxRobot robot) {
+    void eventDetailsAreShown(FxRobot robot) {
         // We cannot directly intereact with the controller from here, as we must be in a JavaFX
         // theda to do so. Thus, we use the FxRobot.interact method.
         // See more: https://github.com/TestFX/TestFX/issues/222
@@ -78,9 +80,14 @@ class InviteScreenCtrlTest {
             controller.refresh();
         });
 
-        String expectedString = "Give people the following invite code: " + event.getInviteCode();
+        Label title = robot.lookup("#title").queryAs(Label.class);
+        Assertions.assertThat(title).hasText(event.getName());
+    }
 
-        Label inviteCodeLabel = robot.lookup("#inviteCodeLabel").queryAs(Label.class);
-        Assertions.assertThat(inviteCodeLabel).hasText(expectedString);
+    @Test
+    void back(FxRobot robot) {
+        robot.interact(() -> {
+            controller.back();
+        });
     }
 }
