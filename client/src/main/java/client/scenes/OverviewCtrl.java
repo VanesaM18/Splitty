@@ -119,46 +119,41 @@ public class OverviewCtrl {
     }
 
     private void initExpenses() {
-        var cb = new Callback<ListView<Expense>, ListCell<Expense>>() {
+        Callback<ListView<Expense>, ListCell<Expense>> cb = lv -> new ListCell<Expense>() {
             @Override
-            public ListCell<Expense> call(ListView<Expense> listView) {
-                return new ListCell<Expense>() {
-                    @Override
-                    protected void updateItem(Expense item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item == null || empty) {
-                            setGraphic(null);
-                            return;
-                        }
-                        Text textBoldP1 = new Text(item.getCreator().getName());
-                        Text textBoldP2 = new Text("" + item.getAmount().getInternalValue()
-                                + item.getAmount().getCurrency().getSymbol());
-                        Text textBoldP3 = new Text(item.getName());
-                        textBoldP1.setFont(Font.font("System", FontWeight.BOLD, 12));
-                        textBoldP2.setFont(Font.font("System", FontWeight.BOLD, 12));
-                        textBoldP3.setFont(Font.font("System", FontWeight.BOLD, 12));
-                        TextFlow mainTextFlow = new TextFlow(textBoldP1, new Text(" paid "),
-                                textBoldP2, new Text(" for "), textBoldP3);
-                        Text smallText = OverviewCtrl.getText(item);
-                        smallText.setFont(Font.font("System", FontWeight.NORMAL, 10));
-                        smallText.setFill(Color.GRAY.darker().darker());
+            protected void updateItem(Expense item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setGraphic(null);
+                    return;
+                }
+                Text textBoldP1 = new Text(item.getCreator().getName());
+                Text textBoldP2 = new Text("" + item.getAmount().toString()
+                        + item.getAmount().getCurrency().getSymbol());
+                Text textBoldP3 = new Text(item.getName());
+                textBoldP1.setFont(Font.font("System", FontWeight.BOLD, 12));
+                textBoldP2.setFont(Font.font("System", FontWeight.BOLD, 12));
+                textBoldP3.setFont(Font.font("System", FontWeight.BOLD, 12));
+                TextFlow mainTextFlow = new TextFlow(textBoldP1, new Text(" paid "),
+                        textBoldP2, new Text(" for "), textBoldP3);
+                Text smallText = OverviewCtrl.getText(item);
+                smallText.setFont(Font.font("System", FontWeight.NORMAL, 10));
+                smallText.setFill(Color.GRAY.darker().darker());
 
-                        VBox vbox = new VBox(mainTextFlow, smallText);
-                        vbox.setSpacing(5);
+                VBox vbox = new VBox(mainTextFlow, smallText);
+                vbox.setSpacing(5);
 
-                        Text dateText = new Text(item.getDate().toString());
-                        dateText.setFont(Font.font("System", FontWeight.NORMAL, 12));
-                        Region region = new Region();
-                        HBox.setHgrow(region, Priority.ALWAYS);
-                        Button editButton = new Button();
-                        editButton.setOnAction(e -> mainCtrl.showExpense(item.getEvent(),
-                                participantComboBox.getSelectionModel().getSelectedItem(), item));
-                        attachImage(editButton, "/assets/pen-solid.png");
-                        HBox element = new HBox(dateText, vbox, region, editButton);
-                        element.setSpacing(15);
-                        setGraphic(element);
-                    }
-                };
+                Text dateText = new Text(item.getDate().toString());
+                dateText.setFont(Font.font("System", FontWeight.NORMAL, 12));
+                Region region = new Region();
+                HBox.setHgrow(region, Priority.ALWAYS);
+                Button editButton = new Button();
+                editButton.setOnAction(e -> mainCtrl.showExpense(item.getEvent(),
+                        participantComboBox.getSelectionModel().getSelectedItem(), item));
+                attachImage(editButton, "/assets/pen-solid.png");
+                HBox element = new HBox(dateText, vbox, region, editButton);
+                element.setSpacing(15);
+                setGraphic(element);
             }
         };
         expensesAll.setCellFactory(cb);

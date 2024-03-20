@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.Currency;
 
@@ -85,5 +87,50 @@ public class MonetaryTest {
         var monetary1 = new Monetary();
         monetary1.setInternalValue(123);
         assertEquals(123, monetary1.getInternalValue());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "420,EUR,4.20",
+            "1206,EUR,12.06",
+            "14501,TND,14.501",
+            "20,EUR,0.20",
+            "4,EUR,0.04",
+            "0,EUR,0.00"
+    })
+    public void testToString(long amount, String currency, String expectedValue) {
+        var monetary = new Monetary(amount, currency);
+
+        assertEquals(expectedValue, monetary.toString());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "400,EUR,4",
+            "420,EUR,4.20",
+            "1206,EUR,12.06",
+            "14501,TND,14.501",
+            "20,EUR,0.20",
+            "4,EUR,0.04",
+            "0,EUR,0.00",
+            "10,EUR,0.1",
+            "20,EUR,.20"
+    })
+    public void testFromString(long amount, String currency, String input) throws Exception {
+        assertEquals(new Monetary(amount, currency),
+                Monetary.fromString(input, Currency.getInstance(currency)));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "EUR,4.204",
+            "TND,14.1501",
+            "EUR,4abc.123",
+            "EUR,123.4abc"
+    })
+    public void testFromStringThrows(String currency, String input) {
+        assertThrows(Exception.class, () -> {
+            Monetary.fromString(input, Currency.getInstance(currency));
+        });
     }
 }

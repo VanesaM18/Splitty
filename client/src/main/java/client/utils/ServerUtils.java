@@ -260,6 +260,27 @@ public class ServerUtils {
     }
 
     /**
+     * Update an expense
+     * 
+     * @param expense The expense to update
+     * 
+     */
+    public void updateExpense(Expense expense) {
+        WebSocketMessage request = new WebSocketMessage();
+        request.setEndpoint("api/expenses");
+        request.setMethod("PUT");
+        request.setData(expense);
+        request.setParameters(List.of(expense.getId()));
+        try {
+            System.out.println("asdfasdfasdfdsf" + request.toString());
+            var resp = sendMessageWithResponse(request);
+            System.out.println("1" + resp.toString());
+        } catch (ExecutionException | InterruptedException e) {
+            return;
+        }
+    }
+
+    /**
      * sends a JSON dump request to the server via WebSocket and waits for the
      * response
      * 
@@ -275,7 +296,7 @@ public class ServerUtils {
             WebSocketMessage response = sendMessageWithResponse(requestMessage);
             if (response.getData() != null) {
                 return Optional.of(
-                    getObjectMapper().convertValue(response.getData(), String.class));
+                        getObjectMapper().convertValue(response.getData(), String.class));
             } else {
                 return Optional.empty();
             }
