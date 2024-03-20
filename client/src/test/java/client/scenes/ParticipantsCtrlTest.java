@@ -21,6 +21,7 @@ import org.testfx.framework.junit5.Start;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 import static com.google.inject.Guice.createInjector;
@@ -28,7 +29,8 @@ import static org.mockito.Mockito.mock;
 
 @ExtendWith(ApplicationExtension.class)
 public class ParticipantsCtrlTest {
-    private final Event event = new Event("testCode", "name", LocalDateTime.now(), Set.of());
+    Set<Participant> participants = new HashSet<>();
+    private final Event event = new Event("testCode", "name", LocalDateTime.now(), participants);
 
     Pane pane;
     ParticipantsCtrl controller;
@@ -55,7 +57,7 @@ public class ParticipantsCtrlTest {
         // access to an injector.
         FXMLLoader loader =
                 new FXMLLoader(getClass().getResource("/client/scenes/Participants.fxml"));
-        Injector injector = createInjector(new MyModule());
+        Injector injector = createInjector(new TestModule());
         loader.setControllerFactory(injector::getInstance);
 
         // Actually load the file, and also save the controller.
@@ -110,20 +112,20 @@ public class ParticipantsCtrlTest {
         Assertions.assertThat(ParticipantsCtrl.isIBicValid("GT72454147X6JF38M7V6085887BG")).isFalse();
     }
 
-//    @Test
-//    void abort(FxRobot robot) {
-//        // We cannot directly intereact with the controller from here, as we must be in a JavaFX
-//        // theda to do so. Thus, we use the FxRobot.interact method.
-//        // See more: https://github.com/TestFX/TestFX/issues/222
-//        robot.interact(() -> {
-//            controller.setEvent(event);
-//            controller.abort();
-//        });
-//
-//        Label warning = robot.lookup("#warning").queryAs(Label.class);
-//        Assertions.assertThat(warning).hasText("");
-//
-//    }
+    @Test
+    void abort(FxRobot robot) {
+        // We cannot directly intereact with the controller from here, as we must be in a JavaFX
+        // theda to do so. Thus, we use the FxRobot.interact method.
+        // See more: https://github.com/TestFX/TestFX/issues/222
+        robot.interact(() -> {
+            controller.setEvent(event);
+            controller.abort();
+        });
+
+        Label warning = robot.lookup("#warning").queryAs(Label.class);
+        Assertions.assertThat(warning).hasText("");
+
+    }
 
     @Test
     void add(FxRobot robot) {
@@ -159,5 +161,136 @@ public class ParticipantsCtrlTest {
 
         TextField bic = robot.lookup("#bic").queryAs(TextField.class);
         Assertions.assertThat(bic).hasText("DLXUNR6QAEN");
+    }
+
+    @Test
+    void ok(FxRobot robot) {
+        // We cannot directly intereact with the controller from here, as we must be in a JavaFX
+        // theda to do so. Thus, we use the FxRobot.interact method.
+        // See more: https://github.com/TestFX/TestFX/issues/222
+        robot.interact(() -> {
+            controller.setEvent(event);
+
+            Participant p = new Participant("Leo", "leo@mail.nl", "CY97946484768297433832859518", "DLXUNR6QAEN");
+            controller.setFields(p);
+            controller.ok();
+
+        });
+
+        Label warning = robot.lookup("#warning").queryAs(Label.class);
+        Assertions.assertThat(warning).hasText("");
+    }
+
+    @Test
+    void ok_name(FxRobot robot) {
+        // We cannot directly intereact with the controller from here, as we must be in a JavaFX
+        // theda to do so. Thus, we use the FxRobot.interact method.
+        // See more: https://github.com/TestFX/TestFX/issues/222
+        robot.interact(() -> {
+            controller.setEvent(event);
+
+            Participant p = new Participant("", "leo@mail.nl", "CY97946484768297433832859518", "DLXUNR6QAEN");
+            controller.setFields(p);
+            controller.ok();
+        });
+
+        Label warning = robot.lookup("#warning").queryAs(Label.class);
+        Assertions.assertThat(warning).hasText("Name cannot be empty!");
+
+    }
+
+    @Test
+    void ok_email(FxRobot robot) {
+        // We cannot directly intereact with the controller from here, as we must be in a JavaFX
+        // theda to do so. Thus, we use the FxRobot.interact method.
+        // See more: https://github.com/TestFX/TestFX/issues/222
+        robot.interact(() -> {
+            controller.setEvent(event);
+
+            Participant p = new Participant("Leo", "", "CY97946484768297433832859518", "DLXUNR6QAEN");
+            controller.setFields(p);
+            controller.ok();
+        });
+
+        Label warning = robot.lookup("#warning").queryAs(Label.class);
+        Assertions.assertThat(warning).hasText("Invalid email!");
+    }
+
+    @Test
+    void ok_iban(FxRobot robot) {
+        // We cannot directly intereact with the controller from here, as we must be in a JavaFX
+        // theda to do so. Thus, we use the FxRobot.interact method.
+        // See more: https://github.com/TestFX/TestFX/issues/222
+        robot.interact(() -> {
+            controller.setEvent(event);
+
+            Participant p = new Participant("Leo", "leo@mail.nl", "", "DLXUNR6QAEN");
+            controller.setFields(p);
+            controller.ok();
+        });
+
+        Label warning = robot.lookup("#warning").queryAs(Label.class);
+        Assertions.assertThat(warning).hasText("Invalid IBAN!");
+
+    }
+
+    @Test
+    void ok_bic(FxRobot robot) {
+        // We cannot directly intereact with the controller from here, as we must be in a JavaFX
+        // theda to do so. Thus, we use the FxRobot.interact method.
+        // See more: https://github.com/TestFX/TestFX/issues/222
+        robot.interact(() -> {
+            controller.setEvent(event);
+
+            Participant p = new Participant("Leo", "leo@mail.nl", "CY97946484768297433832859518", "");
+            controller.setFields(p);
+            controller.ok();
+        });
+
+        Label warning = robot.lookup("#warning").queryAs(Label.class);
+        Assertions.assertThat(warning).hasText("Invalid BIC!");
+
+    }
+
+    @Test
+    void ok_uniqueName(FxRobot robot) {
+        // We cannot directly intereact with the controller from here, as we must be in a JavaFX
+        // theda to do so. Thus, we use the FxRobot.interact method.
+        // See more: https://github.com/TestFX/TestFX/issues/222
+        robot.interact(() -> {
+
+            Participant p = new Participant("Leo", "leo@mail.nl", "CY97946484768297433832859518", "DLXUNR6QAEN");
+            event.addParticipant(p);
+            controller.setEvent(event);
+            controller.setAdd(true);
+            controller.setFields(p);
+            controller.ok();
+        });
+
+        Label warning = robot.lookup("#warning").queryAs(Label.class);
+        Assertions.assertThat(warning).hasText("Not a unique name!");
+
+    }
+
+    @Test
+    void ok_uniqueNameUpdate(FxRobot robot) {
+        // We cannot directly intereact with the controller from here, as we must be in a JavaFX
+        // theda to do so. Thus, we use the FxRobot.interact method.
+        // See more: https://github.com/TestFX/TestFX/issues/222
+        robot.interact(() -> {
+
+            Participant p = new Participant("Leo", "leo@mail.nl", "CY97946484768297433832859518", "DLXUNR6QAEN");
+
+            event.addParticipant(p);
+
+            controller.setEvent(event);
+            controller.setAdd(false);
+            controller.setFields(p);
+            controller.ok();
+        });
+
+        Label warning = robot.lookup("#warning").queryAs(Label.class);
+        Assertions.assertThat(warning).hasText("");
+
     }
 }
