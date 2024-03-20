@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import server.api.ExpenseController;
 import server.database.EventRepository;
 import server.database.ExpenseRepository;
-import static org.hamcrest.Matchers.is;
 import jakarta.persistence.EntityNotFoundException;
 
 import java.time.LocalDate;

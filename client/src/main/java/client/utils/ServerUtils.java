@@ -447,7 +447,7 @@ public class ServerUtils {
                 request.setEndpoint("api/expenses/id");
                 request.setMethod("PUT");
                 request.setData(ex);
-                WebSocketMessage response = sendMessageWithResponse(request);
+                sendMessageWithResponse(request);
             }
         } catch (ExecutionException | InterruptedException er) {
             er.printStackTrace();
