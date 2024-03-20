@@ -119,7 +119,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     /**
      * Handle expenses api for websockets
-     * 
+     *
      * @param session The websocket session
      * @param request The request
      * @throws IOException if the object mapper fails
@@ -127,22 +127,35 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private void handleExpensesApi(WebSocketSession session, WebSocketMessage request)
             throws Exception {
         String endpoint = request.getEndpoint();
-        if ("api/expenses".equals(endpoint)) {
-            handleExpense(session, request);
-        } else if (endpoint.equals("api/expenses/by_event")) {
+        if (endpoint.equals("api/expenses/by_event")) {
             handleExpenseByEventId(session, request);
+        } else if (endpoint.startsWith("api/expenses")) {
+            handleExpense(session, request);
         }
     }
 
     private void handleExpense(WebSocketSession session, WebSocketMessage request)
             throws Exception {
-        if (!"POST".equals(request.getMethod())) {
-            return;
-        }
         if ("DELETE".equals(request.getMethod())) {
             long expenseId = (Long) request.getData();
             ResponseEntity<String> deletedExpense = expenseController.deleteById(expenseId);
             returnResult(session, request, deletedExpense.getBody());
+            return;
+        }
+        if ("PUT".equals(request.getMethod())) {
+            Expense ex = objectMapper.convertValue(request.getData(), Expense.class);
+            long id = ex.getId();
+            if (ex.getSplitBetween().isEmpty() || (ex.getSplitBetween().size() == 1
+                && ex.getSplitBetween().iterator().next().equals(ex.getCreator()))) {
+                ResponseEntity<String> deletedExpense = expenseController.deleteById(id);
+                returnResult(session, request, deletedExpense.getBody());
+                return;
+            }
+            ResponseEntity<Object> updatedExpense = expenseController.updateById(id, ex);
+            returnResult(session, request, updatedExpense.getBody());
+            return;
+        }
+        if (!"POST".equals(request.getMethod())) {
             return;
         }
         Expense expense = objectMapper.convertValue(request.getData(), Expense.class);

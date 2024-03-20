@@ -10,6 +10,7 @@ import server.database.EventRepository;
 import server.database.ExpenseRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/expenses")
@@ -117,13 +118,15 @@ public class ExpenseController {
         }
         Expense oldExpense;
         try {
-            oldExpense = repo.getReferenceById(id);
+            Optional<Expense> wrapped = repo.findById(id);
+            if (!wrapped.isPresent()) {
+                return ResponseEntity.notFound().build();
+            }
+            oldExpense = wrapped.orElse(null);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
-        if (expense.getAmount() != null) {
-            oldExpense.setAmount(expense.getAmount());
-        }
+        updateExpense(expense, oldExpense);
         if (expense.getEvent() != null) {
             return ResponseEntity
                 .badRequest()
@@ -133,6 +136,20 @@ public class ExpenseController {
             oldExpense.setReceiver(expense.getCreator());
         }
         return ResponseEntity.ok(repo.save(oldExpense));
+    }
+
+    /**
+     * Updates the old expense
+     * @param expense the new expense
+     * @param oldExpense the old expense
+     */
+    private static void updateExpense(Expense expense, Expense oldExpense) {
+        if (expense.getAmount() != null) {
+            oldExpense.setAmount(expense.getAmount());
+        }
+        if (!expense.getSplitBetween().isEmpty()) {
+            oldExpense.setSplitBetween(expense.getSplitBetween());
+        }
     }
 
     /**
