@@ -25,12 +25,12 @@ public class Expense {
                            column = @Column(name = "amount_fraction_divider"))
     })
     private Monetary amount;
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "PARTICIPANT_ID", referencedColumnName = "id")
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "PARTICIPANT_ID", referencedColumnName = "id", nullable = true)
     private Participant creator;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "event_id", nullable = false)
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "event_id", nullable = true)
     @JsonBackReference
     private Event event;
 
@@ -254,4 +254,14 @@ public class Expense {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
     }
 
+    /**
+     * Clear everything before deleting
+     */
+    @PreRemove
+    public void removeEverything() {
+        this.splitBetween.clear();
+        this.amount = null;
+        this.creator = null;
+        this.event = null;
+    }
 }
