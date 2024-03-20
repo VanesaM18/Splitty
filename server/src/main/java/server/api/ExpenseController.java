@@ -10,6 +10,7 @@ import server.database.EventRepository;
 import server.database.ExpenseRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/expenses")
@@ -117,7 +118,11 @@ public class ExpenseController {
         }
         Expense oldExpense;
         try {
-            oldExpense = repo.findById(id).orElse(null);
+            Optional<Expense> wrapped = repo.findById(id);
+            if (!wrapped.isPresent()) {
+                return ResponseEntity.notFound().build();
+            }
+            oldExpense = wrapped.orElse(null);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
