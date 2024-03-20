@@ -16,7 +16,7 @@ public class Admin {
     private String password;
     private String email;
 
-    private Admin() {
+    public Admin() {
         // for object mapper
     }
     /**
