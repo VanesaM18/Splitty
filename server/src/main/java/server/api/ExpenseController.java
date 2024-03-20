@@ -126,12 +126,7 @@ public class ExpenseController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
-        if (expense.getAmount() != null) {
-            oldExpense.setAmount(expense.getAmount());
-        }
-        if (!expense.getSplitBetween().isEmpty()) {
-            oldExpense.setSplitBetween(expense.getSplitBetween());
-        }
+        updateExpense(expense, oldExpense);
         if (expense.getEvent() != null) {
             return ResponseEntity
                 .badRequest()
@@ -141,6 +136,20 @@ public class ExpenseController {
             oldExpense.setReceiver(expense.getCreator());
         }
         return ResponseEntity.ok(repo.save(oldExpense));
+    }
+
+    /**
+     * Updates the old expense
+     * @param expense the new expense
+     * @param oldExpense the old expense
+     */
+    private static void updateExpense(Expense expense, Expense oldExpense) {
+        if (expense.getAmount() != null) {
+            oldExpense.setAmount(expense.getAmount());
+        }
+        if (!expense.getSplitBetween().isEmpty()) {
+            oldExpense.setSplitBetween(expense.getSplitBetween());
+        }
     }
 
     /**
