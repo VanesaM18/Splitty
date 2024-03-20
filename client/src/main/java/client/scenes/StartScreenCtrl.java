@@ -18,6 +18,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -232,6 +233,21 @@ public class StartScreenCtrl implements Initializable {
             but.setGraphic(imageView);
         } else {
             System.out.println("Image URL is null. Check the path to the image file.");
+        }
+    }
+
+    /**
+     * Event handler for pressing a key.
+     *
+     * @param e the key that is pressed
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ENTER:
+                createEvent();
+                break;
+            default:
+                break;
         }
     }
 }

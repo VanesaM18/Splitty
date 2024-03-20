@@ -155,6 +155,7 @@ public class MainCtrl {
         primaryStage.setTitle("Start page");
         primaryStage.setScene(startPage);
         startPageCtrl.clearFields();
+        startPage.setOnKeyPressed(e -> startPageCtrl.keyPressed(e));
         startPageCtrl.refresh();
     }
 
@@ -201,6 +202,7 @@ public class MainCtrl {
             overviewEventCtrl.setEvent(e);
             primaryStage.setScene(overviewEvent);
             overviewEventCtrl.refresh();
+            overviewEvent.setOnKeyPressed(key -> overviewEventCtrl.keyPressed(key));
         }
     }
 
