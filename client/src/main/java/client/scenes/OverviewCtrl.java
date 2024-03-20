@@ -345,11 +345,28 @@ public class OverviewCtrl {
             warning.setText("First chose a participant.");
             return;
         }
-        warning.setText("");
-        ev.removeParticipant(participantNames.getSelectionModel().getSelectedItem());
-        server.updateEvent(ev);
-        mainCtrl.showOverviewEvent(ev);
-        refresh();
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation required");
+        alert.setHeaderText("Deleting a participant");
+        alert.setContentText(participantNames.getSelectionModel().getSelectedItem().getName()
+                + " will de deleted.");
+
+        ButtonType confirm = new ButtonType("Confirm");
+        ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(confirm, cancel);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == confirm){
+            warning.setText("");
+            ev.removeParticipant(participantNames.getSelectionModel().getSelectedItem());
+            server.updateEvent(ev);
+            mainCtrl.showOverviewEvent(ev);
+            refresh();
+        } else {
+            alert.close();
+        }
         // server.deleteParticipant(participant);
     }
 

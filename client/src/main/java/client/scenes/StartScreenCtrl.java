@@ -124,6 +124,11 @@ public class StartScreenCtrl implements Initializable {
      */
     public void createEvent() {
         String eventName = createEventField.getText();
+        if(eventName.equals("")) {
+            createEventField.setText("Chose a name...");
+            return;
+        }
+
         Event event = new Event( "ABCDEF", eventName, LocalDateTime.now(), new HashSet<>());
         event.generateInviteCode();
         event = server.addEvent(event);
