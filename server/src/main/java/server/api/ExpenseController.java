@@ -129,8 +129,8 @@ public class ExpenseController {
         updateExpense(expense, oldExpense);
         if (expense.getEvent() != null) {
             return ResponseEntity
-                    .badRequest()
-                    .body("Cannot change event of expense, delete this and create a new one instead");
+                .badRequest()
+                .body("Cannot change event of expense, delete this and create a new one instead");
         }
         return ResponseEntity.ok(repo.save(oldExpense));
     }

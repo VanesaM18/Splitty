@@ -110,6 +110,9 @@ public class ExpenseCtrl {
      */
     public void setUpdateExpense(Expense e) {
         this.updateExpense = e;
+        if (e == null) {
+            return;
+        }
         this.date.setValue(e.getDate());
         this.description.setText(e.getName());
         this.amount.setText(e.getAmount().toString());
