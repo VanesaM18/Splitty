@@ -67,7 +67,7 @@ public class ParticipantsCtrl {
     /**
      * Clears the text fields.
      */
-    private void clearFields() {
+    public void clearFields() {
         name.clear();
         email.clear();
         iban.clear();
@@ -145,7 +145,7 @@ public class ParticipantsCtrl {
      * @param p  participant whose name is to be checked.
      * @return whether the name is unique.
      */
-    private boolean uniqueUpdate(Event ev, Participant p) {
+    public boolean uniqueUpdate(Event ev, Participant p) {
         int count = 0;
         Set<Participant> participants = ev.getParticipants();
         for (Participant participant : participants) {
