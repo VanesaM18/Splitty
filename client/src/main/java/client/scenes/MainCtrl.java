@@ -205,6 +205,7 @@ public class MainCtrl {
     }
 
 
+
     /**
      * Displays the invite code of the vent.
      *

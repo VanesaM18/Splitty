@@ -448,4 +448,35 @@ public class ServerUtils {
         setAuth(admin.getUsername(), admin.getPassword());
     }
 
+    /**
+     * Delete a debt and all expenses related to it
+     * @param debt the debt to be deleted
+     * @param e the event where the debts are
+     */
+    public void deleteDebts(Debt debt, Event e) {
+        try {
+            List<Expense> expenses = getAllExpensesFromEvent(e);
+            List<Expense> relevantExpenses = new ArrayList<>();
+            for (Expense ex : expenses) {
+                if (ex.getCreator().equals(debt.getCreditor()) &&
+                    ex.getSplitBetween().contains(debt.getDebtor())) {
+                    relevantExpenses.add(ex);
+                }
+            }
+            for (Expense ex : relevantExpenses) {
+                long value = ex.getAmount().getInternalValue();
+                value = value - (value / ex.getSplitBetween().size());
+                ex.getAmount().setInternalValue(value);
+                ex.removeParticipant(debt.getDebtor());
+                System.out.println(ex.getAmount().getInternalValue());
+                WebSocketMessage request = new WebSocketMessage();
+                request.setEndpoint("api/expenses/id");
+                request.setMethod("PUT");
+                request.setData(ex);
+                WebSocketMessage response = sendMessageWithResponse(request);
+            }
+        } catch (ExecutionException | InterruptedException er) {
+            er.printStackTrace();
+        }
+    }
 }

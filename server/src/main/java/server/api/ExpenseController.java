@@ -117,12 +117,15 @@ public class ExpenseController {
         }
         Expense oldExpense;
         try {
-            oldExpense = repo.getReferenceById(id);
+            oldExpense = repo.findById(id).orElse(null);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
         if (expense.getAmount() != null) {
             oldExpense.setAmount(expense.getAmount());
+        }
+        if (!expense.getSplitBetween().isEmpty()) {
+            oldExpense.setSplitBetween(expense.getSplitBetween());
         }
         if (expense.getEvent() != null) {
             return ResponseEntity
