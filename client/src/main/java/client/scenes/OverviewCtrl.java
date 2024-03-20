@@ -43,7 +43,7 @@ public class OverviewCtrl {
     private final ObservableList<Expense> expensesAllObs = FXCollections.observableArrayList();
     private final ObservableList<Expense> expensesFromObs = FXCollections.observableArrayList();
     private final ObservableList<Expense> expensesIncludingObs =
-        FXCollections.observableArrayList();
+            FXCollections.observableArrayList();
 
     private Event ev;
 
@@ -68,9 +68,8 @@ public class OverviewCtrl {
     /**
      * Controller responsible for handling the quote overview functionality.
      * 
-     * @param server   An instance of ServerUtils for server-related operations.
-     * @param mainCtrl An instance of MainCtrl for coordinating with the main
-     *                 controller.
+     * @param server An instance of ServerUtils for server-related operations.
+     * @param mainCtrl An instance of MainCtrl for coordinating with the main controller.
      */
     @Inject
     public OverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
@@ -132,13 +131,13 @@ public class OverviewCtrl {
                         }
                         Text textBoldP1 = new Text(item.getCreator().getName());
                         Text textBoldP2 = new Text("" + item.getAmount().getInternalValue()
-                            + item.getAmount().getCurrency().getSymbol());
+                                + item.getAmount().getCurrency().getSymbol());
                         Text textBoldP3 = new Text(item.getName());
                         textBoldP1.setFont(Font.font("System", FontWeight.BOLD, 12));
                         textBoldP2.setFont(Font.font("System", FontWeight.BOLD, 12));
                         textBoldP3.setFont(Font.font("System", FontWeight.BOLD, 12));
                         TextFlow mainTextFlow = new TextFlow(textBoldP1, new Text(" paid "),
-                            textBoldP2, new Text(" for "), textBoldP3);
+                                textBoldP2, new Text(" for "), textBoldP3);
                         Text smallText = OverviewCtrl.getText(item);
                         smallText.setFont(Font.font("System", FontWeight.NORMAL, 10));
                         smallText.setFill(Color.GRAY.darker().darker());
@@ -152,7 +151,7 @@ public class OverviewCtrl {
                         HBox.setHgrow(region, Priority.ALWAYS);
                         Button editButton = new Button();
                         editButton.setOnAction(e -> mainCtrl.showExpense(item.getEvent(),
-                            participantComboBox.getSelectionModel().getSelectedItem(), item));
+                                participantComboBox.getSelectionModel().getSelectedItem(), item));
                         attachImage(editButton, "/assets/pen-solid.png");
                         HBox element = new HBox(dateText, vbox, region, editButton);
                         element.setSpacing(15);
@@ -171,6 +170,7 @@ public class OverviewCtrl {
 
     /**
      * Returns a nice formatted text of the participants in the expense
+     * 
      * @param item the expense
      * @return the nice formatted text
      */
@@ -243,8 +243,7 @@ public class OverviewCtrl {
         for (Expense e : this.ev.getExpenses()) {
             expensesAllObs.add(e);
             if (Objects.equals(e.getCreator(),
-                               participantComboBox.getSelectionModel().getSelectedItem())
-            ) {
+                    participantComboBox.getSelectionModel().getSelectedItem())) {
                 expensesFromObs.add(e);
             }
             if (e.getSplitBetween().contains(selectedParticipant)) {
@@ -275,8 +274,8 @@ public class OverviewCtrl {
     }
 
     /**
-     * Method to add a new participant. This method triggers the display of the add
-     * participant window.
+     * Method to add a new participant. This method triggers the display of the add participant
+     * window.
      */
     public void addParticipant() {
         mainCtrl.showParticipants(this.ev, true, null);
@@ -287,14 +286,14 @@ public class OverviewCtrl {
      * Trigger the new expense dialog
      */
     public void addExpense() {
-        mainCtrl.showExpense(this.ev,
-                             participantComboBox.getSelectionModel().getSelectedItem(), null);
+        mainCtrl.showExpense(this.ev, participantComboBox.getSelectionModel().getSelectedItem(),
+                null);
         refresh();
     }
 
     /**
-     * Method to edit a new participant.
-     * This method triggers the display of the edit participant window.
+     * Method to edit a new participant. This method triggers the display of the edit participant
+     * window.
      */
     public void editParticipant() {
         if (participantNames.getSelectionModel().getSelectedItem() == null) {
@@ -303,9 +302,7 @@ public class OverviewCtrl {
         }
         warning.setText("");
         mainCtrl.showParticipants(this.ev, false,
-                participantNames
-                        .getSelectionModel()
-                        .getSelectedItem());
+                participantNames.getSelectionModel().getSelectedItem());
     }
 
     /**
@@ -316,10 +313,8 @@ public class OverviewCtrl {
     }
 
     /**
-     * Open a dialog with an input box to allow the user to enter a new event name.
-     * The name that is
-     * entered is made to be new event name. If the user cancels the dialog, no
-     * action is performed.
+     * Open a dialog with an input box to allow the user to enter a new event name. The name that is
+     * entered is made to be new event name. If the user cancels the dialog, no action is performed.
      */
     public void editTitle() {
         TextInputDialog dialog = new TextInputDialog(ev.getName());
