@@ -1,8 +1,10 @@
 package client.scenes;
 
 import client.MyModule;
+import client.utils.ServerUtils;
 import com.google.inject.Injector;
 import commons.Event;
+import commons.Participant;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -22,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import static com.google.inject.Guice.createInjector;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(ApplicationExtension.class)
 public class ParticipantsCtrlTest {
@@ -41,7 +44,7 @@ public class ParticipantsCtrlTest {
     }
 
     /**
-     * Will be called with {@code @Before} semantics, i. e. before each test method.
+     * Will be called with {@code @Before} semantics, i.e. before each test method.
      *
      * @param stage - Will be injected by the test runner.
      * @throws IOException
@@ -90,14 +93,71 @@ public class ParticipantsCtrlTest {
     }
 
     @Test
-    void validEmail(FxRobot robot) {
+    void validEmail() {
         Assertions.assertThat(ParticipantsCtrl.isEmailValid("mike@gmail.com")).isTrue();
         Assertions.assertThat(ParticipantsCtrl.isEmailValid("mike-gmail.com")).isFalse();
     }
 
     @Test
-    void validIban(FxRobot robot) {
+    void validIban() {
         Assertions.assertThat(ParticipantsCtrl.isIbanValid("CY97946484768297433832859518")).isTrue();
         Assertions.assertThat(ParticipantsCtrl.isIbanValid("CY9794648")).isFalse();
+    }
+
+    @Test
+    void validBic() {
+        Assertions.assertThat(ParticipantsCtrl.isIBicValid("DLXUNR6QAEN")).isTrue();
+        Assertions.assertThat(ParticipantsCtrl.isIBicValid("GT72454147X6JF38M7V6085887BG")).isFalse();
+    }
+
+//    @Test
+//    void abort(FxRobot robot) {
+//        // We cannot directly intereact with the controller from here, as we must be in a JavaFX
+//        // theda to do so. Thus, we use the FxRobot.interact method.
+//        // See more: https://github.com/TestFX/TestFX/issues/222
+//        robot.interact(() -> {
+//            controller.setEvent(event);
+//            controller.abort();
+//        });
+//
+//        Label warning = robot.lookup("#warning").queryAs(Label.class);
+//        Assertions.assertThat(warning).hasText("");
+//
+//    }
+
+    @Test
+    void add(FxRobot robot) {
+        // We cannot directly intereact with the controller from here, as we must be in a JavaFX
+        // theda to do so. Thus, we use the FxRobot.interact method.
+        // See more: https://github.com/TestFX/TestFX/issues/222
+        robot.interact(() -> {
+            controller.setEvent(event);
+            controller.setAdd(true);
+            Assertions.assertThat(controller.isAdd()).isTrue();
+        });
+    }
+
+    @Test
+    void setFields(FxRobot robot) {
+        // We cannot directly intereact with the controller from here, as we must be in a JavaFX
+        // theda to do so. Thus, we use the FxRobot.interact method.
+        // See more: https://github.com/TestFX/TestFX/issues/222
+        robot.interact(() -> {
+            controller.setEvent(event);
+            Participant p = new Participant("Leo", "leo@mail.nl", "CY97946484768297433832859518", "DLXUNR6QAEN");
+            controller.setFields(p);
+        });
+
+        TextField name = robot.lookup("#name").queryAs(TextField.class);
+        Assertions.assertThat(name).hasText("Leo");
+
+        TextField email = robot.lookup("#email").queryAs(TextField.class);
+        Assertions.assertThat(email).hasText("leo@mail.nl");
+
+        TextField iban = robot.lookup("#iban").queryAs(TextField.class);
+        Assertions.assertThat(iban).hasText("CY97946484768297433832859518");
+
+        TextField bic = robot.lookup("#bic").queryAs(TextField.class);
+        Assertions.assertThat(bic).hasText("DLXUNR6QAEN");
     }
 }

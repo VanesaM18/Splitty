@@ -251,7 +251,7 @@ public class ParticipantsCtrl {
     }
 
     /**
-     * Set whether or not we are editing or adding a participant.
+     * Set weather or not we are editing or adding a participant.
      * 
      * @param add true - add / false - edit.
      */
