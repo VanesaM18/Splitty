@@ -346,6 +346,10 @@ public class OverviewCtrl {
             warning.setText("First chose a participant.");
             return;
         }
+        if(partOfExpense(participantNames.getSelectionModel().getSelectedItem())) {
+            warning.setText("Settle debt first!");
+            return;
+        }
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation required");
@@ -369,6 +373,20 @@ public class OverviewCtrl {
             alert.close();
         }
         // server.deleteParticipant(participant);
+    }
+
+    /**
+     * Checks weather a participant is part of an expense.
+     * @param participant participant to be checked.
+     * @return weather the participant is part of any expense.
+     */
+    private boolean partOfExpense(Participant participant) {
+        Set<Expense> expenses = ev.getExpenses();
+        for(Expense expense : expenses) {
+            if(expense.getCreator().equals(participant)) return true;
+            if(expense.getSplitBetween().contains(participant)) return true;
+        }
+        return false;
     }
 
     /**
