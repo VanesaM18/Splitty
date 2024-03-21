@@ -16,7 +16,11 @@ public class Admin {
     private String password;
     private String email;
 
-    private Admin() {
+    /**
+     * Creates an admin.
+     * Used for object mapping.
+     */
+    public Admin() {
         // for object mapper
     }
     /**

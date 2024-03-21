@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -345,11 +346,28 @@ public class OverviewCtrl {
             warning.setText("First chose a participant.");
             return;
         }
-        warning.setText("");
-        ev.removeParticipant(participantNames.getSelectionModel().getSelectedItem());
-        server.updateEvent(ev);
-        mainCtrl.showOverviewEvent(ev);
-        refresh();
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation required");
+        alert.setHeaderText("Deleting a participant");
+        alert.setContentText(participantNames.getSelectionModel().getSelectedItem().getName()
+                + " will de deleted.");
+
+        ButtonType confirm = new ButtonType("Confirm");
+        ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(confirm, cancel);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == confirm){
+            warning.setText("");
+            ev.removeParticipant(participantNames.getSelectionModel().getSelectedItem());
+            server.updateEvent(ev);
+            mainCtrl.showOverviewEvent(ev);
+            refresh();
+        } else {
+            alert.close();
+        }
         // server.deleteParticipant(participant);
     }
 
@@ -358,6 +376,21 @@ public class OverviewCtrl {
      */
     public void settleDebt() {
         mainCtrl.showOpenDebts(this.ev);
+    }
+
+    /**
+     * Event handler for pressing a key.
+     *
+     * @param e the key that is pressed
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ESCAPE:
+                back();
+                break;
+            default:
+                break;
+        }
     }
 
 }

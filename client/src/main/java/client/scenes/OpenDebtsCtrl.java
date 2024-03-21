@@ -58,15 +58,15 @@ public class OpenDebtsCtrl {
                 TitledPane titledPane = new TitledPane();
                 titledPane.setExpanded(false);
                 titledPane.setMaxWidth(Double.MAX_VALUE);
-                titledPane.setText(debt.getCreditor().getName() + " gives "
+                titledPane.setText(debt.getDebtor().getName() + " gives "
                         + debt.getAmount().getInternalValue()
-                        + " to " + debt.getDebtor().getName());
+                        + " to " + debt.getCreditor().getName());
 
                 VBox content = new VBox();
                 Label debtLabel = new Label("Bank information available, transfer the money to:\n"
-                        + "Account holder: " + debt.getDebtor().getName()
-                        + "\nIBAN: " + debt.getDebtor().getIban()
-                        + "\nBIC: " + debt.getDebtor().getBic());
+                        + "Account holder: " + debt.getCreditor().getName()
+                        + "\nIBAN: " + debt.getCreditor().getIban()
+                        + "\nBIC: " + debt.getCreditor().getBic());
                 content.getChildren().add(debtLabel);
                 titledPane.setContent(content);
 
@@ -76,6 +76,7 @@ public class OpenDebtsCtrl {
                     if (parentHBox instanceof HBox) {
                         debtContainer.getChildren().remove(parentHBox);
                     }
+                    server.deleteDebts(debt, e);
                 });
 
                 hbox.getChildren().addAll(titledPane, markReceivedButton);
@@ -90,6 +91,7 @@ public class OpenDebtsCtrl {
      * goes back to the overview event
      */
     public void back() {
+        mainCtrl.refreshData();
         mainCtrl.showOverviewEvent(null);
     }
 

@@ -79,4 +79,11 @@ public class MonetaryTest {
 
         assertEquals(monetary1, monetary2);
     }
+
+    @Test
+    public void setValue() {
+        var monetary1 = new Monetary();
+        monetary1.setInternalValue(123);
+        assertEquals(123, monetary1.getInternalValue());
+    }
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.Objects;
@@ -129,13 +130,7 @@ public class Participant {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Participant that = (Participant) o;
-        return Objects.equals(name, that.name)
-                && Objects.equals(email, that.email)
-                && Objects.equals(iban, that.iban)
-                && Objects.equals(bic, that.bic);
+        return EqualsBuilder.reflectionEquals(this, o);
     }
 
     /**
