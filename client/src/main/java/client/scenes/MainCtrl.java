@@ -227,7 +227,6 @@ public class MainCtrl {
      * Refreshes data on client side
      */
     public void refreshData() {
-        System.out.println(isInOpenDebt);
         if (isInOpenDebt == true) {
             openDebtsCtrl.initialize(openDebtsCtrl.getEvent());
         } else {
