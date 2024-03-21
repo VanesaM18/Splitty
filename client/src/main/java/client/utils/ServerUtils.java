@@ -240,40 +240,6 @@ public class ServerUtils {
     }
 
     /**
-     * Get all the quotes stored in the database
-     * 
-     * @return all the quotes
-     */
-    public List<Quote> getQuotes() {
-        try {
-            WebSocketMessage request = new WebSocketMessage();
-            request.setEndpoint("api/quotes");
-            request.setMethod("GET");
-
-            WebSocketMessage response = sendMessageWithResponse(request);
-            return objectMapper.convertValue(response.getData(),
-                    new TypeReference<List<Quote>>() {
-                    });
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * Add a quote
-     * 
-     * @param quote to be added
-     */
-    public void addQuote(Quote quote) {
-        WebSocketMessage request = new WebSocketMessage();
-        request.setEndpoint("api/quotes");
-        request.setMethod("POST");
-        request.setData(quote);
-        sendMessageWithoutResponse(request);
-    }
-
-    /**
      * Add expense
      * 
      * @param expense The expense to add

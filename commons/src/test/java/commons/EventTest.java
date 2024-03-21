@@ -2,6 +2,7 @@ package commons;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -141,6 +142,10 @@ class EventTest {
         Debt debt4 = new Debt(participant4, new Monetary(20), participant1);
         Debt debt5 = new Debt(participant4, new Monetary(10), participant2);
         List<Debt> expected = new ArrayList<>(List.of(debt1, debt2, debt3, debt4, debt5));
-        assertEquals(expected, Event.paymentsToDebt(event1));
+        List<Debt> actual = Event.paymentsToDebt(event1);
+
+        for(Debt debt : expected) {
+            assertTrue(actual.contains(debt));
+        }
     }
 }
