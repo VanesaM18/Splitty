@@ -7,6 +7,7 @@ import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -241,7 +242,6 @@ public class Event {
     }
 
     /**
-<<<<<<< HEAD
      * maps and calculates the payments
      * @param event the current event
      * @return a map that maps the debtor, amount owed and creditor to each other
@@ -294,6 +294,65 @@ public class Event {
             });
         });
         return listDebt;
+    }
+
+    public List<Debt> finalCalculation(Event event){
+        List<Debt> totalDebts = paymentsToDebt(event);
+        Map<Participant, Long> debtPP = new HashMap<>();
+        Set<Participant> setParticipants = event.getParticipants();
+        Iterator<Participant> iteratorP = setParticipants.iterator();
+        while(iteratorP.hasNext()){
+            long nextId = iteratorP.next().getId();
+            long amount = 0;
+            for (Debt debt : totalDebts){
+                Participant debtor = debt.getDebtor();
+                Participant creditor = debt.getCreditor();
+                if(nextId == debtor.getId()){
+                    amount = amount - debt.getAmount().getInternalValue();
+                }
+                else if (nextId == creditor.getId()){
+                    amount = amount + debt.getAmount().getInternalValue();
+                }
+            }
+            debtPP.put(iteratorP.next(), amount);
+        }
+        List<Map.Entry<Participant, Long>> sortedEntries = new ArrayList<>(debtPP.entrySet());
+        sortedEntries.sort(new Comparator<Map.Entry<Participant, Long>>() {
+            @Override
+            public int compare(Map.Entry<Participant, Long> entry1, Map.Entry<Participant, Long> entry2) {
+                // Sort in descending order
+                return entry2.getValue().compareTo(entry1.getValue());
+            }
+        });
+
+        // Create a new LinkedHashMap to maintain the insertion order of the sorted entries
+        Map<Participant, Long> sortedDebtPP = new LinkedHashMap<>();
+        for (Map.Entry<Participant, Long> entry : sortedEntries) {
+            sortedDebtPP.put(entry.getKey(), entry.getValue());
+        }
+        Iterator<Map.Entry<Participant, Long>> iterator = sortedDebtPP.entrySet().iterator();
+        Map.Entry<Participant, Long> currentParticipant = iterator.next();
+
+        while (iterator.hasNext()) {
+            Participant debtor = currentParticipant.getKey();
+            long debtorSpending = currentParticipant.getValue();
+
+            Map.Entry<Participant, Long> nextParticipant = iterator.next();
+            Participant creditor = nextParticipant.getKey();
+            long creditorSpending = nextParticipant.getValue();
+
+            if (debtorSpending < creditorSpending) {
+                long amountOwed = creditorSpending - debtorSpending;
+                Monetary monetary = new Monetary(amountOwed);
+                totalDebts.add(new Debt(debtor, monetary, creditor));
+            }
+
+            if (iterator.hasNext()) {
+                currentParticipant = nextParticipant;
+            }
+        }
+
+        return totalDebts;
     }
 
      /** turns this into a readable string
