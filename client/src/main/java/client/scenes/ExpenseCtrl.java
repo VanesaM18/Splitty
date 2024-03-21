@@ -257,7 +257,7 @@ public class ExpenseCtrl {
 
     private long pow(long input) {
         long out = 1;
-        for (int i = 0; i < input; i++) {
+        for (long i = 0; i < input; i++) {
             out *= 10;
         }
         return out;
@@ -267,6 +267,7 @@ public class ExpenseCtrl {
         BigDecimal amount;
         try {
             amount = new BigDecimal(this.amount.getText());
+            if(amount.compareTo(BigDecimal.ZERO) <= 0) throw new Exception("Invalid Amount");
         } catch (NumberFormatException ex) {
             // TODO: Add language support
             throw new Exception("Invalid Amount");
