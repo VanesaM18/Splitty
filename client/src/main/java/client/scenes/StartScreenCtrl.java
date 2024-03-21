@@ -126,7 +126,7 @@ public class StartScreenCtrl implements Initializable {
     public void createEvent() {
         String eventName = createEventField.getText();
         if(eventName.equals("")) {
-            createEventField.setText("Chose a name...");
+            createEventField.setPromptText("Chose a name...");
             return;
         }
 
@@ -145,6 +145,10 @@ public class StartScreenCtrl implements Initializable {
      */
     public void joinEvent() {
         String eventCode = joinEventField.getText();
+        if(eventCode.equals("")) {
+            joinEventField.setPromptText("Enter the event code...");
+            return;
+        }
         Event ev = server.getEventById(eventCode);
         if (ev == null) {
             var alert = new Alert(Alert.AlertType.ERROR);
