@@ -99,6 +99,7 @@ public class OpenDebtsCtrl {
      * goes back to the overview event
      */
     public void back() {
+        mainCtrl.setIsInOpenDebt(false);
         stopLongPolling();
         mainCtrl.refreshData();
         mainCtrl.showOverviewEvent(null);
@@ -142,6 +143,17 @@ public class OpenDebtsCtrl {
         if (longPollingThread != null && longPollingThread.isAlive()) {
             longPollingThread.interrupt();
         }
+    }
+
+    /**
+     * Retuns the event
+     * @return the event
+     */
+    public Event getEvent() {
+        if (e != null) {
+            e = server.getEventById(e.getInviteCode());
+        }
+        return e;
     }
 }
 
