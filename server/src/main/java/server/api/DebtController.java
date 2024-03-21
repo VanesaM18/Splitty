@@ -141,7 +141,6 @@ public class DebtController {
 
     @PostMapping("/{eventId}/updates")
     public DeferredResult<ResponseEntity<?>> getDebtUpdates(@PathVariable("eventId") String eventId) {
-        System.out.println("Got here waiting");
         DeferredResult<ResponseEntity<?>> deferredResult =
             new DeferredResult<>(30 * 60 * 1000L);
 
@@ -166,7 +165,6 @@ public class DebtController {
         });
 
         debtUpdateService.waitForUpdate(eventId, listener);
-        System.out.println("Done");
         return deferredResult;
     }
 }

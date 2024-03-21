@@ -52,8 +52,6 @@ public class OpenDebtsCtrl {
         if (e == null) {
             return;
         }
-        this.e = server.getEventById(this.e.getInviteCode());
-        System.out.println(e.getExpenses().size());
         if (this.e == null) {
             return;
         }
@@ -87,7 +85,6 @@ public class OpenDebtsCtrl {
                     }
                     server.deleteDebts(debt, e);
                     server.markDebtAsReceived(this.e.getInviteCode());
-                    this.e = server.getEventById(this.e.getInviteCode());
                 });
 
                 hbox.getChildren().addAll(titledPane, markReceivedButton);
@@ -118,6 +115,8 @@ public class OpenDebtsCtrl {
                     try {
                         if (e != null) {
                             String result = server.longPoolDebts(e.getInviteCode());
+                            Thread.sleep(100);
+                            e = server.getEventById(e.getInviteCode());
                             Platform.runLater(() -> {
                                 mainCtrl.showOpenDebts(e);
                             });
