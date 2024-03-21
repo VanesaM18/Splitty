@@ -99,10 +99,11 @@ public class MainCtrl {
             startPageCtrl.updateConfig();
         });
 
-        // showLogin();
         settingsCtrl.make();
         sceneManager.showCurrentScene();
         primaryStage.show();
+
+        openDebtsCtrl.startLongPolling();
     }
 
     /**
@@ -252,6 +253,9 @@ public class MainCtrl {
      * @param e the current event
      */
     public void showOpenDebts(Event e) {
+        System.out.println("stopping");
+        openDebtsCtrl.stopLongPolling();
+        System.out.println("done");
         if (e == null) {
             primaryStage.setTitle("Open Debts");
             primaryStage.setScene(openDebt);
@@ -259,9 +263,9 @@ public class MainCtrl {
             primaryStage.setTitle("Open Debt");
             primaryStage.setScene(openDebt);
             openDebtsCtrl.initialize(e);
-
         }
-
+        System.out.println("got here");
+        openDebtsCtrl.startLongPolling();
     }
 
 

@@ -18,13 +18,18 @@ package server.api;
 import commons.Debt;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.context.request.async.DeferredResult;
+import server.DebtUpdateService;
 import server.database.DebtRepository;
 
 import java.util.List;
 import java.util.Random;
+import java.util.function.Consumer;
 
 @RestController
 @RequestMapping("/api/debts")
@@ -32,15 +37,18 @@ public class DebtController {
 
     private final Random random;
     private final DebtRepository repo;
+    private final DebtUpdateService debtUpdateService;
     /**
      * Constructs a DebtController with the specified random generator and debt repository.
      *
      * @param random            An instance of Random for generating random values.
      * @param repo              An instance of DebtRepository for accessing debt data.
+     * @param debtUpdateService An instance of the debt update service
      */
-    public DebtController(Random random, DebtRepository repo) {
+    public DebtController(Random random, DebtRepository repo, DebtUpdateService debtUpdateService) {
         this.random = random;
         this.repo = repo;
+        this.debtUpdateService = debtUpdateService;
     }
 
     /**
@@ -123,5 +131,42 @@ public class DebtController {
         var debts = repo.findAll();
         var idx = random.nextInt((int) repo.count());
         return ResponseEntity.ok(debts.get(idx));
+    }
+    @PostMapping("/{eventId}/received")
+    public ResponseEntity<Void> markDebtAsReceived(@PathVariable("eventId") String eventId) {
+        System.out.println("Updating for " + eventId);
+        debtUpdateService.notifyUpdate(eventId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{eventId}/updates")
+    public DeferredResult<ResponseEntity<?>> getDebtUpdates(@PathVariable("eventId") String eventId) {
+        System.out.println("Got here waiting");
+        DeferredResult<ResponseEntity<?>> deferredResult =
+            new DeferredResult<>(30 * 60 * 1000L);
+
+        Consumer<String> listener = update -> {
+            if (update != null) {
+                deferredResult.setResult(ResponseEntity.ok(update));
+            } else {
+                deferredResult.setResult(ResponseEntity.noContent().build());
+            }
+        };
+
+        deferredResult.onCompletion(() -> {
+            System.out.println("Request for event ID " + eventId + " is complete.");
+            debtUpdateService.removeUpdateListener(eventId, listener);
+        });
+
+        deferredResult.onTimeout(() -> {
+            System.out.println("Request for event ID " + eventId + " timed out.");
+            debtUpdateService.removeUpdateListener(eventId, listener);
+            deferredResult.setErrorResult(
+                ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).build());
+        });
+
+        debtUpdateService.waitForUpdate(eventId, listener);
+        System.out.println("Done");
+        return deferredResult;
     }
 }

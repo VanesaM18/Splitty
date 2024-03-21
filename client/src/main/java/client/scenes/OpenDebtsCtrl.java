@@ -4,6 +4,8 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Debt;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -20,6 +22,8 @@ public class OpenDebtsCtrl {
     private final ServerUtils server;
     @FXML
     private VBox debtContainer;
+    private Event e;
+    private Thread longPollingThread;
 
     /**
      * constructs open debts
@@ -44,10 +48,15 @@ public class OpenDebtsCtrl {
      */
     public void initialize(Event e){
         debtContainer.getChildren().clear();
+        this.e = e;
         if (e == null) {
             return;
         }
-
+        this.e = server.getEventById(this.e.getInviteCode());
+        System.out.println(e.getExpenses().size());
+        if (this.e == null) {
+            return;
+        }
         List<Debt> list = Event.paymentsToDebt(e);
 
         for (Debt debt : list) {
@@ -77,6 +86,8 @@ public class OpenDebtsCtrl {
                         debtContainer.getChildren().remove(parentHBox);
                     }
                     server.deleteDebts(debt, e);
+                    server.markDebtAsReceived(this.e.getInviteCode());
+                    this.e = server.getEventById(this.e.getInviteCode());
                 });
 
                 hbox.getChildren().addAll(titledPane, markReceivedButton);
@@ -91,9 +102,47 @@ public class OpenDebtsCtrl {
      * goes back to the overview event
      */
     public void back() {
+        stopLongPolling();
         mainCtrl.refreshData();
         mainCtrl.showOverviewEvent(null);
     }
 
+    /**
+     * Starts long pooling for updates for open debts
+     */
+    public void startLongPolling() {
+        Task<Void> longPollingTask = new Task<>() {
+            @Override
+            protected Void call() {
+                while (true) {
+                    try {
+                        if (e != null) {
+                            String result = server.longPoolDebts(e.getInviteCode());
+                            Platform.runLater(() -> {
+                                mainCtrl.showOpenDebts(e);
+                            });
+                        }
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
+                return null;
+            }
+        };
+        longPollingThread = new Thread(longPollingTask);
+        longPollingThread.setDaemon(true);
+        longPollingThread.start();
+    }
+
+    /**
+     * Interrupts the request when user leaved the view
+     */
+    public void stopLongPolling() {
+        if (longPollingThread != null && longPollingThread.isAlive()) {
+            longPollingThread.interrupt();
+        }
+    }
 }
 
