@@ -1,17 +1,12 @@
-
 package client.scenes;
 
-import static com.google.inject.Guice.createInjector;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.testfx.api.FxRobot;
@@ -19,17 +14,13 @@ import org.testfx.assertions.api.Assertions;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
-import com.google.inject.Injector;
-import client.MyModule;
 import client.utils.SceneManager;
 import client.utils.ServerUtils;
 import commons.Admin;
-import commons.Event;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.DialogPane;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
