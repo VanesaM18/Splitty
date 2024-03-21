@@ -17,9 +17,6 @@ package server.api;
 
 import commons.Debt;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -132,15 +129,26 @@ public class DebtController {
         var idx = random.nextInt((int) repo.count());
         return ResponseEntity.ok(debts.get(idx));
     }
+
+    /**
+     * Notifies awaiting request that open debts for event needs to be refreshed
+     * @param eventId the event id
+     * @return status 200 if everything went well
+     */
     @PostMapping("/{eventId}/received")
     public ResponseEntity<Void> markDebtAsReceived(@PathVariable("eventId") String eventId) {
-        System.out.println("Updating for " + eventId);
         debtUpdateService.notifyUpdate(eventId);
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Long pools for any updates on open debt view
+     * @param eventId the event invite code
+     * @return the status of the await
+     */
     @PostMapping("/{eventId}/updates")
-    public DeferredResult<ResponseEntity<?>> getDebtUpdates(@PathVariable("eventId") String eventId) {
+    public DeferredResult<ResponseEntity<?>> getDebtUpdates(
+        @PathVariable("eventId") String eventId) {
         DeferredResult<ResponseEntity<?>> deferredResult =
             new DeferredResult<>(30 * 60 * 1000L);
 
@@ -153,15 +161,7 @@ public class DebtController {
         };
 
         deferredResult.onCompletion(() -> {
-            System.out.println("Request for event ID " + eventId + " is complete.");
             debtUpdateService.removeUpdateListener(eventId, listener);
-        });
-
-        deferredResult.onTimeout(() -> {
-            System.out.println("Request for event ID " + eventId + " timed out.");
-            debtUpdateService.removeUpdateListener(eventId, listener);
-            deferredResult.setErrorResult(
-                ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).build());
         });
 
         debtUpdateService.waitForUpdate(eventId, listener);

@@ -28,7 +28,8 @@ public class DebtUpdateService {
         final Object lock = new Object();
 
         // Add the lock to the list of locks for this eventId
-        eventLocks.computeIfAbsent(eventId, k -> Collections.synchronizedList(new CopyOnWriteArrayList<>())).add(lock);
+        eventLocks.computeIfAbsent(eventId, k ->
+            Collections.synchronizedList(new CopyOnWriteArrayList<>())).add(lock);
 
         synchronized (lock) {
             try {

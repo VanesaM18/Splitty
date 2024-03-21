@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.ws.rs.NotFoundException;
-import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.Response;
@@ -449,9 +448,9 @@ public class ServerUtils {
      * @param eventId the event id
      */
     public void markDebtAsReceived(String eventId) {
-        String SERVER = (String)config.getProperty("address");
+        String serverAddress = (String)config.getProperty("address");
         Response response = ClientBuilder.newClient(new ClientConfig())
-            .target(SERVER)
+            .target(serverAddress)
             .path("/api/debts/" + eventId + "/received")
             .request(APPLICATION_JSON)
             .accept(APPLICATION_JSON)
@@ -468,9 +467,9 @@ public class ServerUtils {
      * @return the status of the update
      */
     public String longPoolDebts(String eventId) {
-        String SERVER = (String)config.getProperty("address");
+        String serverAddress = (String)config.getProperty("address");
         Response response = ClientBuilder.newClient(new ClientConfig())
-            .target(SERVER)
+            .target(serverAddress)
             .path("/api/debts/" + eventId + "/updates")
             .request(APPLICATION_JSON)
             .accept(APPLICATION_JSON)
