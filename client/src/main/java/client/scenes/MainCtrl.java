@@ -52,6 +52,7 @@ public class MainCtrl {
     private InviteScreenCtrl inviteScreenCtrl;
     private Scene invite;
     private Optional<Locale> currentLocale = Optional.empty();
+    private boolean isInOpenDebt = false;
 
 
     /**
@@ -99,7 +100,6 @@ public class MainCtrl {
             startPageCtrl.updateConfig();
         });
 
-        // showLogin();
         settingsCtrl.make();
         sceneManager.showCurrentScene();
         primaryStage.show();
@@ -155,6 +155,7 @@ public class MainCtrl {
         primaryStage.setTitle("Start page");
         primaryStage.setScene(startPage);
         startPageCtrl.clearFields();
+        startPage.setOnKeyPressed(e -> startPageCtrl.keyPressed(e));
         startPageCtrl.refresh();
     }
 
@@ -201,6 +202,7 @@ public class MainCtrl {
             overviewEventCtrl.setEvent(e);
             primaryStage.setScene(overviewEvent);
             overviewEventCtrl.refresh();
+            overviewEvent.setOnKeyPressed(key -> overviewEventCtrl.keyPressed(key));
         }
     }
 
@@ -225,7 +227,11 @@ public class MainCtrl {
      * Refreshes data on client side
      */
     public void refreshData() {
-        overviewEventCtrl.refresh();
+        if (isInOpenDebt == true) {
+            openDebtsCtrl.initialize(openDebtsCtrl.getEvent());
+        } else {
+            overviewEventCtrl.refresh();
+        }
     }
 
     /**
@@ -250,6 +256,7 @@ public class MainCtrl {
      * @param e the current event
      */
     public void showOpenDebts(Event e) {
+        openDebtsCtrl.stopLongPolling();
         if (e == null) {
             primaryStage.setTitle("Open Debts");
             primaryStage.setScene(openDebt);
@@ -257,9 +264,9 @@ public class MainCtrl {
             primaryStage.setTitle("Open Debt");
             primaryStage.setScene(openDebt);
             openDebtsCtrl.initialize(e);
-
         }
-
+        openDebtsCtrl.startLongPolling();
+        isInOpenDebt = true;
     }
 
 
@@ -287,5 +294,13 @@ public class MainCtrl {
         primaryStage.setTitle((edit == null ? "Add" : "Edit").concat(" Expense"));
         primaryStage.setScene(expense);
         participants.setOnKeyPressed(e -> expenseCtrl.keyPressed(e));
+    }
+
+    /**
+     * Sets status of open debt view
+     * @param b the status
+     */
+    public void setIsInOpenDebt(boolean b) {
+        isInOpenDebt = b;
     }
 }

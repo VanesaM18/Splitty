@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -90,6 +91,7 @@ public class OverviewCtrl {
      * Method to refresh the current view.
      */
     public void refresh() {
+        warning.setText("");
         if (ev == null) {
             return;
         }
@@ -286,9 +288,14 @@ public class OverviewCtrl {
      * Trigger the new expense dialog
      */
     public void addExpense() {
+        if(ev.getParticipants().size() < 2) {
+            warning.setText("Not enough people!");
+            return;
+        }
         mainCtrl.showExpense(this.ev, participantComboBox.getSelectionModel().getSelectedItem(),
                 null);
         refresh();
+        warning.setText("");
     }
 
     /**
@@ -322,6 +329,7 @@ public class OverviewCtrl {
 
         Optional<String> newNameOpt = dialog.showAndWait();
         if (!newNameOpt.isPresent()) {
+            warning.setText("");
             return;
         }
 
@@ -335,6 +343,7 @@ public class OverviewCtrl {
      */
     public void back() {
         mainCtrl.getSceneManager().goBack();
+        warning.setText("");
     }
 
     /**
@@ -345,12 +354,47 @@ public class OverviewCtrl {
             warning.setText("First chose a participant.");
             return;
         }
-        warning.setText("");
-        ev.removeParticipant(participantNames.getSelectionModel().getSelectedItem());
-        server.updateEvent(ev);
-        mainCtrl.showOverviewEvent(ev);
-        refresh();
+        if(partOfExpense(participantNames.getSelectionModel().getSelectedItem())) {
+            warning.setText("Settle debt first!");
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation required");
+        alert.setHeaderText("Deleting a participant");
+        alert.setContentText(participantNames.getSelectionModel().getSelectedItem().getName()
+                + " will de deleted.");
+
+        ButtonType confirm = new ButtonType("Confirm");
+        ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(confirm, cancel);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == confirm){
+            warning.setText("");
+            ev.removeParticipant(participantNames.getSelectionModel().getSelectedItem());
+            server.updateEvent(ev);
+            mainCtrl.showOverviewEvent(ev);
+            refresh();
+        } else {
+            alert.close();
+        }
         // server.deleteParticipant(participant);
+    }
+
+    /**
+     * Checks weather a participant is part of an expense.
+     * @param participant participant to be checked.
+     * @return weather the participant is part of any expense.
+     */
+    private boolean partOfExpense(Participant participant) {
+        Set<Expense> expenses = ev.getExpenses();
+        for(Expense expense : expenses) {
+            if(expense.getCreator().equals(participant)) return true;
+            if(expense.getSplitBetween().contains(participant)) return true;
+        }
+        return false;
     }
 
     /**
@@ -358,6 +402,21 @@ public class OverviewCtrl {
      */
     public void settleDebt() {
         mainCtrl.showOpenDebts(this.ev);
+    }
+
+    /**
+     * Event handler for pressing a key.
+     *
+     * @param e the key that is pressed
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ESCAPE:
+                back();
+                break;
+            default:
+                break;
+        }
     }
 
 }

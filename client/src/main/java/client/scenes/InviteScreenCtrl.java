@@ -5,6 +5,7 @@ import commons.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 
 public class InviteScreenCtrl {
 
@@ -17,6 +18,8 @@ public class InviteScreenCtrl {
     private Button backButton;
     @FXML
     private Button sendInvitesButton;
+    @FXML
+    private TextArea emailTextArea;
 
     private Event event;
 
@@ -51,6 +54,7 @@ public class InviteScreenCtrl {
     public void refresh() {
         eventNameLabel.setText(event.getName());
         inviteCodeLabel.setText("Give people the following invite code: " + event.getInviteCode());
+        emailTextArea.setText("");
     }
 
     /**
