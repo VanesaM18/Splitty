@@ -466,7 +466,7 @@ public class ServerUtils {
      * @param eventId the event where the open debts are
      * @return the status of the update
      */
-    public String longPoolDebts(String eventId) {
+    public String longPollDebts(String eventId) {
         String serverAddress = (String)config.getProperty("address");
         Response response = ClientBuilder.newClient(new ClientConfig())
             .target(serverAddress)

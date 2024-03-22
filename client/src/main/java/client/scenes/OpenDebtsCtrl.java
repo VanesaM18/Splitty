@@ -115,7 +115,7 @@ public class OpenDebtsCtrl {
                 while (true) {
                     try {
                         if (e != null) {
-                            String result = server.longPoolDebts(e.getInviteCode());
+                            String result = server.longPollDebts(e.getInviteCode());
                             Thread.sleep(100);
                             e = server.getEventById(e.getInviteCode());
                             Platform.runLater(() -> {
