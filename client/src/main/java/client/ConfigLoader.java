@@ -42,7 +42,7 @@ public class ConfigLoader {
     public void loadConfig() {
         try {
             if (!Files.exists(configPath)) {
-                configMap.put("address", "ws://localhost:8080/ws");
+                configMap.put("address", "http://localhost:8080");
                 configMap.put("recentEvents", new ArrayList<String>());
                 configMap.put("language", Main.DEFAULT_LOCALE);
                 configMap.put("startUpShown", "false");

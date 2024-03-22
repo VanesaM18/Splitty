@@ -1,5 +1,6 @@
 package client.utils;
 
+import client.ConfigLoader;
 import client.MyWebSocketClient;
 import commons.Admin;
 import commons.Event;
@@ -37,8 +38,9 @@ class ServerUtilsTest {
         wsm.setData(pz);
         var future = CompletableFuture.supplyAsync(() -> wsm);
         MyWebSocketClient wap = mock(MyWebSocketClient.class);
+        ConfigLoader cnf = mock(ConfigLoader.class);
         when(wap.addPendingRequests(any())).thenReturn(future);
-        ServerUtils severe = new ServerUtils(wap);
+        ServerUtils severe = new ServerUtils(wap, cnf);
         ServerUtils.adminAuth(new Admin("","",""));
         var response = severe.getAllEvents();
         assertTrue(response.isPresent());

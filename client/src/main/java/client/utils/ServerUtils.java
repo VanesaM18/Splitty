@@ -15,6 +15,7 @@
  */
 package client.utils;
 
+import client.ConfigLoader;
 import client.MyWebSocketClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.inject.Inject;
@@ -22,26 +23,36 @@ import commons.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Response;
+import org.glassfish.jersey.client.ClientConfig;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import java.util.concurrent.ExecutionException;
 
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+
 public class ServerUtils {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final MyWebSocketClient webSocketClient;
     private static Optional<String> auth = Optional.empty();
+    private ConfigLoader config;
 
     /**
      * Creates an instance of ServerUtils which is used for communicating with the
      * server
      * 
      * @param webSocketClient the websocket to communicate through
+     * @param config the config loader to get the server address
      */
     @Inject
-    public ServerUtils(MyWebSocketClient webSocketClient) {
+    public ServerUtils(MyWebSocketClient webSocketClient, ConfigLoader config) {
         this.webSocketClient = webSocketClient;
+        this.config = config;
         this.objectMapper.registerModule(new JavaTimeModule());
     }
 
@@ -421,7 +432,6 @@ public class ServerUtils {
                 value = value - (value / ex.getSplitBetween().size());
                 ex.getAmount().setInternalValue(value);
                 ex.removeParticipant(debt.getDebtor());
-                System.out.println(ex.getAmount().getInternalValue());
                 WebSocketMessage request = new WebSocketMessage();
                 request.setEndpoint("api/expenses/id");
                 request.setMethod("PUT");
@@ -431,5 +441,43 @@ public class ServerUtils {
         } catch (ExecutionException | InterruptedException er) {
             er.printStackTrace();
         }
+    }
+
+    /**
+     * Announce all client that open debts view needs to be updated for an event
+     * @param eventId the event id
+     */
+    public void markDebtAsReceived(String eventId) {
+        String serverAddress = (String)config.getProperty("address");
+        Response response = ClientBuilder.newClient(new ClientConfig())
+            .target(serverAddress)
+            .path("/api/debts/" + eventId + "/received")
+            .request(APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
+            .post(Entity.text(""));
+
+        if (response.getStatus() != 200) {
+            throw new NotFoundException();
+        }
+    }
+
+    /**
+     * Long pools for updates in open debt view
+     * @param eventId the event where the open debts are
+     * @return the status of the update
+     */
+    public String longPollDebts(String eventId) {
+        String serverAddress = (String)config.getProperty("address");
+        Response response = ClientBuilder.newClient(new ClientConfig())
+            .target(serverAddress)
+            .path("/api/debts/" + eventId + "/updates")
+            .request(APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
+            .post(Entity.text(""));
+
+        if (response.getStatus() != 200) {
+            throw new NotFoundException();
+        }
+        return "New update incoming";
     }
 }
