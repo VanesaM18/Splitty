@@ -91,6 +91,7 @@ public class OverviewCtrl {
      * Method to refresh the current view.
      */
     public void refresh() {
+        warning.setText("");
         if (ev == null) {
             return;
         }
@@ -287,9 +288,14 @@ public class OverviewCtrl {
      * Trigger the new expense dialog
      */
     public void addExpense() {
+        if(ev.getParticipants().size() < 2) {
+            warning.setText("Not enough people!");
+            return;
+        }
         mainCtrl.showExpense(this.ev, participantComboBox.getSelectionModel().getSelectedItem(),
                 null);
         refresh();
+        warning.setText("");
     }
 
     /**
@@ -323,6 +329,7 @@ public class OverviewCtrl {
 
         Optional<String> newNameOpt = dialog.showAndWait();
         if (!newNameOpt.isPresent()) {
+            warning.setText("");
             return;
         }
 
@@ -336,6 +343,7 @@ public class OverviewCtrl {
      */
     public void back() {
         mainCtrl.getSceneManager().goBack();
+        warning.setText("");
     }
 
     /**
@@ -344,6 +352,10 @@ public class OverviewCtrl {
     public void deleteParticipant() {
         if (participantNames.getSelectionModel().getSelectedItem() == null) {
             warning.setText("First chose a participant.");
+            return;
+        }
+        if(partOfExpense(participantNames.getSelectionModel().getSelectedItem())) {
+            warning.setText("Settle debt first!");
             return;
         }
 
@@ -369,6 +381,20 @@ public class OverviewCtrl {
             alert.close();
         }
         // server.deleteParticipant(participant);
+    }
+
+    /**
+     * Checks weather a participant is part of an expense.
+     * @param participant participant to be checked.
+     * @return weather the participant is part of any expense.
+     */
+    private boolean partOfExpense(Participant participant) {
+        Set<Expense> expenses = ev.getExpenses();
+        for(Expense expense : expenses) {
+            if(expense.getCreator().equals(participant)) return true;
+            if(expense.getSplitBetween().contains(participant)) return true;
+        }
+        return false;
     }
 
     /**
