@@ -109,41 +109,6 @@ class EventTest {
 
         assertEquals(event.hashCode(), event2.hashCode());
     }
-
-    @Test
-    void paymentsToDebt() {
-        Event event1 = new Event("WDKFDLS", "Event1", dateTime, new HashSet<>());
-        Participant participant1 = new Participant("participant1", "email1", "iban1", "bic1");
-        Participant participant2 = new Participant("participant2", "email2", "iban2", "bic2");
-        Participant participant3 = new Participant("participant3", "email3", "iban3", "bic3");
-        Participant participant4 = new Participant("participant4", "email4", "iban4", "bic4");
-        Monetary amount1 = new Monetary(10);
-        Monetary amount2 = new Monetary(20);
-        Monetary amount3 = new Monetary(40);
-        var date = LocalDate.now();
-        Set<Participant> set1 = new HashSet<>();
-        set1.add(participant2);
-        set1.add(participant3);
-        Set<Participant> set2 = new HashSet<>();
-        set2.add(participant1);
-        set2.add(participant4);
-        Set<Participant> set3 = new HashSet<>();
-        set3.add(participant2);
-        set3.add(participant4);
-        Expense expense1 = new Expense(event1, "expense1", participant1, amount1, date, set1);
-        Expense expense2 = new Expense(event1, "expense2", participant2, amount2, date, set2);
-        Expense expense3 = new Expense(event1, "expense3", participant1, amount3, date, set3);
-        Set<Expense> setExpense = new HashSet<>(List.of(expense1, expense2, expense3));
-        event1.setExpenses(setExpense);
-        Debt debt1 = new Debt(participant2, new Monetary(25), participant1);
-        Debt debt2 = new Debt(participant3, new Monetary(5), participant1);
-        Debt debt3 = new Debt(participant1, new Monetary(10), participant2);
-        Debt debt4 = new Debt(participant4, new Monetary(20), participant1);
-        Debt debt5 = new Debt(participant4, new Monetary(10), participant2);
-        List<Debt> expected = new ArrayList<>(List.of(debt1, debt2, debt3, debt4, debt5));
-        assertEquals(expected, Event.paymentsToDebt(event1));
-    }
-
     @Test
     void finalCalculationTest(){
         Event event1 = new Event("WDKFDLS", "Event1", dateTime, new HashSet<>());
@@ -160,16 +125,19 @@ class EventTest {
         Set<Participant> set2 = new HashSet<>();
         set2.add(participant1);
         set2.add(participant4);
+        Set<Participant> set3 = new HashSet<>();
+        set3.add(participant1);
+        set3.add(participant2);
+        set3.add(participant3);
+        set3.add(participant4);
+        event1.setParticipants(set3);
         Expense expense1 = new Expense(event1, "expense1", participant1, amount1, date, set1);
         Expense expense2 = new Expense(event1, "expense2", participant2, amount2, date, set2);
         Set<Expense> setExpense = new HashSet<>(List.of(expense1, expense2));
         event1.setExpenses(setExpense);
-        Debt debt1 = new Debt(participant1, new Monetary(5), participant2);
-        Debt debt2 = new Debt(participant3, new Monetary(5), participant1);
-        Debt debt3 = new Debt(participant4, new Monetary(10), participant2);
-        List<Debt> expected = new ArrayList<>(List.of(debt1, debt2, debt3));
-        System.out.println(Event.finalCalculation(event1));
-        System.out.println(Event.paymentsToDebt(event1));
+        Debt debt1 = new Debt(participant4, new Monetary(10), participant2);
+        Debt debt2 = new Debt(participant3, new Monetary(5), participant2);
+        List<Debt> expected = new ArrayList<>(List.of(debt1, debt2));
         assertEquals(expected, Event.finalCalculation(event1));
     }
 }

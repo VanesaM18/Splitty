@@ -98,6 +98,8 @@ public class Debt {
      */
     @Override
     public String toString() {
-        return  debtor.getName() + " gives " + amount.getInternalValue() + " to " + creditor.getName();
+        return  debtor.getName() + " gives " +
+                amount.getInternalValue() +
+                " to " + creditor.getName();
     }
 }

@@ -7,13 +7,9 @@ import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import org.apache.commons.lang3.tuple.Pair;
-
 @Entity
 public class Event {
 
@@ -297,63 +293,90 @@ public class Event {
         return listDebt;
     }
 
-    public static List<Debt> finalCalculation(Event event){
+    /**
+     * calculates the debts in N-1
+     * @param event the current event
+     * @return a list of (N-1) debts
+     */
+    public static List<Debt> finalCalculation(Event event) {
         List<Debt> totalDebts = paymentsToDebt(event);
         Map<Participant, Long> debtPP = new HashMap<>();
         Set<Participant> setParticipants = event.getParticipants();
-        Iterator<Participant> iteratorP = setParticipants.iterator();
-        while(iteratorP.hasNext()){
-            long nextId = iteratorP.next().getId();
+
+        // Calculate the total debt per participant
+        for (Participant participant : setParticipants) {
             long amount = 0;
-            for (Debt debt : totalDebts){
-                Participant debtor = debt.getDebtor();
-                Participant creditor = debt.getCreditor();
-                if(nextId == debtor.getId()){
-                    amount = amount - debt.getAmount().getInternalValue();
-                }
-                else if (nextId == creditor.getId()){
-                    amount = amount + debt.getAmount().getInternalValue();
+            for (Debt debt : totalDebts) {
+                if (debt.getDebtor().equals(participant)) {
+                    amount -= debt.getAmount().getInternalValue();
+                } else if (debt.getCreditor().equals(participant)) {
+                    amount += debt.getAmount().getInternalValue();
                 }
             }
-            debtPP.put(iteratorP.next(), amount);
+            debtPP.put(participant, amount);
         }
+        List<Debt> totalDebts2 = new ArrayList<>();
+
+        // Sort the debts in descending order based on the amount
         List<Map.Entry<Participant, Long>> sortedEntries = new ArrayList<>(debtPP.entrySet());
-        sortedEntries.sort(new Comparator<Map.Entry<Participant, Long>>() {
-            @Override
-            public int compare(Map.Entry<Participant, Long> entry1, Map.Entry<Participant, Long> entry2) {
-                // Sort in descending order
-                return entry2.getValue().compareTo(entry1.getValue());
-            }
-        });
+        sortedEntries.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
 
-        // Create a new LinkedHashMap to maintain the insertion order of the sorted entries
-        Map<Participant, Long> sortedDebtPP = new LinkedHashMap<>();
+        // Create maps to track debtors and creditors
+        Map<Participant, Long> debtors = new HashMap<>();
+        Map<Participant, Long> creditors = new HashMap<>();
+
+        // Populate debtors and creditors maps
+        populateDebts(sortedEntries, debtors, creditors);
+
+        mappingDebts(debtors, creditors, totalDebts2);
+
+        return totalDebts2;
+    }
+
+    private static void populateDebts(List<Map.Entry<Participant, Long>> sortedEntries,
+                                      Map<Participant, Long> debtors,
+                                      Map<Participant, Long> creditors) {
         for (Map.Entry<Participant, Long> entry : sortedEntries) {
-            sortedDebtPP.put(entry.getKey(), entry.getValue());
-        }
-        Iterator<Map.Entry<Participant, Long>> iterator = sortedDebtPP.entrySet().iterator();
-        Map.Entry<Participant, Long> currentParticipant = iterator.next();
-
-        while (iterator.hasNext()) {
-            Participant debtor = currentParticipant.getKey();
-            long debtorSpending = currentParticipant.getValue();
-
-            Map.Entry<Participant, Long> nextParticipant = iterator.next();
-            Participant creditor = nextParticipant.getKey();
-            long creditorSpending = nextParticipant.getValue();
-
-            if (debtorSpending < creditorSpending) {
-                long amountOwed = creditorSpending - debtorSpending;
-                Monetary monetary = new Monetary(amountOwed);
-                totalDebts.add(new Debt(debtor, monetary, creditor));
-            }
-
-            if (iterator.hasNext()) {
-                currentParticipant = nextParticipant;
+            if (entry.getValue() < 0) {
+                debtors.put(entry.getKey(), entry.getValue());
+            } else if (entry.getValue() > 0) {
+                creditors.put(entry.getKey(), entry.getValue());
             }
         }
+    }
 
-        return totalDebts;
+    private static void mappingDebts(Map<Participant, Long> debtors, Map<Participant,
+            Long> creditors, List<Debt> totalDebts2) {
+        // Iterate over debtors and creditors to settle debts
+        for (Map.Entry<Participant, Long> debtorEntry : debtors.entrySet()) {
+            Participant debtor = debtorEntry.getKey();
+            long debtorBalance = debtorEntry.getValue();
+
+            Iterator<Map.Entry<Participant, Long>> iteratorCreditors
+                    = creditors.entrySet().iterator();
+
+            while (iteratorCreditors.hasNext() && debtorBalance < 0) {
+                Map.Entry<Participant, Long> creditorEntry = iteratorCreditors.next();
+                Participant creditor = creditorEntry.getKey();
+                long creditorBalance = creditorEntry.getValue();
+
+                long amountToPay = Math.min(-debtorBalance, creditorBalance);
+                totalDebts2.add(new Debt(debtor, new Monetary(amountToPay), creditor));
+
+                // Update debtor and creditor balances
+                debtorBalance += amountToPay;
+                creditorBalance -= amountToPay;
+
+                // Update balances in the respective maps
+                debtorEntry.setValue(debtorBalance);
+                creditors.put(creditor, creditorBalance);
+
+                // Remove creditor if they no longer need to receive any payments
+                if (creditorBalance <= 0) {
+                    iteratorCreditors.remove(); // Remove creditor from the iterator
+                }
+            }
+        }
     }
 
     /** turns this into a readable string
