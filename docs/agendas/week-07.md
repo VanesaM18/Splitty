@@ -32,10 +32,11 @@ Agenda Items:
   - Upcoming deadlines:
     - Product pitch (draft) (Thursday week 7) (8 min)
       - product pitch so far / plan
-      - pitch product in short presentation
-      - highlight features that make application unique
-      - highlight solutions found for problems
-      - discuss structure of product pitch
+      - Important points product pitch:
+        - pitch product in short presentation (9 to 10 min long)
+        - highlight features that make application unique
+        - highlight solutions found for problems
+      - discuss structure of product pitch (recommended outline)
     - Self-reflection (draft) (Friday week 8) (1 min)
   - Feedback last meeting: (2 min)
     - Overall last meeting was good
