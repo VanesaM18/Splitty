@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.apache.commons.lang3.tuple.Pair;
 
 @Entity
 public class Event {
@@ -296,7 +297,7 @@ public class Event {
         return listDebt;
     }
 
-    public List<Debt> finalCalculation(Event event){
+    public static List<Debt> finalCalculation(Event event){
         List<Debt> totalDebts = paymentsToDebt(event);
         Map<Participant, Long> debtPP = new HashMap<>();
         Set<Participant> setParticipants = event.getParticipants();
@@ -355,7 +356,7 @@ public class Event {
         return totalDebts;
     }
 
-     /** turns this into a readable string
+    /** turns this into a readable string
      *
      * @return string representation of the monetary value
      */
