@@ -150,6 +150,14 @@ public class ExpenseCtrl {
         }
     }
 
+    private HashSet<Participant> validateSplitBetween() throws Exception {
+        var newSplit = new HashSet<>(selectParticipantsObs);
+        if (newSplit.size() < 1) {
+            throw new Exception("At least one participant must be selected");
+        }
+        return newSplit;
+    }
+
     /**
      * Validates the fields and updates value on the server if successful.
      */
@@ -167,10 +175,7 @@ public class ExpenseCtrl {
             expense.setName(getName());
             expense.setReceiver(validateReceiver());
             expense.setEvent(this.event);
-            System.out.println("TEST: " + selectParticipantsObs.toString());
-            var newSplit = new HashSet<>(selectParticipantsObs);
-            System.out.println("NEW SPLIT: " + newSplit.toString());
-            expense.setSplitBetween(newSplit);
+            expense.setSplitBetween(validateSplitBetween());
         } catch (Exception ex) {
             warning.setText(ex.getMessage());
             return;
@@ -267,17 +272,25 @@ public class ExpenseCtrl {
     }
 
     private LocalDate getDate() throws Exception {
-        return date.getValue();
+        var newDate = date.getValue();
+        if (newDate == null) {
+            throw new Exception("Date must be specified");
+        }
+        return newDate;
     }
 
     private Monetary getAmount() throws Exception {
+        String textValue = amount.getText().strip();
+        if ("".equals(textValue)) {
+            throw new Exception("Amount must be specified");
+        }
         return Monetary.fromString(amount.getText(), Currency.getInstance("EUR"));
     }
 
     private String getName() throws Exception {
-        String name = this.description.getText();
-        if ("".equals(name.strip())) {
-            throw new Exception("Name must not be empty");
+        String name = this.description.getText().strip();
+        if ("".equals(name)) {
+            throw new Exception("Name must be specified");
         }
         return name;
     }
