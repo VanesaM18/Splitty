@@ -21,9 +21,12 @@ import commons.Expense;
 import commons.Monetary;
 import commons.Participant;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
@@ -60,15 +63,14 @@ class ExpenseCtrlTest {
         Participant p1 = new Participant("Alice", "alice@alice.com", "idk", "abcdef12");
         Participant p2 = new Participant("Bob", "bob@bob.com", "idk", "abcdef12");
         event = new Event("testCode", "name", LocalDateTime.now(), Set.of(p1, p2));
-        Expense e1 =
-                new Expense(event, "name", p1, new Monetary(100), LocalDate.now(), Set.of(p1, p2));
-        Expense e2 =
-                new Expense(event, "name 2", p2, new Monetary(50), LocalDate.now(), Set.of(p1, p2));
+        Expense e1 = new Expense(event, "name", p1, new Monetary(100), LocalDate.now(), Set.of(p1, p2));
+        Expense e2 = new Expense(event, "name 2", p2, new Monetary(50), LocalDate.now(), Set.of(p1, p2));
         event.setExpenses(Set.of(e1, e2));
         serverUtils = Mockito.mock(ServerUtils.class);
         mainCtrl = Mockito.mock(MainCtrl.class);
 
-        // We need to load the fxml file in this complicated manner because we need to give it
+        // We need to load the fxml file in this complicated manner because we need to
+        // give it
         // access to an injector.
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/Expense.fxml"));
         Locale locale = Locale.of("en", "EN");
@@ -97,7 +99,10 @@ class ExpenseCtrlTest {
         TextField description = robot.lookup("#description").queryAs(TextField.class);
         TextField amount = robot.lookup("#amount").queryAs(TextField.class);
         DatePicker date = robot.lookup("#date").queryAs(DatePicker.class);
-        ComboBox<Participant> receiver = robot.lookup("#receiver").queryAs(ComboBox.class);
+        ComboBox<Participant> receiver = robot.lookup("#receiver").queryComboBox();
+        ListView<Participant> selectParticipant = robot.lookup("#selectParticipant").queryListView();
+        Set<CheckBox> checkBoxes = robot.from(selectParticipant).lookup((Node node) -> (node instanceof CheckBox))
+                .queryAllAs(CheckBox.class);
 
         robot.clickOn(description);
         robot.type(KeyCode.N, KeyCode.A, KeyCode.M, KeyCode.E);
@@ -110,14 +115,18 @@ class ExpenseCtrlTest {
         robot.interact(() -> {
             date.setValue(now);
 
+            for (CheckBox cb : checkBoxes) {
+                cb.setSelected(true);
+            }
+
             receiver.setValue(creator);
         });
 
         robot.clickOn("Ok");
 
-        Expense expectedExpense =
-                new Expense(event, "name", creator, new Monetary(1000), now, Set.of());
-        // NOTE: Use Mockito.eq since we cannot get the same instance of monetary, so we must check
+        Expense expectedExpense = new Expense(event, "name", creator, new Monetary(1000), now, event.getParticipants());
+        // NOTE: Use Mockito.eq since we cannot get the same instance of monetary, so we
+        // must check
         // for equality, not them being the same instance.
         Mockito.verify(serverUtils, Mockito.times(1)).addExpense(Mockito.eq(expectedExpense));
     }
