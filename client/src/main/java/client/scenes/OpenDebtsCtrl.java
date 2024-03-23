@@ -59,7 +59,8 @@ public class OpenDebtsCtrl {
                 titledPane.setExpanded(false);
                 titledPane.setMaxWidth(Double.MAX_VALUE);
                 titledPane.setText(debt.getDebtor().getName() + " gives "
-                        + debt.getAmount().getInternalValue()
+                        + debt.getAmount().getCurrency().getSymbol()
+                        + debt.getAmount().toString()
                         + " to " + debt.getCreditor().getName());
 
                 VBox content = new VBox();
