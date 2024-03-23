@@ -98,6 +98,7 @@ public class OpenDebtsCtrl {
     public void back() {
         mainCtrl.setIsInOpenDebt(false);
         stopLongPolling();
+//        server.removeExpense(e);
         mainCtrl.refreshData();
         mainCtrl.showOverviewEvent(null);
     }
