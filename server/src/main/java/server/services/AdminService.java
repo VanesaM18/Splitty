@@ -59,8 +59,9 @@ public class AdminService {
         if (isNullOrEmpty(username) || !adminRepository.existsById(username)) {
             return Optional.empty();
         }
+        var admin = adminRepository.findById(username);
         adminRepository.deleteById(username);
-        return Optional.of(new commons.Admin());
+        return admin;
     }
 
     /**

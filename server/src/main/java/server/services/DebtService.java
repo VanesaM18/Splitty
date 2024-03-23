@@ -1,6 +1,5 @@
 package server.services;
 
-import commons.Debt;
 import org.springframework.stereotype.Service;
 import server.database.DebtRepository;
 
@@ -48,8 +47,9 @@ public class DebtService {
         if (!debtRepository.existsById(id)) {
             return Optional.empty();
         }
+        var debt = debtRepository.findById(id);
         debtRepository.deleteById(id);
-        return Optional.of(new Debt());
+        return debt;
     }
 
     /**

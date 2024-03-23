@@ -1,7 +1,6 @@
 package server.services;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import commons.Participant;
 import org.springframework.stereotype.Service;
 import server.database.ParticipantRepository;
 
@@ -61,52 +60,57 @@ public class ParticipantService {
         if (id == null || !participantRepository.existsById(id)) {
             return Optional.empty();
         }
+        var participant = participantRepository.findById(id);
         participantRepository.deleteById(id);
-        return Optional.of(new commons.Participant());
+        return participant;
     }
 
     /**
      * updates a participant by its ID
-     * @param id                 ID of the participant to update
+     * @param existingParticipant existing participant details
      * @param updatedParticipant updated participant details
      * @return ResponseEntity with an appropriate status and
      * message indicating the result of the update operation
      */
-    public ResponseEntity<String> updateParticipant(Long id,
+    public boolean updateParticipant(commons.Participant existingParticipant,
                                                     commons.Participant updatedParticipant) {
-        if (id == null || !participantRepository.existsById(id)) {
-            return ResponseEntity.badRequest().body("Participant not found.");
-        }
 
-        // Validate the updated participant data
-        if (updatedParticipant == null || isNullOrEmpty(updatedParticipant.getName())
-                || isNullOrEmpty(updatedParticipant.getEmail())) {
-            return ResponseEntity.badRequest().body("Invalid participant data.");
-        }
 
-        // Update the ID
-        updatedParticipant.setId(id);
-
-        // Update the participant
         try {
-            Optional<commons.Participant> existingParticipantOptional =
-                    participantRepository.findById(id);
-            if (existingParticipantOptional.isPresent()) {
-                commons.Participant existingParticipant = existingParticipantOptional.get();
-                // Update existing participant with new data
-                existingParticipant.setName(updatedParticipant.getName());
-                existingParticipant.setEmail(updatedParticipant.getEmail());
+            // Update the ID
+            updatedParticipant.setId(existingParticipant.getId());
 
-                // Save the updated participant
-                participantRepository.save(existingParticipant);
-                return ResponseEntity.ok("Participant updated successfully.");
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error updating participant.");
+            // Update existing participant with new data
+            existingParticipant.setName(updatedParticipant.getName());
+            existingParticipant.setEmail(updatedParticipant.getEmail());
+
+            // Save the updated participant
+            participantRepository.save(existingParticipant);
+            return true;
+        } catch (Exception exception) {
+            return false;
         }
+
+
+    }
+
+    /**
+     *
+     * @param updatedParticipant participant to verify.
+     * @return true when ok.
+     */
+    public boolean checkUpdatedParticipant(Participant updatedParticipant) {
+        return !(updatedParticipant == null || isNullOrEmpty(updatedParticipant.getName())
+                || isNullOrEmpty(updatedParticipant.getEmail()));
+    }
+
+    /**
+     *
+     * @param id the id that shall be put under the verifycation operation.
+     * @return true when ok, false when bad!
+     */
+    public boolean checkParticipantId(Long id) {
+        return id != null && participantRepository.existsById(id);
     }
 
     /**

@@ -82,15 +82,23 @@ public class ParticipantController {
     @PutMapping("/{id}")
     public ResponseEntity<String> update(@PathVariable("id") Long id,
                                          @RequestBody Participant updatedParticipant) {
-        ResponseEntity<String> response =
-                participantService.updateParticipant(id, updatedParticipant);
-        if (response.getStatusCode() == HttpStatus.OK) {
-            return ResponseEntity.ok().body(response.getBody());
-        } else if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
-            return ResponseEntity.badRequest().body(response.getBody());
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response.getBody());
+        var participantOptional = participantService.getParticipantById(id);
+        if (!participantService.checkParticipantId(id)
+                || participantOptional.isEmpty())
+            return ResponseEntity.notFound().build();
+        var existingParticipant = participantOptional.get();
+
+        // Validate the updated participant data
+        if (!participantService.checkUpdatedParticipant(updatedParticipant)) {
+            return ResponseEntity.badRequest().body("Invalid participant data.");
         }
+        boolean ok = participantService.updateParticipant(existingParticipant, updatedParticipant);
+        return ok
+                ? ResponseEntity
+                .ok("Participant updated successfully.")
+                : ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error updating participant.");
     }
 
 }

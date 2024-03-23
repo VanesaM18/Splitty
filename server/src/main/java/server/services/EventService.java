@@ -99,8 +99,9 @@ public class EventService {
                 !eventRepository.existsByInviteCodeEqualsIgnoreCase(inviteCode)) {
             return Optional.empty();
         }
+        var event = eventRepository.findById(inviteCode);
         eventRepository.deleteById(inviteCode);
-        return Optional.of(new commons.Event());
+        return event;
     }
 
     /**
@@ -127,5 +128,13 @@ public class EventService {
 
     private boolean isNullOrEmpty(String s) {
         return s == null || s.isEmpty();
+    }
+
+    /**
+     * gets event repository
+     * @return event repository
+     */
+    public EventRepository getEventRepository() {
+        return eventRepository;
     }
 }
