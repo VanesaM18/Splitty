@@ -21,7 +21,7 @@ public class ExpenseController {
     /**
      * Create a new expenses controller. This controller manages expenses for events
      *
-     * @param repo The expense repository
+     * @param repo      The expense repository
      * @param eventRepo The event repository
      */
     public ExpenseController(ExpenseRepository repo, EventRepository eventRepo) {
@@ -48,7 +48,7 @@ public class ExpenseController {
      * Create a new expense, supplying the event id in the URL
      * 
      * @param newExpense the expense to add
-     * @param eventId the ID of the event
+     * @param eventId    the ID of the event
      * @return 204 No content if successful, else 400 bad request
      */
     @PostMapping("/by_event/{id}")
@@ -132,23 +132,30 @@ public class ExpenseController {
                 .badRequest()
                 .body("Cannot change event of expense, delete this and create a new one instead");
         }
-        if (expense.getCreator() != null) {
-            oldExpense.setReceiver(expense.getCreator());
-        }
         return ResponseEntity.ok(repo.save(oldExpense));
     }
 
     /**
      * Updates the old expense
-     * @param expense the new expense
+     * 
+     * @param expense    the new expense
      * @param oldExpense the old expense
      */
     private static void updateExpense(Expense expense, Expense oldExpense) {
         if (expense.getAmount() != null) {
             oldExpense.setAmount(expense.getAmount());
         }
-        if (!expense.getSplitBetween().isEmpty()) {
+        if (expense.getSplitBetween() != null && !expense.getSplitBetween().isEmpty()) {
             oldExpense.setSplitBetween(expense.getSplitBetween());
+        }
+        if (expense.getName() != null) {
+            oldExpense.setName(expense.getName());
+        }
+        if (expense.getCreator() != null) {
+            oldExpense.setReceiver(expense.getCreator());
+        }
+        if (expense.getDate() != null) {
+            oldExpense.setDate(expense.getDate());
         }
     }
 
