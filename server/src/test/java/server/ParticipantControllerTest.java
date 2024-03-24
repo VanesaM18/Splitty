@@ -11,7 +11,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import server.api.ParticipantController;
-import server.database.ParticipantRepository;
+import org.springframework.http.ResponseEntity;
+import server.services.ParticipantService;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -28,7 +29,7 @@ public class ParticipantControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private ParticipantRepository participantRepository;
+    private ParticipantService participantService;
 
     private Participant participant;
 
@@ -39,7 +40,7 @@ public class ParticipantControllerTest {
 
     @Test
     void getAllParticipantsShouldReturnParticipantList() throws Exception {
-        Mockito.when(participantRepository.findAll()).thenReturn(Arrays.asList(participant));
+        Mockito.when(participantService.getAllParticipants()).thenReturn(Arrays.asList(participant));
 
         mockMvc.perform(get("/api/participants"))
             .andExpect(status().isOk())
@@ -51,8 +52,7 @@ public class ParticipantControllerTest {
 
     @Test
     void getParticipantByIdShouldReturnParticipant() throws Exception {
-        Mockito.when(participantRepository.existsById(anyLong())).thenReturn(true);
-        Mockito.when(participantRepository.findById(anyLong())).thenReturn(Optional.of(participant));
+        Mockito.when(participantService.getParticipantById(anyLong())).thenReturn(Optional.of(participant));
 
         mockMvc.perform(get("/api/participants/{id}", participant.getId()))
             .andExpect(status().isOk())
@@ -64,7 +64,7 @@ public class ParticipantControllerTest {
 
     @Test
     void addParticipantShouldReturnSavedParticipant() throws Exception {
-        Mockito.when(participantRepository.save(any(Participant.class))).thenReturn(participant);
+        Mockito.when(participantService.createParticipant(any(Participant.class))).thenReturn(Optional.of(participant));
 
         mockMvc.perform(post("/api/participants")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -78,9 +78,10 @@ public class ParticipantControllerTest {
 
     @Test
     void updateParticipantShouldReturnSuccessStatus() throws Exception {
-        Mockito.when(participantRepository.existsById(anyLong())).thenReturn(true);
-        Mockito.when(participantRepository.findById(anyLong())).thenReturn(Optional.of(participant));
-        Mockito.when(participantRepository.save(any(Participant.class))).thenReturn(participant);
+        Mockito.when(participantService.checkParticipantId(anyLong())).thenReturn((true));
+        Mockito.when(participantService.getParticipantById(anyLong())).thenReturn(Optional.of(participant));
+        Mockito.when(participantService.updateParticipant(any(Participant.class), any(Participant.class))).thenReturn(true);
+        Mockito.when(participantService.checkUpdatedParticipant(any(Participant.class))).thenReturn(true);
 
         Participant updatedParticipant = new Participant("Jane Doe", "janedoe@example.com", "IBAN54321", "BIC09876");
 
@@ -93,7 +94,7 @@ public class ParticipantControllerTest {
 
     @Test
     void deleteParticipantShouldReturnSuccessStatus() throws Exception {
-        Mockito.when(participantRepository.existsById(anyLong())).thenReturn(true);
+        Mockito.when(participantService.deleteParticipantById(anyLong())).thenReturn(Optional.of(participant));
 
         mockMvc.perform(delete("/api/participants/{id}", participant.getId()))
             .andExpect(status().isOk())
@@ -102,7 +103,7 @@ public class ParticipantControllerTest {
 
     @Test
     void getParticipantByInvalidIdShouldReturnBadRequest() throws Exception {
-        Mockito.when(participantRepository.existsById(anyLong())).thenReturn(false);
+        Mockito.when(participantService.getParticipantById(anyLong())).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/api/participants/{id}", -1))
             .andExpect(status().isBadRequest());
@@ -120,12 +121,16 @@ public class ParticipantControllerTest {
 
     @Test
     void updateNonExistentParticipantShouldReturnNotFound() throws Exception {
-        Mockito.when(participantRepository.existsById(anyLong())).thenReturn(false);
-
+        Mockito.when(participantService.checkParticipantId(anyLong()))
+                .thenReturn(true);
+        Mockito.when(participantService.getParticipantById(anyLong()))
+                .thenReturn(Optional.empty());
+        Mockito.when(participantService.checkUpdatedParticipant(any(Participant.class)))
+                .thenReturn(false);
+            //
         mockMvc.perform(put("/api/participants/{id}", anyLong())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(participant)))
-            .andExpect(status().isBadRequest())
-            .andExpect(content().string("Participant not found."));
+            .andExpect(status().isNotFound());
     }
 }
