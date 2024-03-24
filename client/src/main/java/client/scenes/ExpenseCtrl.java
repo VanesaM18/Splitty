@@ -7,10 +7,7 @@ import java.util.HashSet;
 import com.google.inject.Inject;
 
 import client.utils.ServerUtils;
-import commons.Event;
-import commons.Expense;
-import commons.Monetary;
-import commons.Participant;
+import commons.*;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -50,6 +47,10 @@ public class ExpenseCtrl {
     private final ObservableList<Participant> participantsObs = FXCollections.observableArrayList();
 
     @FXML
+    private ComboBox<ExpenseType> types;
+    private final ObservableList<ExpenseType> typesObs = FXCollections.observableArrayList();
+
+    @FXML
     private ListView<Participant> selectParticipant;
 
     private final ObservableSet<Participant> selectParticipantsObs = FXCollections.observableSet();
@@ -79,6 +80,7 @@ public class ExpenseCtrl {
     @FXML
     public void initialize() {
         selectParticipant.setItems(participantsObs);
+        initTagsCombobox();
         initReceiverCombobox();
         initSelectParticipants();
     }
@@ -101,6 +103,7 @@ public class ExpenseCtrl {
         this.event = event;
         clearFields();
         participantsObs.addAll(event.getParticipants());
+        typesObs.addAll(event.getTags());
     }
 
     /**
@@ -117,9 +120,11 @@ public class ExpenseCtrl {
         this.description.setText(e.getName());
         this.amount.setText(e.getAmount().toString());
         this.participantsObs.clear();
+        this.typesObs.clear();
         this.selectParticipantsObs.clear();
         this.selectParticipantsObs.addAll(e.getSplitBetween());
         this.participantsObs.addAll(this.event.getParticipants());
+        this.typesObs.addAll(this.event.getTags());
         this.receiver.getSelectionModel().select(e.getCreator());
     }
 
@@ -224,6 +229,27 @@ public class ExpenseCtrl {
 
     }
 
+
+    private void initTagsCombobox() {
+        Callback<ListView<ExpenseType>, ListCell<ExpenseType>> cb = lv -> {
+            return new ListCell<ExpenseType>() {
+                @Override
+                protected void updateItem(ExpenseType item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setGraphic(null);
+                        return;
+                    }
+                    setGraphic(new Text(item.getName()));
+                }
+            };
+        };
+
+        types.setCellFactory(cb);
+        types.setButtonCell(cb.call(null));
+        types.setItems(typesObs);
+    }
+
     private void initSelectParticipants() {
         var getSelectedProperty = new Callback<Participant, ObservableValue<Boolean>>() {
 
@@ -269,6 +295,7 @@ public class ExpenseCtrl {
         date.setValue(null);
         selectParticipantsObs.clear();
         participantsObs.clear();
+        typesObs.clear();
     }
 
     private LocalDate getDate() throws Exception {

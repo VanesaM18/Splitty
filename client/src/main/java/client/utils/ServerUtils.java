@@ -271,6 +271,23 @@ public class ServerUtils {
     }
 
     /**
+     * Adds expense type.
+     * @param tag the expense type to be added.
+     */
+    public void addExpenseType(ExpenseType tag) {
+        WebSocketMessage request = new WebSocketMessage();
+        request.setEndpoint("api/expense_type/by_event");
+        request.setMethod("POST");
+        request.setData(tag);
+        request.setParameters(List.of(tag.getEvent().getInviteCode()));
+        try {
+            sendMessageWithResponse(request);
+        } catch (ExecutionException | InterruptedException e) {
+            return;
+        }
+    }
+
+    /**
      * Update an expense
      * 
      * @param expense The expense to update

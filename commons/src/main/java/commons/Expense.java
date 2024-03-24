@@ -42,6 +42,10 @@ public class Expense {
     @JoinTable(name = "EXPENSE_PARTICIPANTS")
     private Set<Participant> splitBetween;
 
+    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "EXPENSE_TAGS")
+    private Set<ExpenseType> tags;
+
     /**
      * For object mapper
      */
@@ -70,6 +74,38 @@ public class Expense {
         } else {
             this.splitBetween = splitBetween;
         }
+    }
+
+    /**
+     * Adds new expense type.
+     * @param type tag to be added.
+     */
+    public void addType(ExpenseType type) {
+        tags.add(type);
+    }
+
+    /**
+     * Deletes an expense type.
+     * @param type tag to be deleted.
+     */
+    public void deleteType(ExpenseType type) {
+        tags.remove(type);
+    }
+
+    /**
+     * Getter of the tags.
+     * @return all the tags.
+     */
+    public Set<ExpenseType> getTags() {
+        return tags;
+    }
+
+    /**
+     * Setter of the tags.
+     * @param tags new tags.
+     */
+    public void setTags(Set<ExpenseType> tags) {
+        this.tags = tags;
     }
 
     /**

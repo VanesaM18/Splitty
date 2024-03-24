@@ -106,7 +106,8 @@ public class EventController {
         // NOTE: The participant list must be empty, people can only be added to an event by using
         // the invite code.
         if (isNullOrEmpty(event.getName()) || event.getDateTime() == null
-                || (event.getParticipants() != null && !event.getParticipants().isEmpty())) {
+                || (event.getParticipants() != null && !event.getParticipants().isEmpty())
+                || (event.getTags() != null && !event.getTags().isEmpty())) {
             return ResponseEntity.badRequest().build();
         }
 
