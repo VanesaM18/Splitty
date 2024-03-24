@@ -1,7 +1,5 @@
 package client.scenes;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Currency;
 import java.util.HashSet;
@@ -65,7 +63,7 @@ public class ExpenseCtrl {
     /**
      * Construct an ExpenseCtrl
      *
-     * @param server The server utilities (gets injected)
+     * @param server   The server utilities (gets injected)
      * @param mainCtrl The main controller (gets injected)
      */
     @Inject
@@ -102,9 +100,7 @@ public class ExpenseCtrl {
     public void setEvent(Event event) {
         this.event = event;
         clearFields();
-        for (Participant p : event.getParticipants()) {
-            participantsObs.add(p);
-        }
+        participantsObs.addAll(event.getParticipants());
     }
 
     /**
@@ -114,6 +110,17 @@ public class ExpenseCtrl {
      */
     public void setUpdateExpense(Expense e) {
         this.updateExpense = e;
+        if (e == null) {
+            return;
+        }
+        this.date.setValue(e.getDate());
+        this.description.setText(e.getName());
+        this.amount.setText(e.getAmount().toString());
+        this.participantsObs.clear();
+        this.selectParticipantsObs.clear();
+        this.selectParticipantsObs.addAll(e.getSplitBetween());
+        this.participantsObs.addAll(this.event.getParticipants());
+        this.receiver.getSelectionModel().select(e.getCreator());
     }
 
     /**
@@ -143,6 +150,14 @@ public class ExpenseCtrl {
         }
     }
 
+    private HashSet<Participant> validateSplitBetween() throws Exception {
+        var newSplit = new HashSet<>(selectParticipantsObs);
+        if (newSplit.size() < 1) {
+            throw new Exception("At least one participant must be selected");
+        }
+        return newSplit;
+    }
+
     /**
      * Validates the fields and updates value on the server if successful.
      */
@@ -160,7 +175,7 @@ public class ExpenseCtrl {
             expense.setName(getName());
             expense.setReceiver(validateReceiver());
             expense.setEvent(this.event);
-            expense.setSplitBetween(new HashSet<>(selectParticipantsObs));
+            expense.setSplitBetween(validateSplitBetween());
         } catch (Exception ex) {
             warning.setText(ex.getMessage());
             return;
@@ -171,6 +186,7 @@ public class ExpenseCtrl {
             if (newExpense) {
                 server.addExpense(expense);
             } else {
+                server.updateExpense(expense);
                 // do nothing for now
             }
         } catch (Exception err) {
@@ -183,25 +199,23 @@ public class ExpenseCtrl {
         }
 
         clearFields();
+        mainCtrl.refreshData();
         mainCtrl.showOverviewEvent(event);
     }
 
     private void initReceiverCombobox() {
-        var cb = new Callback<ListView<Participant>, ListCell<Participant>>() {
-            @Override
-            public ListCell<Participant> call(ListView<Participant> listView) {
-                return new ListCell<Participant>() {
-                    @Override
-                    protected void updateItem(Participant item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item == null || empty) {
-                            setGraphic(null);
-                            return;
-                        }
-                        setGraphic(new Text(item.getName()));
+        Callback<ListView<Participant>, ListCell<Participant>> cb = lv -> {
+            return new ListCell<Participant>() {
+                @Override
+                protected void updateItem(Participant item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setGraphic(null);
+                        return;
                     }
-                };
-            }
+                    setGraphic(new Text(item.getName()));
+                }
+            };
         };
 
         receiver.setCellFactory(cb);
@@ -215,13 +229,19 @@ public class ExpenseCtrl {
 
             @Override
             public ObservableValue<Boolean> call(Participant participant) {
-                final SimpleBooleanProperty prop = new SimpleBooleanProperty();
+                final SimpleBooleanProperty prop = new SimpleBooleanProperty(
+                        selectParticipantsObs.contains(participant));
                 prop.subscribe((Boolean value) -> {
                     if (value) {
                         selectParticipantsObs.add(participant);
                     } else {
                         selectParticipantsObs.remove(participant);
                     }
+                });
+                selectParticipantsObs.subscribe(() -> {
+                    boolean contains = selectParticipantsObs.contains(participant);
+                    if (contains != prop.getValue())
+                        prop.setValue(contains);
                 });
                 return prop;
             }
@@ -252,39 +272,25 @@ public class ExpenseCtrl {
     }
 
     private LocalDate getDate() throws Exception {
-        return date.getValue();
-    }
-
-    private long pow(long input) {
-        long out = 1;
-        for (long i = 0; i < input; i++) {
-            out *= 10;
+        var newDate = date.getValue();
+        if (newDate == null) {
+            throw new Exception("Date must be specified");
         }
-        return out;
+        return newDate;
     }
 
     private Monetary getAmount() throws Exception {
-        BigDecimal amount;
-        try {
-            amount = new BigDecimal(this.amount.getText());
-            if(amount.compareTo(BigDecimal.ZERO) <= 0) throw new Exception("Invalid Amount");
-        } catch (NumberFormatException ex) {
-            // TODO: Add language support
-            throw new Exception("Invalid Amount");
+        String textValue = amount.getText().strip();
+        if ("".equals(textValue)) {
+            throw new Exception("Amount must be specified");
         }
-
-        // TODO: support multiple currencies
-        Currency currency = Currency.getInstance("EUR");
-        amount.setScale(currency.getDefaultFractionDigits(), RoundingMode.HALF_UP);
-        amount.multiply(new BigDecimal(pow(currency.getDefaultFractionDigits())));
-        return new Monetary(amount.longValueExact(), currency);
-
+        return Monetary.fromString(amount.getText(), Currency.getInstance("EUR"));
     }
 
     private String getName() throws Exception {
-        String name = this.description.getText();
-        if ("".equals(name.strip())) {
-            throw new Exception("Name must not be empty");
+        String name = this.description.getText().strip();
+        if ("".equals(name)) {
+            throw new Exception("Name must be specified");
         }
         return name;
     }

@@ -17,25 +17,39 @@ package server.api;
 
 import commons.Debt;
 
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.context.request.async.DeferredResult;
+import server.DebtUpdateService;
+import server.database.DebtRepository;
 import server.services.DebtService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+import java.util.function.Consumer;
 
 @RestController
 @RequestMapping("/api/debts")
 public class DebtController {
 
+    private final Random random;
+    private final DebtRepository repo;
+    private final DebtUpdateService debtUpdateService;
     private final DebtService debtService;
     /**
      * Constructs a DebtController with the specified random generator and debt repository.
      *
+     * @param random            An instance of Random for generating random values.
+     * @param repo              An instance of DebtRepository for accessing debt data.
+     * @param debtUpdateService An instance of the debt update service
      * @param debtService       An instance of DebtService for accessing debt operations.
      */
+    public DebtController(Random random, DebtRepository repo, DebtUpdateService debtUpdateService) {
+        this.random = random;
+        this.repo = repo;
+        this.debtUpdateService = debtUpdateService;
     public DebtController(DebtService debtService) {
         this.debtService = debtService;
     }
@@ -114,5 +128,43 @@ public class DebtController {
         Optional<Debt> randomDebt = debtService.getRandomDebt();
         return randomDebt.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.badRequest().build());
+    }
+
+    /**
+     * Notifies awaiting request that open debts for event needs to be refreshed
+     * @param eventId the event id
+     * @return status 200 if everything went well
+     */
+    @PostMapping("/{eventId}/received")
+    public ResponseEntity<Void> markDebtAsReceived(@PathVariable("eventId") String eventId) {
+        debtUpdateService.notifyUpdate(eventId);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Long pools for any updates on open debt view
+     * @param eventId the event invite code
+     * @return the status of the await
+     */
+    @PostMapping("/{eventId}/updates")
+    public DeferredResult<ResponseEntity<?>> getDebtUpdates(
+        @PathVariable("eventId") String eventId) {
+        DeferredResult<ResponseEntity<?>> deferredResult =
+            new DeferredResult<>(30 * 60 * 1000L);
+
+        Consumer<String> listener = update -> {
+            if (update != null) {
+                deferredResult.setResult(ResponseEntity.ok(update));
+            } else {
+                deferredResult.setResult(ResponseEntity.noContent().build());
+            }
+        };
+
+        deferredResult.onCompletion(() -> {
+            debtUpdateService.removeUpdateListener(eventId, listener);
+        });
+
+        debtUpdateService.waitForUpdate(eventId, listener);
+        return deferredResult;
     }
 }

@@ -1,13 +1,11 @@
 package commons;
 
-import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 import java.util.Arrays;
 import java.util.Currency;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -191,6 +189,52 @@ public class Monetary {
      */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
+        return String.format("%d.%0" + currency.getDefaultFractionDigits() + "d",
+               getMajor(), getMinor());
+    }
+
+    /**
+     * Parses a monetary value from a string
+     *
+     * @param str The string to parse
+     * @param c The currency of the string we want to parse
+     *
+     * @return The monetary parsed from the string
+     * @throws Exception When the format of the Monetary value is incorrect
+     */
+    public static Monetary fromString(String str, Currency c) throws Exception {
+        int decimalIndex = str.indexOf('.');
+        long major = 0, minor = 0;
+        if (decimalIndex != -1 &&
+            str.length() - (decimalIndex + 1) > c.getDefaultFractionDigits()) {
+            throw new Exception("Invalid currency format: Too many decimals");
+        }
+        try {
+            if (decimalIndex != 0) {
+                major = Long.parseUnsignedLong(str, 0,
+                        decimalIndex == -1 ? str.length() : decimalIndex, 10);
+            }
+            minor = parseMinor(decimalIndex, str, c);
+        } catch (NumberFormatException e) {
+            throw new Exception("Invalid currency format", e);
+        }
+
+        for (long i = 0; i < c.getDefaultFractionDigits(); i++) {
+            major *= 10;
+        }
+
+        return new Monetary(major + minor, c);
+    }
+    /** FIXME: Checkstyle */
+    private static long parseMinor(int decimalIndex, String str, Currency c) {
+        if (decimalIndex == -1) { 
+            return 0;
+        }
+        long minor = Long.parseUnsignedLong(str, decimalIndex + 1, str.length(), 10);
+        int minorLength = str.length() - (decimalIndex + 1);
+        for (int i = 0; i < c.getDefaultFractionDigits() - minorLength; i++) {
+            minor *= 10;
+        }
+        return minor;
     }
 }

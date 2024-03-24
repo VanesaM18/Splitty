@@ -91,6 +91,7 @@ public class OverviewCtrl {
      * Method to refresh the current view.
      */
     public void refresh() {
+        warning.setText("");
         if (ev == null) {
             return;
         }
@@ -119,46 +120,41 @@ public class OverviewCtrl {
     }
 
     private void initExpenses() {
-        var cb = new Callback<ListView<Expense>, ListCell<Expense>>() {
+        Callback<ListView<Expense>, ListCell<Expense>> cb = lv -> new ListCell<Expense>() {
             @Override
-            public ListCell<Expense> call(ListView<Expense> listView) {
-                return new ListCell<Expense>() {
-                    @Override
-                    protected void updateItem(Expense item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item == null || empty) {
-                            setGraphic(null);
-                            return;
-                        }
-                        Text textBoldP1 = new Text(item.getCreator().getName());
-                        Text textBoldP2 = new Text("" + item.getAmount().getInternalValue()
-                                + item.getAmount().getCurrency().getSymbol());
-                        Text textBoldP3 = new Text(item.getName());
-                        textBoldP1.setFont(Font.font("System", FontWeight.BOLD, 12));
-                        textBoldP2.setFont(Font.font("System", FontWeight.BOLD, 12));
-                        textBoldP3.setFont(Font.font("System", FontWeight.BOLD, 12));
-                        TextFlow mainTextFlow = new TextFlow(textBoldP1, new Text(" paid "),
-                                textBoldP2, new Text(" for "), textBoldP3);
-                        Text smallText = OverviewCtrl.getText(item);
-                        smallText.setFont(Font.font("System", FontWeight.NORMAL, 10));
-                        smallText.setFill(Color.GRAY.darker().darker());
+            protected void updateItem(Expense item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setGraphic(null);
+                    return;
+                }
+                Text textBoldP1 = new Text(item.getCreator().getName());
+                Text textBoldP2 = new Text("" + item.getAmount().toString()
+                        + item.getAmount().getCurrency().getSymbol());
+                Text textBoldP3 = new Text(item.getName());
+                textBoldP1.setFont(Font.font("System", FontWeight.BOLD, 12));
+                textBoldP2.setFont(Font.font("System", FontWeight.BOLD, 12));
+                textBoldP3.setFont(Font.font("System", FontWeight.BOLD, 12));
+                TextFlow mainTextFlow = new TextFlow(textBoldP1, new Text(" paid "),
+                        textBoldP2, new Text(" for "), textBoldP3);
+                Text smallText = OverviewCtrl.getText(item);
+                smallText.setFont(Font.font("System", FontWeight.NORMAL, 10));
+                smallText.setFill(Color.GRAY.darker().darker());
 
-                        VBox vbox = new VBox(mainTextFlow, smallText);
-                        vbox.setSpacing(5);
+                VBox vbox = new VBox(mainTextFlow, smallText);
+                vbox.setSpacing(5);
 
-                        Text dateText = new Text(item.getDate().toString());
-                        dateText.setFont(Font.font("System", FontWeight.NORMAL, 12));
-                        Region region = new Region();
-                        HBox.setHgrow(region, Priority.ALWAYS);
-                        Button editButton = new Button();
-                        editButton.setOnAction(e -> mainCtrl.showExpense(item.getEvent(),
-                                participantComboBox.getSelectionModel().getSelectedItem(), item));
-                        attachImage(editButton, "/assets/pen-solid.png");
-                        HBox element = new HBox(dateText, vbox, region, editButton);
-                        element.setSpacing(15);
-                        setGraphic(element);
-                    }
-                };
+                Text dateText = new Text(item.getDate().toString());
+                dateText.setFont(Font.font("System", FontWeight.NORMAL, 12));
+                Region region = new Region();
+                HBox.setHgrow(region, Priority.ALWAYS);
+                Button editButton = new Button();
+                editButton.setOnAction(e -> mainCtrl.showExpense(item.getEvent(),
+                        participantComboBox.getSelectionModel().getSelectedItem(), item));
+                attachImage(editButton, "/assets/pen-solid.png");
+                HBox element = new HBox(dateText, vbox, region, editButton);
+                element.setSpacing(15);
+                setGraphic(element);
             }
         };
         expensesAll.setCellFactory(cb);
@@ -287,9 +283,14 @@ public class OverviewCtrl {
      * Trigger the new expense dialog
      */
     public void addExpense() {
+        if(ev.getParticipants().size() < 2) {
+            warning.setText("Not enough people!");
+            return;
+        }
         mainCtrl.showExpense(this.ev, participantComboBox.getSelectionModel().getSelectedItem(),
                 null);
         refresh();
+        warning.setText("");
     }
 
     /**
@@ -323,6 +324,7 @@ public class OverviewCtrl {
 
         Optional<String> newNameOpt = dialog.showAndWait();
         if (!newNameOpt.isPresent()) {
+            warning.setText("");
             return;
         }
 
@@ -336,6 +338,7 @@ public class OverviewCtrl {
      */
     public void back() {
         mainCtrl.getSceneManager().goBack();
+        warning.setText("");
     }
 
     /**
@@ -344,6 +347,10 @@ public class OverviewCtrl {
     public void deleteParticipant() {
         if (participantNames.getSelectionModel().getSelectedItem() == null) {
             warning.setText("First chose a participant.");
+            return;
+        }
+        if(partOfExpense(participantNames.getSelectionModel().getSelectedItem())) {
+            warning.setText("Settle debt first!");
             return;
         }
 
@@ -369,6 +376,20 @@ public class OverviewCtrl {
             alert.close();
         }
         // server.deleteParticipant(participant);
+    }
+
+    /**
+     * Checks weather a participant is part of an expense.
+     * @param participant participant to be checked.
+     * @return weather the participant is part of any expense.
+     */
+    private boolean partOfExpense(Participant participant) {
+        Set<Expense> expenses = ev.getExpenses();
+        for(Expense expense : expenses) {
+            if(expense.getCreator().equals(participant)) return true;
+            if(expense.getSplitBetween().contains(participant)) return true;
+        }
+        return false;
     }
 
     /**
