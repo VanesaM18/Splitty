@@ -52,6 +52,7 @@ public class MainCtrl {
     private InviteScreenCtrl inviteScreenCtrl;
     private Scene invite;
     private Optional<Locale> currentLocale = Optional.empty();
+    private boolean isInOpenDebt = false;
 
 
     /**
@@ -99,7 +100,6 @@ public class MainCtrl {
             startPageCtrl.updateConfig();
         });
 
-        // showLogin();
         settingsCtrl.make();
         sceneManager.showCurrentScene();
         primaryStage.show();
@@ -227,7 +227,11 @@ public class MainCtrl {
      * Refreshes data on client side
      */
     public void refreshData() {
-        overviewEventCtrl.refresh();
+        if (isInOpenDebt == true) {
+            openDebtsCtrl.initialize(openDebtsCtrl.getEvent());
+        } else {
+            overviewEventCtrl.refresh();
+        }
     }
 
     /**
@@ -252,6 +256,7 @@ public class MainCtrl {
      * @param e the current event
      */
     public void showOpenDebts(Event e) {
+        openDebtsCtrl.stopLongPolling();
         if (e == null) {
             primaryStage.setTitle("Open Debts");
             primaryStage.setScene(openDebt);
@@ -259,9 +264,9 @@ public class MainCtrl {
             primaryStage.setTitle("Open Debt");
             primaryStage.setScene(openDebt);
             openDebtsCtrl.initialize(e);
-
         }
-
+        openDebtsCtrl.startLongPolling();
+        isInOpenDebt = true;
     }
 
 
@@ -282,12 +287,18 @@ public class MainCtrl {
      * @param edit         The expense to edit. Pass null to create a new one
      */
     public void showExpense(Event ev, Participant selectedItem, Expense edit) {
-        if (ev != expenseCtrl.getEvent()) {
-            expenseCtrl.setEvent(ev);
-        }
+        expenseCtrl.setEvent(ev);
         expenseCtrl.setUpdateExpense(edit);
         primaryStage.setTitle((edit == null ? "Add" : "Edit").concat(" Expense"));
         primaryStage.setScene(expense);
         participants.setOnKeyPressed(e -> expenseCtrl.keyPressed(e));
+    }
+
+    /**
+     * Sets status of open debt view
+     * @param b the status
+     */
+    public void setIsInOpenDebt(boolean b) {
+        isInOpenDebt = b;
     }
 }

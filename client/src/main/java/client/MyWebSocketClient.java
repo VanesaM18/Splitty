@@ -27,7 +27,8 @@ public class MyWebSocketClient extends WebSocketClient {
      */
     @Inject
     public MyWebSocketClient(ConfigLoader config, MainCtrl mainCtrl) throws URISyntaxException {
-        super(new URI((String) config.getProperty("address")));
+        super(new URI(((String) config.getProperty("address"))
+            .replaceFirst("^http://", "ws://") + "/ws"));
         this.objectMapper = new ObjectMapper();
         this.mainCtrl = mainCtrl;
         try {
