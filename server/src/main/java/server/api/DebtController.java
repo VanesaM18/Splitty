@@ -22,36 +22,26 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.context.request.async.DeferredResult;
 import server.DebtUpdateService;
-import server.database.DebtRepository;
 import server.services.DebtService;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Consumer;
 
 @RestController
 @RequestMapping("/api/debts")
 public class DebtController {
-
-    private final Random random;
-    private final DebtRepository repo;
     private final DebtUpdateService debtUpdateService;
     private final DebtService debtService;
     /**
      * Constructs a DebtController with the specified random generator and debt repository.
      *
-     * @param random            An instance of Random for generating random values.
-     * @param repo              An instance of DebtRepository for accessing debt data.
      * @param debtUpdateService An instance of the debt update service
      * @param debtService       An instance of DebtService for accessing debt operations.
      */
-    public DebtController(Random random, DebtRepository repo, DebtUpdateService debtUpdateService) {
-        this.random = random;
-        this.repo = repo;
-        this.debtUpdateService = debtUpdateService;
-    public DebtController(DebtService debtService) {
+    public DebtController(DebtUpdateService debtUpdateService, DebtService debtService) {
         this.debtService = debtService;
+        this.debtUpdateService = debtUpdateService;
     }
 
     /**
