@@ -6,9 +6,15 @@ import client.utils.ServerUtils;
 import client.utils.language.LanguageProcessor;
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextField;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
+import java.util.Optional;
 
 public class AppConfigurationCtrl {
 
@@ -18,6 +24,8 @@ public class AppConfigurationCtrl {
     private final ConfigLoader configLoader;
     @FXML
     private ChoiceBox<String> choiceBox;
+    @FXML
+    private TextField urlTextField;
 
     /**
      * controller for handling the application configuration functionality.
@@ -51,12 +59,35 @@ public class AppConfigurationCtrl {
      * while executing language-specific actions
      */
     public void onSave() {
-        String selectedLanguage = choiceBox.getValue();
-        configLoader.updateProperty("startUpShown", "true");
-        var sceneManager = mainCtrl.getSceneManager();
-        sceneManager.popScene();
-        sceneManager.pushScene(SceneEnum.START);
-        languageProcessor.getActions().get(selectedLanguage).run();
+        String url = urlTextField.getText();
+
+        try {
+            new URL(url); // Attempt to create a URL object
+        } catch (MalformedURLException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Invalid URL");
+            alert.setHeaderText("Invalid URL");
+            alert.setContentText("Please enter a valid URL.");
+            alert.showAndWait();
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation");
+        alert.setHeaderText("Are you sure you want to proceed?");
+        alert.setContentText("Do you want to save these settings and proceed?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            String selectedLanguage = choiceBox.getValue();
+            server.setServerUrl(url);
+            configLoader.updateProperty("address", url);
+            var sceneManager = mainCtrl.getSceneManager();
+            sceneManager.popScene();
+            sceneManager.pushScene(SceneEnum.START);
+            configLoader.updateProperty("startUpShown", "true");
+            languageProcessor.getActions().get(selectedLanguage).run();
+        }
     }
 
     /**
