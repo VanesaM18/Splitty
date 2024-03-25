@@ -52,6 +52,14 @@ public class ExpenseType {
     }
 
     /**
+     * Sets the id associated with this expense type.
+     * @param id The new id to be set.
+     */
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    /**
      * Retrieves the name of this expense type.
      * @return the type's name.
      */

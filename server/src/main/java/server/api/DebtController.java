@@ -22,29 +22,25 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.context.request.async.DeferredResult;
 import server.DebtUpdateService;
-import server.database.DebtRepository;
+import server.services.DebtService;
 
 import java.util.List;
-import java.util.Random;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 @RestController
 @RequestMapping("/api/debts")
 public class DebtController {
-
-    private final Random random;
-    private final DebtRepository repo;
     private final DebtUpdateService debtUpdateService;
+    private final DebtService debtService;
     /**
      * Constructs a DebtController with the specified random generator and debt repository.
      *
-     * @param random            An instance of Random for generating random values.
-     * @param repo              An instance of DebtRepository for accessing debt data.
      * @param debtUpdateService An instance of the debt update service
+     * @param debtService       An instance of DebtService for accessing debt operations.
      */
-    public DebtController(Random random, DebtRepository repo, DebtUpdateService debtUpdateService) {
-        this.random = random;
-        this.repo = repo;
+    public DebtController(DebtUpdateService debtUpdateService, DebtService debtService) {
+        this.debtService = debtService;
         this.debtUpdateService = debtUpdateService;
     }
 
@@ -54,7 +50,7 @@ public class DebtController {
      */
     @GetMapping(path = { "", "/" })
     public List<Debt> getAll() {
-        return repo.findAll();
+        return debtService.getAllDebts();
     }
 
     /**
@@ -65,10 +61,9 @@ public class DebtController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Debt> getById(@PathVariable("id") long id) {
-        if (id < 0 || !repo.existsById(id)) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(repo.findById(id).get());
+        Optional<Debt> optional = debtService.getDebtById(id);
+        return optional.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.badRequest().build());
     }
     /**
      * Deletes a debt by its ID.
@@ -82,10 +77,10 @@ public class DebtController {
         if (id < 0) {
             return ResponseEntity.badRequest().build();
         }
-        if (!repo.existsById(id)) {
+        Optional<Debt> optional = debtService.deleteDebtById(id);
+        if (optional.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        repo.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -99,14 +94,9 @@ public class DebtController {
      */
     @PostMapping(path = { "", "/" })
     public ResponseEntity<Debt> add(@RequestBody Debt debt) {
-
-        if (debt.getDebtor() == null
-                || debt.getCreditor() == null || debt.getAmount() == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        Debt saved = repo.save(debt);
-        return ResponseEntity.ok(saved);
+        Optional<Debt> optional = debtService.addDebt(debt);
+        return optional.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
     /**
@@ -125,9 +115,9 @@ public class DebtController {
      */
     @GetMapping("rnd")
     public ResponseEntity<Debt> getRandom() {
-        var debts = repo.findAll();
-        var idx = random.nextInt((int) repo.count());
-        return ResponseEntity.ok(debts.get(idx));
+        Optional<Debt> randomDebt = debtService.getRandomDebt();
+        return randomDebt.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.badRequest().build());
     }
 
     /**
