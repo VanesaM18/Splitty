@@ -18,6 +18,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -46,6 +47,9 @@ public class ExpenseCtrl {
 
     @FXML
     private ComboBox<Participant> receiver;
+
+    @FXML
+    private Button deleteExpenseButton;
 
     private final ObservableList<Participant> participantsObs = FXCollections.observableArrayList();
 
@@ -111,8 +115,10 @@ public class ExpenseCtrl {
     public void setUpdateExpense(Expense e) {
         this.updateExpense = e;
         if (e == null) {
+            deleteExpenseButton.setVisible(false);
             return;
         }
+        deleteExpenseButton.setVisible(true);
         this.date.setValue(e.getDate());
         this.description.setText(e.getName());
         this.amount.setText(e.getAmount().toString());
@@ -191,6 +197,25 @@ public class ExpenseCtrl {
             }
         } catch (Exception err) {
 
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText(err.getMessage());
+            alert.showAndWait();
+            return;
+        }
+
+        clearFields();
+        mainCtrl.refreshData();
+        mainCtrl.showOverviewEvent(event);
+    }
+
+    /**
+     * Delete expense
+     */
+    public void deleteExpense() {
+        try {
+            server.deleteExpense(updateExpense);
+        } catch (Exception err) {
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.setContentText(err.getMessage());
