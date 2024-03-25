@@ -283,10 +283,10 @@ public class OverviewCtrl {
      * Trigger the new expense dialog
      */
     public void addExpense() {
-//        if(ev.getParticipants().size() < 2) {
-//            warning.setText("Not enough people!");
-//            return;
-//        }
+        if(ev.getParticipants().size() < 2) {
+            warning.setText("Not enough people!");
+            return;
+        }
         mainCtrl.showExpense(this.ev, participantComboBox.getSelectionModel().getSelectedItem(),
                 null);
         refresh();

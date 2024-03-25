@@ -3,6 +3,7 @@ package client.scenes;
 import java.time.LocalDate;
 import java.util.Currency;
 import java.util.HashSet;
+import java.util.Set;
 
 import com.google.inject.Inject;
 
@@ -52,6 +53,10 @@ public class ExpenseCtrl {
 
     @FXML
     private ListView<Participant> selectParticipant;
+    @FXML
+    private ListView<ExpenseType> selectedTags;
+    private final ObservableList<ExpenseType> selectedTypesObs
+            = FXCollections.observableArrayList();
 
     private final ObservableSet<Participant> selectParticipantsObs = FXCollections.observableSet();
 
@@ -181,6 +186,8 @@ public class ExpenseCtrl {
             expense.setReceiver(validateReceiver());
             expense.setEvent(this.event);
             expense.setSplitBetween(validateSplitBetween());
+            Set<ExpenseType> tags = new HashSet<>(selectedTags.getItems());
+            expense.setTags(tags);
         } catch (Exception ex) {
             warning.setText(ex.getMessage());
             return;
@@ -290,6 +297,8 @@ public class ExpenseCtrl {
     }
 
     private void clearFields() {
+        selectedTypesObs.clear();
+        selectedTags.setItems(null);
         description.clear();
         amount.clear();
         date.setValue(null);
@@ -330,7 +339,34 @@ public class ExpenseCtrl {
         return selected;
     }
 
-    // private Set<Participant> validateSplitBetween() throws Exception {
-    // }
+    /**
+     * Adds a tag to the listView.
+     */
+    public void addTag() {
+        ExpenseType tag = types.getSelectionModel().getSelectedItem();
+        if(!selectedTypesObs.contains(tag)) selectedTypesObs.add(tag);
+        initTypes();
+    }
 
+    private void initTypes() {
+        var cb = new Callback<ListView<ExpenseType>, ListCell<ExpenseType>>() {
+            @Override
+            public ListCell<ExpenseType> call(ListView<ExpenseType> listView) {
+                return new ListCell<ExpenseType>() {
+                    @Override
+                    protected void updateItem(ExpenseType item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item == null || empty) {
+                            setGraphic(null);
+                            return;
+                        }
+                        setGraphic(new Text(item.getName()));
+                    }
+                };
+            }
+        };
+
+        selectedTags.setCellFactory(cb);
+        selectedTags.setItems(selectedTypesObs);
+    }
 }

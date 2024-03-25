@@ -42,7 +42,7 @@ public class Expense {
     @JoinTable(name = "EXPENSE_PARTICIPANTS")
     private Set<Participant> splitBetween;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.REFRESH })
     @JoinTable(name = "EXPENSE_TAGS")
     private Set<ExpenseType> tags;
 
