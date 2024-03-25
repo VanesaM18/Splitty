@@ -137,15 +137,15 @@ public class StartScreenCtrl implements Initializable {
         event.generateInviteCode();
         event = server.addEvent(event);
 
-        ExpenseType food = new ExpenseType("food", "green", event);
+        ExpenseType food = new ExpenseType("food", "#5bf562", event);
         server.addExpenseType(food);
         event.addType(food);
 
-        ExpenseType fees = new ExpenseType("entrance fees", "blue", event);
+        ExpenseType fees = new ExpenseType("entrance fees", "#5ba0f5", event);
         server.addExpenseType(fees);
         event.addType(fees);
 
-        ExpenseType travel = new ExpenseType("travel", "red", event);
+        ExpenseType travel = new ExpenseType("travel", "#f7596c", event);
         server.addExpenseType(travel);
         event.addType(travel);
 

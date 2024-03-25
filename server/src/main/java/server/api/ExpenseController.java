@@ -157,9 +157,7 @@ public class ExpenseController {
         if (expense.getDate() != null) {
             oldExpense.setDate(expense.getDate());
         }
-        if (expense.getTags() != null) {
-            oldExpense.setTags(expense.getTags());
-        }
+        oldExpense.setTags(expense.getTags());
     }
 
     /**

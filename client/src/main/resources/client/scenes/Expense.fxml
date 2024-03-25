@@ -66,7 +66,7 @@
                </children>
             </GridPane>
             <Region prefHeight="26.0" prefWidth="380.0" />
-            <ListView fx:id="selectedTags" accessibleRole="IMAGE_VIEW" orientation="HORIZONTAL" prefHeight="57.0" prefWidth="380.0" />
+            <ListView fx:id="selectedTags" accessibleRole="IMAGE_VIEW" orientation="HORIZONTAL" prefHeight="65.0" prefWidth="380.0" />
             <Region prefHeight="26.0" prefWidth="380.0" />
             <Label text="Participants">
                <font>
