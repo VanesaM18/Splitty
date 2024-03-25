@@ -14,6 +14,7 @@ import server.database.EventRepository;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -37,7 +38,7 @@ class EventServiceTest {
 
     @Test
     void testGetAllEvents() {
-        Event event = new Event("inviteCode", "name", LocalDateTime.of(2024, Month.MARCH, 23, 22, 2, 40), Set.of(new Participant("name", "email", "iban", "bic")));
+        Event event = new Event("inviteCode", "name", LocalDateTime.of(2024, Month.MARCH, 23, 22, 2, 40), Set.of(new Participant("name", "email", "iban", "bic")), new HashSet<>());
         when(eventRepository.findAll()).thenReturn(List.of(event));
 
         List<Event> result = eventService.getAllEvents();
@@ -46,7 +47,7 @@ class EventServiceTest {
 
     @Test
     void testGetEventByInviteCode() {
-        Event event = new Event("inviteCode", "name", LocalDateTime.of(2024, Month.MARCH, 23, 22, 2, 40), Set.of(new Participant("name", "email", "iban", "bic")));
+        Event event = new Event("inviteCode", "name", LocalDateTime.of(2024, Month.MARCH, 23, 22, 2, 40), Set.of(new Participant("name", "email", "iban", "bic")), new HashSet<>());
         when(eventRepository.existsByInviteCodeEqualsIgnoreCase(anyString())).thenReturn(true);
         when(eventRepository.findById(any())).thenReturn(Optional.of(event));
         when(adminRepository.findById(any())).thenReturn(null);
@@ -61,7 +62,7 @@ class EventServiceTest {
         when(eventRepository.save(any())).thenReturn(new Event());
         when(adminRepository.save(any())).thenReturn(new Admin());
 
-        Optional<Event> result = eventService.createEvent(new Event("inviteCode", "name", LocalDateTime.of(2024, Month.MARCH, 23, 22, 2, 40), Set.of(new Participant("name", "email", "iban", "bic"))));
+        Optional<Event> result = eventService.createEvent(new Event("inviteCode", "name", LocalDateTime.of(2024, Month.MARCH, 23, 22, 2, 40), Set.of(new Participant("name", "email", "iban", "bic")), new HashSet<>()));
         Assertions.assertEquals(Optional.empty(), result);
     }
 

@@ -13,6 +13,7 @@ import server.services.EventService;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +37,7 @@ public class EventControllerTest {
     @Test
     public void getAllEvents_Authenticated_ReturnsEventsList() throws Exception {
         var auth = "Basic QWxhZGRpbjpkOWZiOTJlM2JiZTY1YmUxZjFhYWQ0YTgyZWVmNDU2N2Y3YTFlYmUyY2QxMTBjODA0OWI5Njk4YmU3YTcwYzg4";
-        Event event = new Event("ABC123", "Event Name", LocalDateTime.now(), Collections.emptySet());
+        Event event = new Event("ABC123", "Event Name", LocalDateTime.now(), Collections.emptySet(), new HashSet<>());
         given(eventService.getAllEvents()).willReturn(List.of(event));
         given(eventService.isAuthenticated(auth)).willReturn(true);
 
@@ -64,7 +65,7 @@ public class EventControllerTest {
 
     @Test
     public void addEvent_Success_ReturnsEvent() throws Exception {
-        Event event = new Event("NEWCODE", "New Event", LocalDateTime.now(), Collections.emptySet());
+        Event event = new Event("NEWCODE", "New Event", LocalDateTime.now(), Collections.emptySet(), new HashSet<>());
         given(eventService.createEvent(any(Event.class))).willReturn(Optional.of(event));
 
         mockMvc.perform(post("/api/events")

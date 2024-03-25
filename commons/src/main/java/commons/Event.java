@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -270,7 +271,9 @@ public class Event {
         return Objects.equals(getName(), event.getName())
                 && Objects.equals(getInviteCode(), event.getInviteCode())
                 && Objects.equals(getDateTime(), event.getDateTime())
-                && Objects.equals(getParticipants(), event.getParticipants());
+                && Objects.equals(getParticipants(), event.getParticipants())
+                && Objects.equals(getTags(), event.getTags())
+                && Objects.equals(getExpenses(), event.getExpenses());
     }
 
     /**

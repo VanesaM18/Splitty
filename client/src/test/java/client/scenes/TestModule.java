@@ -23,6 +23,7 @@ import com.google.inject.Module;
 
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import org.mockito.Mockito;
 
@@ -79,7 +80,7 @@ public class TestModule implements Module {
     public ServerUtils provideServerUtils(MyWebSocketClient webSocketClient) {
         ServerUtils mock = Mockito.mock(ServerUtils.class);
 
-        Event event = new Event("testCode", "name", LocalDateTime.now(), Set.of());
+        Event event = new Event("testCode", "name", LocalDateTime.now(), Set.of(), new HashSet<>());
         event.setExpenses(Set.of());
         Mockito.when(mock.getEventById(event.getInviteCode())).thenReturn(event);
 
