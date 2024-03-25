@@ -62,11 +62,11 @@
                         <Font name="System Bold" size="22.0" />
                      </font>
                   </Label>
-                  <ComboBox fx:id="types" maxWidth="1.7976931348623157E308" prefHeight="26.0" prefWidth="176.0" GridPane.columnIndex="1" GridPane.rowIndex="4" onAction="#addTag"/>
+                  <ComboBox fx:id="types" maxWidth="1.7976931348623157E308" onAction="#addTag" prefHeight="26.0" prefWidth="176.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                </children>
             </GridPane>
             <Region prefHeight="26.0" prefWidth="380.0" />
-            <ListView fx:id="selectedTags" orientation="HORIZONTAL" accessibleRole="IMAGE_VIEW" prefHeight="52.0" prefWidth="349.0" />
+            <ListView fx:id="selectedTags" accessibleRole="IMAGE_VIEW" orientation="HORIZONTAL" prefHeight="57.0" prefWidth="380.0" />
             <Region prefHeight="26.0" prefWidth="380.0" />
             <Label text="Participants">
                <font>

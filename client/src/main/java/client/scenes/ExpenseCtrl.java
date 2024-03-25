@@ -131,6 +131,8 @@ public class ExpenseCtrl {
         this.participantsObs.addAll(this.event.getParticipants());
         this.typesObs.addAll(this.event.getTags());
         this.receiver.getSelectionModel().select(e.getCreator());
+        this.selectedTypesObs.addAll(e.getTags());
+        initTypes();
     }
 
     /**
@@ -186,7 +188,7 @@ public class ExpenseCtrl {
             expense.setReceiver(validateReceiver());
             expense.setEvent(this.event);
             expense.setSplitBetween(validateSplitBetween());
-            Set<ExpenseType> tags = new HashSet<>(selectedTags.getItems());
+            Set<ExpenseType> tags = new HashSet<>(selectedTypesObs);
             expense.setTags(tags);
         } catch (Exception ex) {
             warning.setText(ex.getMessage());
@@ -370,3 +372,5 @@ public class ExpenseCtrl {
         selectedTags.setItems(selectedTypesObs);
     }
 }
+// TODO: delete tags expense
+// TODO: add new tags, delete/edit
