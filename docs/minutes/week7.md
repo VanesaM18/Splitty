@@ -12,9 +12,8 @@ Attendees: Nathan Huisman, Noah Swartjes, Ruben van der Giessen, Matei Aruxandei
 - Announcements from the TA (10 min)
   - Our final presentation is on the 19th of April, 13:20
   - Questions from the lectures material will be asked, but overall, not much theory. For example, where we use Dependency injection?
-  - product pitch - video, presentation
   - The product pitch can be either a video or a presentation. We decided that we would do a video and will talk over it.
-  - Not everyone needs to present in oral presentation, but each of us can be asked about any part of the application. Redirecting questions might be possible, but general knowledge about every part of the app is needed.
+  - Not everyone needs to present in the oral presentation, but each of us can be asked about any part of the application. Redirecting questions might be possible, but general knowledge about every part of the app is needed.
   - We shouldn't forget to reach the knockout criteria!
 - Presented application (10 min)
   - New things:
@@ -28,12 +27,12 @@ Attendees: Nathan Huisman, Noah Swartjes, Ruben van der Giessen, Matei Aruxandei
   - Update README.md - more details, maybe screenshots - how to set up the application.
 - Talking points (15 min)
   - HCI feedback:
-    - Colors - we talked about different design options, but decided that we like how our app look now, and we will leave it like that.
+    - Colors - we talked about different design options, but decided that we like how our app looks now, and we will leave it like that.
     - Noah presented an app logo, which we can use.
     - Shortcuts
-      - They need to be explained in the README.md
+      - They need to be explained in the README.md.
       - A message could be shown when hovering certain buttons.
-    - Error messages should be shown in the terminal
+    - Error messages should be shown in the terminal.
   - Testing
     - Indirect - user-based manner, usage tests, how things work together.
   - Previous week
@@ -41,7 +40,7 @@ Attendees: Nathan Huisman, Noah Swartjes, Ruben van der Giessen, Matei Aruxandei
     - Nathan - edit/delete/sync expenses - delete has some more things to be fixed.
     - Ruben, Vanesa - A lot of tests were added - UI ones including
     - Matei - long polling - sometimes connection doesn't get closed, but still works.
-    - Noah - Open debts - almost finished, deletion remains.
+    - Noah, Matei - Open debts - almost finished, deletion remains.
     - Vanesa - Basic tags are added.
   - Product pitch (draft)
     - What makes our application unique? - Still needs to be discussed.
