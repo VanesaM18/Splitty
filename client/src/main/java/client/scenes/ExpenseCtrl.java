@@ -1,33 +1,31 @@
 package client.scenes;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.Currency;
 import java.util.HashSet;
+import java.util.Set;
 
 import com.google.inject.Inject;
 
 import client.utils.ServerUtils;
-import commons.Event;
-import commons.Expense;
-import commons.Monetary;
-import commons.Participant;
+import commons.*;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Cursor;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.util.Callback;
@@ -52,7 +50,15 @@ public class ExpenseCtrl {
     private final ObservableList<Participant> participantsObs = FXCollections.observableArrayList();
 
     @FXML
+    private ComboBox<ExpenseType> types;
+    private final ObservableList<ExpenseType> typesObs = FXCollections.observableArrayList();
+
+    @FXML
     private ListView<Participant> selectParticipant;
+    @FXML
+    private ListView<ExpenseType> selectedTags;
+    private final ObservableList<ExpenseType> selectedTypesObs
+            = FXCollections.observableArrayList();
 
     private final ObservableSet<Participant> selectParticipantsObs = FXCollections.observableSet();
 
@@ -65,7 +71,7 @@ public class ExpenseCtrl {
     /**
      * Construct an ExpenseCtrl
      *
-     * @param server The server utilities (gets injected)
+     * @param server   The server utilities (gets injected)
      * @param mainCtrl The main controller (gets injected)
      */
     @Inject
@@ -81,6 +87,7 @@ public class ExpenseCtrl {
     @FXML
     public void initialize() {
         selectParticipant.setItems(participantsObs);
+        initTagsCombobox();
         initReceiverCombobox();
         initSelectParticipants();
     }
@@ -102,9 +109,8 @@ public class ExpenseCtrl {
     public void setEvent(Event event) {
         this.event = event;
         clearFields();
-        for (Participant p : event.getParticipants()) {
-            participantsObs.add(p);
-        }
+        participantsObs.addAll(event.getParticipants());
+        typesObs.addAll(event.getTags());
     }
 
     /**
@@ -114,6 +120,21 @@ public class ExpenseCtrl {
      */
     public void setUpdateExpense(Expense e) {
         this.updateExpense = e;
+        if (e == null) {
+            return;
+        }
+        this.date.setValue(e.getDate());
+        this.description.setText(e.getName());
+        this.amount.setText(e.getAmount().toString());
+        this.participantsObs.clear();
+        this.typesObs.clear();
+        this.selectParticipantsObs.clear();
+        this.selectParticipantsObs.addAll(e.getSplitBetween());
+        this.participantsObs.addAll(this.event.getParticipants());
+        this.typesObs.addAll(this.event.getTags());
+        this.receiver.getSelectionModel().select(e.getCreator());
+        this.selectedTypesObs.addAll(e.getTags());
+        initTypes();
     }
 
     /**
@@ -143,6 +164,14 @@ public class ExpenseCtrl {
         }
     }
 
+    private HashSet<Participant> validateSplitBetween() throws Exception {
+        var newSplit = new HashSet<>(selectParticipantsObs);
+        if (newSplit.size() < 1) {
+            throw new Exception("At least one participant must be selected");
+        }
+        return newSplit;
+    }
+
     /**
      * Validates the fields and updates value on the server if successful.
      */
@@ -160,7 +189,9 @@ public class ExpenseCtrl {
             expense.setName(getName());
             expense.setReceiver(validateReceiver());
             expense.setEvent(this.event);
-            expense.setSplitBetween(new HashSet<>(selectParticipantsObs));
+            expense.setSplitBetween(validateSplitBetween());
+            Set<ExpenseType> tags = new HashSet<>(selectedTypesObs);
+            expense.setTags(tags);
         } catch (Exception ex) {
             warning.setText(ex.getMessage());
             return;
@@ -171,6 +202,7 @@ public class ExpenseCtrl {
             if (newExpense) {
                 server.addExpense(expense);
             } else {
+                server.updateExpense(expense);
                 // do nothing for now
             }
         } catch (Exception err) {
@@ -183,25 +215,23 @@ public class ExpenseCtrl {
         }
 
         clearFields();
+        mainCtrl.refreshData();
         mainCtrl.showOverviewEvent(event);
     }
 
     private void initReceiverCombobox() {
-        var cb = new Callback<ListView<Participant>, ListCell<Participant>>() {
-            @Override
-            public ListCell<Participant> call(ListView<Participant> listView) {
-                return new ListCell<Participant>() {
-                    @Override
-                    protected void updateItem(Participant item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item == null || empty) {
-                            setGraphic(null);
-                            return;
-                        }
-                        setGraphic(new Text(item.getName()));
+        Callback<ListView<Participant>, ListCell<Participant>> cb = lv -> {
+            return new ListCell<Participant>() {
+                @Override
+                protected void updateItem(Participant item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setGraphic(null);
+                        return;
                     }
-                };
-            }
+                    setGraphic(new Text(item.getName()));
+                }
+            };
         };
 
         receiver.setCellFactory(cb);
@@ -210,18 +240,45 @@ public class ExpenseCtrl {
 
     }
 
+
+    private void initTagsCombobox() {
+        Callback<ListView<ExpenseType>, ListCell<ExpenseType>> cb = lv -> {
+            return new ListCell<ExpenseType>() {
+                @Override
+                protected void updateItem(ExpenseType item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setGraphic(null);
+                        return;
+                    }
+                    setGraphic(new Text(item.getName()));
+                }
+            };
+        };
+
+        types.setCellFactory(cb);
+        types.setButtonCell(cb.call(null));
+        types.setItems(typesObs);
+    }
+
     private void initSelectParticipants() {
         var getSelectedProperty = new Callback<Participant, ObservableValue<Boolean>>() {
 
             @Override
             public ObservableValue<Boolean> call(Participant participant) {
-                final SimpleBooleanProperty prop = new SimpleBooleanProperty();
+                final SimpleBooleanProperty prop = new SimpleBooleanProperty(
+                        selectParticipantsObs.contains(participant));
                 prop.subscribe((Boolean value) -> {
                     if (value) {
                         selectParticipantsObs.add(participant);
                     } else {
                         selectParticipantsObs.remove(participant);
                     }
+                });
+                selectParticipantsObs.subscribe(() -> {
+                    boolean contains = selectParticipantsObs.contains(participant);
+                    if (contains != prop.getValue())
+                        prop.setValue(contains);
                 });
                 return prop;
             }
@@ -244,47 +301,36 @@ public class ExpenseCtrl {
     }
 
     private void clearFields() {
+        selectedTypesObs.clear();
+        selectedTags.setItems(null);
         description.clear();
         amount.clear();
         date.setValue(null);
         selectParticipantsObs.clear();
         participantsObs.clear();
+        typesObs.clear();
     }
 
     private LocalDate getDate() throws Exception {
-        return date.getValue();
-    }
-
-    private long pow(long input) {
-        long out = 1;
-        for (long i = 0; i < input; i++) {
-            out *= 10;
+        var newDate = date.getValue();
+        if (newDate == null) {
+            throw new Exception("Date must be specified");
         }
-        return out;
+        return newDate;
     }
 
     private Monetary getAmount() throws Exception {
-        BigDecimal amount;
-        try {
-            amount = new BigDecimal(this.amount.getText());
-            if (amount.compareTo(BigDecimal.ZERO) <= 0) throw new Exception("Invalid Amount");
-        } catch (NumberFormatException ex) {
-            // TODO: Add language support
-            throw new Exception("Invalid Amount");
+        String textValue = amount.getText().strip();
+        if ("".equals(textValue)) {
+            throw new Exception("Amount must be specified");
         }
-
-        // TODO: support multiple currencies
-        Currency currency = Currency.getInstance("EUR");
-        amount.setScale(currency.getDefaultFractionDigits(), RoundingMode.HALF_UP);
-        amount.multiply(new BigDecimal(pow(currency.getDefaultFractionDigits())));
-        return new Monetary(amount.longValueExact(), currency);
-
+        return Monetary.fromString(amount.getText(), Currency.getInstance("EUR"));
     }
 
     private String getName() throws Exception {
-        String name = this.description.getText();
-        if ("".equals(name.strip())) {
-            throw new Exception("Name must not be empty");
+        String name = this.description.getText().strip();
+        if ("".equals(name)) {
+            throw new Exception("Name must be specified");
         }
         return name;
     }
@@ -297,7 +343,81 @@ public class ExpenseCtrl {
         return selected;
     }
 
-    // private Set<Participant> validateSplitBetween() throws Exception {
-    // }
+    /**
+     * Adds a tag to the listView.
+     */
+    public void addTag() {
+        ExpenseType tag = types.getSelectionModel().getSelectedItem();
+        if(!selectedTypesObs.contains(tag)) selectedTypesObs.add(tag);
+        initTypes();
+    }
 
+    private void initTypes() {
+        var cb = new Callback<ListView<ExpenseType>, ListCell<ExpenseType>>() {
+            @Override
+            public ListCell<ExpenseType> call(ListView<ExpenseType> listView) {
+                return new ListCell<ExpenseType>() {
+                    @Override
+                    protected void updateItem(ExpenseType item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item == null || empty) {
+                            setGraphic(null);
+                            setBackground(null);
+                            return;
+                        }
+
+                        HBox hBox = new HBox(5);
+                        hBox.setAlignment(Pos.CENTER_LEFT);
+                        Text text = new Text(item.getName());
+                        Button deleteButton = new Button();
+                        deleteButton.setOnAction(event -> {
+                            listView.getItems().remove(item);
+                            selectedTypesObs.remove(item);
+                        });
+                        deleteButton.setAlignment(Pos.CENTER);
+
+                        HBox.setHgrow(deleteButton, Priority.ALWAYS);
+                        Region region = new Region();
+                        HBox.setHgrow(region, Priority.ALWAYS);
+                        attachImage(deleteButton, "/assets/circle-xmark-solid.png", 15, 15);
+                        deleteButton.setStyle("-fx-background-color: transparent; " +
+                                "-fx-padding: 0; -fx-border: none;");
+                        deleteButton.setOnMouseEntered(event ->
+                                deleteButton.setCursor(Cursor.HAND));
+                        deleteButton.setOnMouseExited(event ->
+                                deleteButton.setCursor(Cursor.DEFAULT));
+                        hBox.getChildren().addAll(text, region, deleteButton);
+                        setGraphic(hBox);
+                        setBackground(new Background(new BackgroundFill(Color.web(item.getColor()),
+                                new CornerRadii(20), Insets.EMPTY)));
+                    }
+                };
+            }
+        };
+        selectedTags.setStyle("-fx-cell-size: 30px; -fx-spacing: 10px;");
+        selectedTags.setCellFactory(cb);
+        selectedTags.setItems(selectedTypesObs);
+    }
+
+    /**
+     * Attaches an image to a button
+     * @param but the button to attach to
+     * @param url the url to the image
+     * @param height the height of the image
+     * @param width the width of the image
+     */
+    public void attachImage(Button but, String url, float height, float width) {
+        URL imageUrl = getClass().getResource(url);
+        if (imageUrl != null) {
+            Image image = new Image(imageUrl.toExternalForm());
+            ImageView imageView = new ImageView(image);
+            imageView.setFitHeight(height);
+            imageView.setFitWidth(width);
+            imageView.setPickOnBounds(true);
+            imageView.setPreserveRatio(true);
+            but.setGraphic(imageView);
+        } else {
+            System.out.println("Image URL is null. Check the path to the image file.");
+        }
+    }
 }

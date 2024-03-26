@@ -2,17 +2,13 @@ package server.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import commons.Admin;
 import commons.Event;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import server.BasicAuthParser;
-import server.database.AdminRepository;
-import server.database.EventRepository;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,20 +19,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/events")
 public class EventController {
 
-    private final EventRepository repo;
-
-    private final AdminRepository adminRepository;
+    private final server.services.EventService eventService;
 
     /**
      * Create a new event controller. This controller contains all api endpoints that have to do
      * with events.
      *
-     * @param repo The repository used for creating, reading, updating and deleting events.
-     * @param adminRepository The repository used for checking authentication.
+     * @param eventService
      */
-    public EventController(EventRepository repo, AdminRepository adminRepository) {
-        this.repo = repo;
-        this.adminRepository = adminRepository;
+    public EventController(server.services.EventService eventService) {
+        this.eventService = eventService;
     }
 
     /**
@@ -49,10 +41,11 @@ public class EventController {
     public ResponseEntity<List<Event>> getAll(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
         // This is a protected API endpoint.
-        if (!isAuthenticated(auth)) {
+        List<Event> events = eventService.getAllEvents();
+        if (!eventService.isAuthenticated(auth)) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(repo.findAll());
+        return ResponseEntity.ok(events);
     }
 
     /**
@@ -62,7 +55,7 @@ public class EventController {
      */
     @GetMapping("/jsonDump")
     public ResponseEntity<String> getJsonDump() {
-        List<Event> events = repo.findAll();
+        List<Event> events = eventService.getAllEvents();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         try {
@@ -89,10 +82,9 @@ public class EventController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Event> getById(@PathVariable("id") String id) {
-        if (isNullOrEmpty(id) || !repo.existsByInviteCodeEqualsIgnoreCase(id)) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(repo.findById(id).get());
+        Optional<Event> optional = eventService.getEventByInviteCode(id);
+        return optional.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
     /**
@@ -104,21 +96,11 @@ public class EventController {
     @PostMapping(path = {"", "/"})
     public ResponseEntity<Event> add(@RequestBody Event event) {
         // NOTE: The participant list must be empty, people can only be added to an event by using
-        // the invite code.
-        if (isNullOrEmpty(event.getName()) || event.getDateTime() == null
-                || (event.getParticipants() != null && !event.getParticipants().isEmpty())) {
-            return ResponseEntity.badRequest().build();
-        }
 
-        // Generate an invite code
-        event.generateInviteCode();
-        // Check if the invite code is unique
-        while (repo.existsByInviteCodeEqualsIgnoreCase(event.getInviteCode())) {
-            event.generateInviteCode();
-        }
-
-        Event saved = repo.save(event);
-        return ResponseEntity.ok(saved);
+        // the invite code. (checked in service)
+        Optional<Event> saved = eventService.createEvent(event);
+        return saved.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
     /**
@@ -131,23 +113,9 @@ public class EventController {
     @PutMapping(path = {"/{id}"})
     public ResponseEntity<Event> update(@PathVariable("id") String id,
             @RequestBody Event updatedEvent) {
-        if (isNullOrEmpty(updatedEvent.getName()) || updatedEvent.getDateTime() == null
-                || !id.equals(updatedEvent.getInviteCode())) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        return repo.findById(id).map(existingEvent -> {
-            existingEvent.setName(updatedEvent.getName());
-            existingEvent.setDateTime(updatedEvent.getDateTime());
-            existingEvent.setLastUpdateTime(LocalDateTime.now());
-            if (updatedEvent.getParticipants() != null) {
-                existingEvent.getParticipants().clear();
-                existingEvent.getParticipants().addAll(updatedEvent.getParticipants());
-            }
-
-            Event savedEvent = repo.save(existingEvent);
-            return ResponseEntity.ok(savedEvent);
-        }).orElse(ResponseEntity.notFound().build());
+        Optional<Event> optionalUpdatedEvent = eventService.updateEvent(id, updatedEvent);
+        return optionalUpdatedEvent.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     /**
@@ -160,42 +128,15 @@ public class EventController {
     @DeleteMapping(path = {"/{id}"})
     public ResponseEntity<String> delete(@PathVariable("id") String id,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
-        if (isNullOrEmpty(id) || !repo.existsByInviteCodeEqualsIgnoreCase(id)) {
-            return ResponseEntity.badRequest().build();
-        }
-
         // This is a protected API endpoint.
-        if (!isAuthenticated(auth)) {
+        if (!eventService.isAuthenticated(auth)) {
             return ResponseEntity.badRequest().build();
         }
-
-        repo.deleteById(id);
+        Optional<Event> optional = eventService.deleteEvent(id);
+        if (optional.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok("Deleted");
     }
 
-    /**
-     * Check whether the given auth header is valid, and the password matches.
-     *
-     * @param authHeader The auth header to check.
-     * @return true if the login credentials are correct, false otherwise.
-     */
-    private boolean isAuthenticated(String authHeader) {
-        if (isNullOrEmpty(authHeader)) {
-            return false;
-        }
-        var login = BasicAuthParser.parse(authHeader);
-        if (login == null) {
-            return false;
-        }
-        String hash = login.getPassword();
-
-        // Check if the admin exists and the password matches.
-        Admin admin = adminRepository.findById(login.getUsername()).orElse(null);
-
-        return admin != null && hash.equals(admin.getPassword());
-    }
-
-    private static boolean isNullOrEmpty(String s) {
-        return s == null || s.isEmpty();
-    }
 }

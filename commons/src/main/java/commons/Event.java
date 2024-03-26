@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
+import java.awt.*;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.List;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -27,6 +29,51 @@ public class Event {
     @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private Set<Participant> participants;
 
+    @OneToMany(fetch = FetchType.EAGER,
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE },
+            mappedBy = "event")
+    @JsonManagedReference
+    private Set<ExpenseType> tags;
+
+    @OneToMany(fetch = FetchType.EAGER,
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE },
+            mappedBy = "event")
+    @JsonManagedReference
+    private Set<Expense> expenses;
+
+    /**
+     * Adds new expense type.
+     * @param type tag to be added.
+     */
+    public void addType(ExpenseType type) {
+        tags.add(type);
+    }
+
+    /**
+     * Deletes an expense type.
+     * @param type tag to be deleted.
+     */
+    public void deleteType(ExpenseType type) {
+        tags.remove(type);
+    }
+
+    /**
+     * Getter of the tags.
+     *
+     * @return all the tags.
+     */
+    public Set<ExpenseType> getTags() {
+        return tags;
+    }
+
+    /**
+     * Setter of the tags.
+     * @param tags new tags.
+     */
+    public void setTags(Set<ExpenseType> tags) {
+        this.tags = tags;
+    }
+
     /**
      * Get expenses with this event
      * 
@@ -45,12 +92,6 @@ public class Event {
         this.expenses = expenses;
     }
 
-    @OneToMany(fetch = FetchType.EAGER,
-        cascade = { CascadeType.PERSIST, CascadeType.MERGE },
-        mappedBy = "event")
-    @JsonManagedReference
-    private Set<Expense> expenses;
-
     /**
      * Create an Event with the given details.
      *
@@ -58,15 +99,17 @@ public class Event {
      * @param name         The name/title of the event.
      * @param dateTime     The date and time of the event.
      * @param participants A set of the participants in the event.
+     * @param tags         A set of the expense types in the event.
      */
     public Event(String inviteCode, String name, LocalDateTime dateTime,
-            Set<Participant> participants) {
+            Set<Participant> participants, Set<ExpenseType> tags) {
         this.name = name;
         this.inviteCode = inviteCode;
         this.dateTime = dateTime;
         this.participants = participants;
         this.creationTime = LocalDateTime.now();
         this.lastUpdateTime = LocalDateTime.now();
+        this.tags = tags;
     }
 
     /**
@@ -225,7 +268,9 @@ public class Event {
         return Objects.equals(getName(), event.getName())
                 && Objects.equals(getInviteCode(), event.getInviteCode())
                 && Objects.equals(getDateTime(), event.getDateTime())
-                && Objects.equals(getParticipants(), event.getParticipants());
+                && Objects.equals(getParticipants(), event.getParticipants())
+                && Objects.equals(getTags(), event.getTags())
+                && Objects.equals(getExpenses(), event.getExpenses());
     }
 
     /**
@@ -259,12 +304,12 @@ public class Event {
                 Map<Participant, Participant> currentMap = new HashMap<Participant, Participant>();
                 currentMap.put(iteratorDebtors.next(), creditor);
                 Monetary currentMonetary = new Monetary(amount);
-                    if (allDebts.get(currentMap) == null) {
-                        allDebts.put(currentMap, currentMonetary);
-                    } else {
-                        Monetary newMonetary = allDebts.get(currentMap);
-                        allDebts.put(currentMap, Monetary.add(currentMonetary, newMonetary));
-                    }
+                if (allDebts.get(currentMap) == null) {
+                    allDebts.put(currentMap, currentMonetary);
+                }else {
+                    Monetary newMonetary = allDebts.get(currentMap);
+                    allDebts.put(currentMap, Monetary.add(currentMonetary, newMonetary));
+                }
 
             }
         }

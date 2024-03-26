@@ -287,9 +287,7 @@ public class MainCtrl {
      * @param edit         The expense to edit. Pass null to create a new one
      */
     public void showExpense(Event ev, Participant selectedItem, Expense edit) {
-        if (ev != expenseCtrl.getEvent()) {
-            expenseCtrl.setEvent(ev);
-        }
+        expenseCtrl.setEvent(ev);
         expenseCtrl.setUpdateExpense(edit);
         primaryStage.setTitle((edit == null ? "Add" : "Edit").concat(" Expense"));
         primaryStage.setScene(expense);

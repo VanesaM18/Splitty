@@ -26,24 +26,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import server.database.AdminRepository;
+import server.services.AdminService;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
 
-    private final AdminRepository repo;
+    private final AdminService adminService;
 
     /**
      * Create a new admin controller.
      * This controller contains all api endpoints that have to do with admin.
      *
-     * @param repo The repository used for creating, reading, updating and deleting admin.
+     * @param adminService Service providing functionality for
+     *                     creating, reading, updating and deleting admin.
      */
-    public AdminController(AdminRepository repo) {
-        this.repo = repo;
+    public AdminController(AdminService adminService) {
+        this.adminService = adminService;
     }
 
     /**
@@ -52,7 +54,7 @@ public class AdminController {
      */
     @GetMapping(path = { "", "/" })
     public List<Admin> getAll() {
-        return repo.findAll();
+        return adminService.getAllAdmins();
     }
 
     /**
@@ -62,11 +64,10 @@ public class AdminController {
      */
     @GetMapping("/{username}")
     public ResponseEntity<Admin> getByUsername(@PathVariable("username") String username) {
-        if (username.isEmpty() || !repo.existsById(username)) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(repo.findById(username).get());
+        Optional<Admin> admin = adminService.getAdminByUsername(username);
+        return admin.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().build());
     }
+
     /**
      * Adds and admin account if the username it's not taken already
      * @param admin the admin to be added
@@ -74,13 +75,9 @@ public class AdminController {
      */
     @PostMapping(path = { "", "/" })
     public ResponseEntity<Admin> add(@RequestBody Admin admin) {
-        if (admin.getUsername() == null || admin.getUsername().isEmpty()
-            || repo.existsById(admin.getUsername())) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        Admin saved = repo.save(admin);
-        return ResponseEntity.ok(saved);
+        Optional<Admin> optional = adminService.createAdmin(admin);
+        return optional.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
     /**
@@ -90,10 +87,10 @@ public class AdminController {
      */
     @DeleteMapping("/{username}")
     public ResponseEntity<String> delete(@PathVariable("username") String username) {
-        if (isNullOrEmpty(username) || !repo.existsById(username)) {
+        Optional<Admin> optional = adminService.deleteAdminByUsername(username);
+        if (optional.isEmpty()) {
             return ResponseEntity.badRequest().body("Can't delete the admin account");
         }
-        repo.deleteById(username);
         return ResponseEntity.ok().body("Deleted successfully");
     }
 
@@ -104,19 +101,12 @@ public class AdminController {
      */
     @PostMapping("login")
     public ResponseEntity<String> login(@RequestBody Admin admin) {
-        if (admin.getUsername().isEmpty() || !repo.existsById(admin.getUsername())) {
+        if (admin.getUsername().isEmpty()) {
             return ResponseEntity.badRequest().body("Missing credentials");
         }
-        Admin exist = repo.findById(admin.getUsername()).orElse(null);
-        if (exist != null && exist.getPassword().equals(admin.getPassword())) {
-            return ResponseEntity.ok().body("Login successfully");
-        }
-        return ResponseEntity.badRequest().body("Invalid credentials");
+        return adminService.authenticateAdmin(admin)
+                ? ResponseEntity.ok("Login successfully")
+                : ResponseEntity.badRequest().body("Invalid credentials");
     }
-    /**
-     *  Checks if a string is null or empty
-     */
-    private static boolean isNullOrEmpty(String s) {
-        return s == null || s.isEmpty();
-    }
+
 }
