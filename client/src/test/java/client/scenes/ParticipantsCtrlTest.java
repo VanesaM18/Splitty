@@ -28,7 +28,7 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(ApplicationExtension.class)
 public class ParticipantsCtrlTest {
     Set<Participant> participants = new HashSet<>();
-    private final Event event = new Event("testCode", "name", LocalDateTime.now(), participants);
+    private final Event event = new Event("testCode", "name", LocalDateTime.now(), participants, new HashSet<>());
 
     Pane pane;
     ParticipantsCtrl controller;

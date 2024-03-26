@@ -18,7 +18,7 @@ class EventTest {
 
     @BeforeEach
     void setup() {
-        event = new Event("ABCDEF","Test Event", dateTime, new HashSet<>());
+        event = new Event("ABCDEF","Test Event", dateTime, new HashSet<>(), new HashSet<>());
     }
 
     @Test
@@ -92,28 +92,28 @@ class EventTest {
 
     @Test
     void testEquals() {
-        Event event2 = new Event("ABCDEF", "Test Event", dateTime, new HashSet<>());
+        Event event2 = new Event("ABCDEF", "Test Event", dateTime, new HashSet<>(), new HashSet<>());
 
         assertEquals(event, event2);
     }
 
     @Test
     void testNotEquals() {
-        Event event2 = new Event("ABCDEF", "Different name", dateTime, new HashSet<>());
+        Event event2 = new Event("ABCDEF", "Different name", dateTime, new HashSet<>(), new HashSet<>());
 
         assertNotEquals(event, event2);
     }
 
     @Test
     void testHashCode() {
-        Event event2 = new Event("ABCDEF", "Test Event", dateTime, new HashSet<>());
+        Event event2 = new Event("ABCDEF", "Test Event", dateTime, new HashSet<>(), new HashSet<>());
 
         assertEquals(event.hashCode(), event2.hashCode());
     }
 
     @Test
     void paymentsToDebt() {
-        Event event1 = new Event("WDKFDLS", "Event1", dateTime, new HashSet<>());
+        Event event1 = new Event("WDKFDLS", "Event1", dateTime, new HashSet<>(), new HashSet<>());
         Participant participant1 = new Participant("participant1", "email1", "iban1", "bic1");
         Participant participant2 = new Participant("participant2", "email2", "iban2", "bic2");
         Participant participant3 = new Participant("participant3", "email3", "iban3", "bic3");
