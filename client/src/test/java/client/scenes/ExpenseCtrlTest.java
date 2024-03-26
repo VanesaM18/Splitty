@@ -126,10 +126,10 @@ class ExpenseCtrlTest {
         robot.clickOn("Ok");
 
         Expense expectedExpense = new Expense(event, "name", creator, new Monetary(1000), now, event.getParticipants());
+        expectedExpense.setTags(new HashSet<>());
         // NOTE: Use Mockito.eq since we cannot get the same instance of monetary, so we
-        // must check
-        // for equality, not them being the same instance.
-        // Mockito.verify(serverUtils, Mockito.times(1)).addExpense(Mockito.eq(expectedExpense));
+        // must check for equality, not them being the same instance.
+        Mockito.verify(serverUtils, Mockito.times(1)).addExpense(Mockito.eq(expectedExpense));
     }
 
     @Test
