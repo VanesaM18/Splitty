@@ -11,10 +11,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.websocket.server.ServerEndpoint;
-import server.api.AdminController;
-import server.api.EventController;
-import server.api.ExpenseController;
-import server.api.ParticipantController;
+import server.api.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +33,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private ParticipantController participantController;
     @Autowired
     private ExpenseController expenseController;
+    @Autowired
+    private ExpenseTypeController expenseTypeController;
 
     /**
      * Creates a class for handling the websocket connection
@@ -115,6 +114,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
             || endPoint.contains("/participants")) {
             updateClients(session, request);
         }
+        if(endPoint.contains("/expense_type")) {
+            handleExpenseTypes(session, request, request.getMethod());
+        }
     }
 
     /**
@@ -181,6 +183,25 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
 
     }
+
+    private void handleExpenseTypes(WebSocketSession session,
+                                    WebSocketMessage request, String method) throws Exception {
+        switch (method) {
+            case "POST" -> handleAddExpenseType(session, request);
+            //case "PUT" ->
+            //case "GET" ->
+        }
+    }
+
+    private void handleAddExpenseType(WebSocketSession session,
+                                      WebSocketMessage request) throws Exception {
+        ExpenseType tag = objectMapper.convertValue(request.getData(), ExpenseType.class);
+        String id = objectMapper.convertValue(request.getParameters().get(0), String.class);
+
+        String res = expenseTypeController.add(id, tag).getBody();
+        returnResult(session, request, res);
+    }
+
 
     /**
      * Send requests to refresh views to all clients that are in the same event as

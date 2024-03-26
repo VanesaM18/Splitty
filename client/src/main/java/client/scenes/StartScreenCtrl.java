@@ -6,6 +6,7 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 
 import commons.Event;
+import commons.ExpenseType;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -26,6 +27,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.util.Callback;
 
+import java.awt.*;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -130,9 +132,23 @@ public class StartScreenCtrl implements Initializable {
             return;
         }
 
-        Event event = new Event( "ABCDEF", eventName, LocalDateTime.now(), new HashSet<>());
+        Event event = new Event( "ABCDEF", eventName, LocalDateTime.now(),
+                new HashSet<>(), new HashSet<>());
         event.generateInviteCode();
         event = server.addEvent(event);
+
+        ExpenseType food = new ExpenseType("food", "#5bf562", event);
+        server.addExpenseType(food);
+        event.addType(food);
+
+        ExpenseType fees = new ExpenseType("entrance fees", "#5ba0f5", event);
+        server.addExpenseType(fees);
+        event.addType(fees);
+
+        ExpenseType travel = new ExpenseType("travel", "#f7596c", event);
+        server.addExpenseType(travel);
+        event.addType(travel);
+
         lastEvent = event.getInviteCode();
         server.sendUpdateStatus(lastEvent);
         updateConfig();

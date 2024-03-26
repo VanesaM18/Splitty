@@ -3,6 +3,7 @@ package client.scenes;
 import static com.google.inject.Guice.createInjector;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -25,7 +26,7 @@ import javafx.stage.Stage;
 @ExtendWith(ApplicationExtension.class)
 class InviteScreenCtrlTest {
 
-    private final Event event = new Event("testCode", "name", LocalDateTime.now(), Set.of());
+    private final Event event = new Event("testCode", "name", LocalDateTime.now(), Set.of(), new HashSet<>());
 
     Pane pane;
     InviteScreenCtrl controller;

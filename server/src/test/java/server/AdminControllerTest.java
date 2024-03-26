@@ -11,7 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import server.api.AdminController;
-import server.database.AdminRepository;
+import server.services.AdminService;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -26,7 +26,7 @@ public class AdminControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private AdminRepository adminRepository;
+    private AdminService adminService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -39,7 +39,7 @@ public class AdminControllerTest {
 
     @Test
     void getAllAdminsShouldReturnAdminList() throws Exception {
-        Mockito.when(adminRepository.findAll()).thenReturn(Arrays.asList(admin));
+        Mockito.when(adminService.getAllAdmins()).thenReturn(Arrays.asList(admin));
 
         mockMvc.perform(get("/api/admin"))
             .andExpect(status().isOk())
@@ -48,8 +48,7 @@ public class AdminControllerTest {
 
     @Test
     void getAdminByUsernameShouldReturnAdmin() throws Exception {
-        Mockito.when(adminRepository.existsById(admin.getUsername())).thenReturn(true);
-        Mockito.when(adminRepository.findById(admin.getUsername())).thenReturn(Optional.of(admin));
+        Mockito.when(adminService.getAdminByUsername(admin.getUsername())).thenReturn(Optional.of(admin));
 
         mockMvc.perform(get("/api/admin/{username}", admin.getUsername()))
             .andExpect(status().isOk())
@@ -58,8 +57,7 @@ public class AdminControllerTest {
 
     @Test
     void addAdminShouldReturnSavedAdmin() throws Exception {
-        Mockito.when(adminRepository.existsById(admin.getUsername())).thenReturn(false);
-        Mockito.when(adminRepository.save(any(Admin.class))).thenReturn(admin);
+        Mockito.when(adminService.createAdmin(any(Admin.class))).thenReturn(Optional.of(admin));
 
         mockMvc.perform(post("/api/admin")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -70,7 +68,7 @@ public class AdminControllerTest {
 
     @Test
     void deleteAdminShouldReturnSuccessStatus() throws Exception {
-        Mockito.when(adminRepository.existsById(admin.getUsername())).thenReturn(true);
+        Mockito.when(adminService.deleteAdminByUsername(admin.getUsername())).thenReturn(Optional.of(admin));
 
         mockMvc.perform(delete("/api/admin/{username}", admin.getUsername()))
             .andExpect(status().isOk())
@@ -79,7 +77,7 @@ public class AdminControllerTest {
 
     @Test
     void getAdminByNonExistentUsernameShouldReturnNotFound() throws Exception {
-        Mockito.when(adminRepository.existsById("nonexistent")).thenReturn(false);
+        Mockito.when(adminService.getAdminByUsername("nonexistent")).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/api/admin/{username}", "nonexistent"))
             .andExpect(status().isBadRequest());
@@ -87,7 +85,7 @@ public class AdminControllerTest {
 
     @Test
     void addAdminWithExistingUsernameShouldReturnBadRequest() throws Exception {
-        Mockito.when(adminRepository.existsById(admin.getUsername())).thenReturn(true);
+        Mockito.when(adminService.createAdmin(any(Admin.class))).thenReturn(Optional.empty());
 
         mockMvc.perform(post("/api/admin")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -97,7 +95,8 @@ public class AdminControllerTest {
 
     @Test
     void deleteNonExistentAdminShouldReturnBadRequest() throws Exception {
-        Mockito.when(adminRepository.existsById("nonexistent")).thenReturn(false);
+        Mockito.when(adminService.deleteAdminByUsername("nonexistent")).thenReturn(Optional.empty());
+
 
         mockMvc.perform(delete("/api/admin/{username}", "nonexistent"))
             .andExpect(status().isBadRequest());
@@ -115,8 +114,7 @@ public class AdminControllerTest {
 
     @Test
     void loginWithValidCredentialsShouldReturnSuccess() throws Exception {
-        Mockito.when(adminRepository.existsById(admin.getUsername())).thenReturn(true);
-        Mockito.when(adminRepository.findById(admin.getUsername())).thenReturn(Optional.of(admin));
+        Mockito.when(adminService.authenticateAdmin(admin)).thenReturn(true);
 
         mockMvc.perform(post("/api/admin/login")
                 .contentType(MediaType.APPLICATION_JSON)

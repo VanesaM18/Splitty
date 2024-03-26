@@ -58,7 +58,7 @@ class StartScreenCtrlTest {
         configLoader = Mockito.mock(ConfigLoader.class);
 
         Mockito.when(configLoader.getProperty("recentEvents")).thenReturn(List.of("testCode"));
-        Event event = new Event("testCode", "abc", LocalDateTime.now(), new HashSet<>());
+        Event event = new Event("testCode", "abc", LocalDateTime.now(), new HashSet<>(),new HashSet<>());
         Mockito.when(serverUtils.getEventById("testCode")).thenReturn(event);
 
         // We need to load the fxml file in this complicated manner because we need to give it
@@ -90,7 +90,7 @@ class StartScreenCtrlTest {
         robot.clickOn(eventName);
         robot.type(KeyCode.A, KeyCode.B, KeyCode.C);
 
-        Event event = new Event("testCode", "abc", LocalDateTime.now(), new HashSet<>());
+        Event event = new Event("testCode", "abc", LocalDateTime.now(), new HashSet<>(), new HashSet<>());
         Mockito.when(serverUtils.addEvent(Mockito.any())).thenReturn(event);
 
         robot.clickOn("Create");
@@ -108,7 +108,7 @@ class StartScreenCtrlTest {
         robot.clickOn(eventName);
         robot.type(KeyCode.T, KeyCode.E, KeyCode.S, KeyCode.T);
 
-        Event event = new Event("test", "abc", LocalDateTime.now(), new HashSet<>());
+        Event event = new Event("test", "abc", LocalDateTime.now(), new HashSet<>(), new HashSet<>());
         Mockito.when(serverUtils.getEventById("test")).thenReturn(event);
 
         robot.clickOn("Join");

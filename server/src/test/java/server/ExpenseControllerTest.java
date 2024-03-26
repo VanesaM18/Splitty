@@ -50,7 +50,7 @@ public class ExpenseControllerTest {
         Participant participant = new Participant("John Doe", "john.doe@example.com", "IBAN123", "BIC456");
         participant.setId(1L);
         testExpense = new Expense(
-                new Event("ABCDEF", "Event 1", LocalDateTime.now(), new HashSet<>()),
+                new Event("ABCDEF", "Event 1", LocalDateTime.now(), new HashSet<>(), new HashSet<>()),
                 "Foo",
                 participant,
                 new Monetary(1000, "USD"),
