@@ -111,13 +111,8 @@ class EventTest {
         assertEquals(event.hashCode(), event2.hashCode());
     }
     @Test
-<<<<<<< HEAD
-    void finalCalculationTest(){
-        Event event1 = new Event("WDKFDLS", "Event1", dateTime, new HashSet<>());
-=======
     void paymentsToDebt() {
         Event event1 = new Event("WDKFDLS", "Event1", dateTime, new HashSet<>(), new HashSet<>());
->>>>>>> main
         Participant participant1 = new Participant("participant1", "email1", "iban1", "bic1");
         Participant participant2 = new Participant("participant2", "email2", "iban2", "bic2");
         Participant participant3 = new Participant("participant3", "email3", "iban3", "bic3");
