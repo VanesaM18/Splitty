@@ -259,13 +259,13 @@ public class Event {
                 Map<Participant, Participant> currentMap = new HashMap<Participant, Participant>();
                 currentMap.put(iteratorDebtors.next(), creditor);
                 Monetary currentMonetary = new Monetary(amount);
+                    if (allDebts.get(currentMap) == null) {
+                        allDebts.put(currentMap, currentMonetary);
+                    } else {
+                        Monetary newMonetary = allDebts.get(currentMap);
+                        allDebts.put(currentMap, Monetary.add(currentMonetary, newMonetary));
+                    }
 
-                if(allDebts.get(currentMap) == null) {
-                    allDebts.put(currentMap, currentMonetary);
-                } else {
-                    Monetary newMonetary = allDebts.get(currentMap);
-                    allDebts.put(currentMap, Monetary.add(currentMonetary, newMonetary));
-                }
             }
         }
         return  allDebts;
@@ -307,10 +307,12 @@ public class Event {
         for (Participant participant : setParticipants) {
             long amount = 0;
             for (Debt debt : totalDebts) {
-                if (debt.getDebtor().equals(participant)) {
-                    amount -= debt.getAmount().getInternalValue();
+                if(debt.getDebtor().equals(participant) & debt.getCreditor().equals(participant)){
+                    amount += 0;
                 } else if (debt.getCreditor().equals(participant)) {
                     amount += debt.getAmount().getInternalValue();
+                } else if (debt.getDebtor().equals(participant)) {
+                    amount -= debt.getAmount().getInternalValue();
                 }
             }
             debtPP.put(participant, amount);

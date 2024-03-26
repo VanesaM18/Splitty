@@ -423,10 +423,12 @@ public class ServerUtils {
             List<Expense> relevantExpenses = new ArrayList<>();
             for (Expense ex : expenses) {
                 if (ex.getCreator().equals(debt.getCreditor()) &&
-                    ex.getSplitBetween().contains(debt.getDebtor())) {
+                        ex.getSplitBetween().contains(debt.getDebtor())) {
                     relevantExpenses.add(ex);
                 }
             }
+            removeDoubleExpense(expenses, relevantExpenses);
+
             for (Expense ex : relevantExpenses) {
                 long value = ex.getAmount().getInternalValue();
                 value = value - (value / ex.getSplitBetween().size());
@@ -443,20 +445,19 @@ public class ServerUtils {
         }
     }
 
-    public List<Expense> removeExpense(Event e){
-        List<Expense> expenses = getAllExpensesFromEvent(e);
+    public static void removeDoubleExpense(List<Expense> expenses, List<Expense> relevantExpenses) {
         for (Expense ex : expenses) {
             for (Expense exp : expenses) {
-                if(!(ex.getCreator().equals(exp.getSplitBetween())
+                if (!(ex.getCreator().equals(exp.getSplitBetween())
                         && exp.getCreator().equals(ex.getSplitBetween())
-                        && ex.getAmount().equals(exp.getAmount()))){
-                    expenses.remove(ex);
-                    expenses.remove(exp);
+                        && ex.getAmount().equals(exp.getAmount()))) {
+                    relevantExpenses.add(ex);
+                    relevantExpenses.add(exp);
                 }
             }
         }
-        return expenses;
     }
+
 
     /**
      * Announce all client that open debts view needs to be updated for an event
