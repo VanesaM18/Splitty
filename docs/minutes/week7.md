@@ -31,14 +31,14 @@ Attendees: Nathan Huisman, Noah Swartjes, Ruben van der Giessen, Matei Aruxandei
     - Noah presented an app logo, which we can use.
     - Shortcuts
       - They need to be explained in the README.md.
-      - A message could be shown when hovering certain buttons.
+      - A message could be shown when hovering certain buttons. This can be, for example, like an 'info' popup with instructions. 
     - Error messages should be shown in the terminal.
   - Testing
     - Indirect - user-based manner, usage tests, how things work together.
   - Previous week
-    - Andreea implemented connecting to a localhost with another port.
+    - Andreea - implemented connecting to a server of the user's choice, added services for the server.
     - Nathan - edit/delete/sync expenses - delete has some more things to be fixed.
-    - Ruben, Vanesa - A lot of tests were added - UI ones including
+    - Ruben, Vanesa, Andreea - A lot of tests were added - UI ones including
     - Matei - long polling - sometimes connection doesn't get closed, but still works.
     - Noah, Matei - Open debts - almost finished, deletion remains.
     - Vanesa - Basic tags are added.
