@@ -71,10 +71,15 @@ public class OpenDebtsCtrl {
                         + " to " + debt.getCreditor().getName());
 
                 VBox content = new VBox();
-                Label debtLabel = new Label("Bank information available, transfer the money to:\n"
+                Label debtLabel = null;
+                if (debt.getCreditor().getIban().isEmpty()) {
+                    debtLabel = new Label("Bank information not available");
+                } else {
+                    debtLabel = new Label("Bank information available, transfer the money to:\n"
                         + "Account holder: " + debt.getCreditor().getName()
                         + "\nIBAN: " + debt.getCreditor().getIban()
                         + "\nBIC: " + debt.getCreditor().getBic());
+                }
                 content.getChildren().add(debtLabel);
                 titledPane.setContent(content);
 
