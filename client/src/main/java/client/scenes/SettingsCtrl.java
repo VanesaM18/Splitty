@@ -6,11 +6,13 @@ import client.utils.language.LanguageProcessor;
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 
 public class SettingsCtrl {
     private final ServerUtils server;
@@ -77,16 +79,24 @@ public class SettingsCtrl {
             alert.showAndWait();
             return;
         }
-        server.setServerUrl(url);
-        configLoader.updateProperty("URL", url);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation");
+        alert.setHeaderText("Are you sure you want to proceed?");
+        alert.setContentText("Do you want to save these settings and proceed?");
 
-        Alert confirmationAlert = new Alert(Alert.AlertType.INFORMATION);
-        confirmationAlert.setTitle("URL Saved");
-        confirmationAlert.setHeaderText(null);
-        confirmationAlert.setContentText("URL has been saved.");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
 
-        confirmationAlert.showAndWait();
+            Alert confirmationAlert = new Alert(Alert.AlertType.INFORMATION);
+            confirmationAlert.setTitle("URL Saved");
+            confirmationAlert.setHeaderText(null);
+            confirmationAlert.setContentText("URL has been saved.");
 
-        goBack();
+            confirmationAlert.showAndWait();
+            server.setServerUrl(url);
+            configLoader.updateProperty("address", url);
+
+            goBack();
+        }
     }
 }
