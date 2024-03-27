@@ -154,10 +154,13 @@ public class InviteScreenCtrl {
      * Refresh the current view
      */
     public void refresh() {
-        eventNameLabel.setText(event.getName());
-        inviteCodeLabel.setText("Give people the following invite code: " + event.getInviteCode());
-        emailTextArea.setText("");
-        event = serverUtils.getEventById(event.getInviteCode());
+        if (event != null) {
+            eventNameLabel.setText(event.getName());
+            inviteCodeLabel.setText(
+                "Give people the following invite code: " + event.getInviteCode());
+            emailTextArea.setText("");
+            event = serverUtils.getEventById(event.getInviteCode());
+        }
     }
 
     /**
