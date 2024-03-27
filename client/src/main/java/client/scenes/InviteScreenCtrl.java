@@ -138,8 +138,8 @@ public class InviteScreenCtrl {
                 sendInvitesButton.setText("Send invites");
                 isSendingEmail = false;
                 updateSendInvitesButtonState();
+                refresh();
             });
-            refresh();
         }).start();
     }
 
