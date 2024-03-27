@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.EmailManager;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
@@ -20,6 +21,7 @@ import javafx.geometry.Insets;
 public class OpenDebtsCtrl {
     private final MainCtrl mainCtrl;
     private final ServerUtils server;
+    private final EmailManager emailManager;
     @FXML
     private VBox debtContainer;
     private Event e;
@@ -32,9 +34,10 @@ public class OpenDebtsCtrl {
      * @param server
      */
     @Inject
-    public OpenDebtsCtrl(MainCtrl mainCtrl, ServerUtils server) {
+    public OpenDebtsCtrl(MainCtrl mainCtrl, ServerUtils server, EmailManager emailManager) {
         this.mainCtrl = mainCtrl;
         this.server = server;
+        this.emailManager = emailManager;
     }
 
     /**
@@ -92,6 +95,27 @@ public class OpenDebtsCtrl {
                     server.deleteDebts(debt, e);
                     server.markDebtAsReceived(this.e.getInviteCode());
                 });
+
+                HBox sendReminder = new HBox();
+                if (this.emailManager.areCredentialsValid()) {
+                    if (!debt.getDebtor().getEmail().isEmpty()) {
+                        sendReminder.getChildren().add(new Label("Email configured: "));
+                        Button sendEmail = new Button(("send reminder"));
+                        sendEmail.setOnAction(event -> {
+                            this.emailManager.sendEmail(debt.getDebtor().getEmail(),
+                                "Payment reminder for " + e.getName(),
+                                "You own " + debt.getDebtor().getName() + " "
+                                    +  debt.getAmount().getCurrency().getSymbol()
+                                    + debt.getAmount().toString() + " to " +
+                                    debt.getDebtor().getName() + "\n You can pay him back using " +
+                                    "the details from the Splitty event and mark as received!");
+                        });
+                        sendReminder.getChildren().add(sendEmail);
+                    } else {
+                        sendReminder.getChildren().add(new Label("Email not configured"));
+                    }
+                }
+                content.getChildren().add(sendReminder);
 
                 hbox.getChildren().addAll(titledPane, markReceivedButton);
                 HBox.setMargin(titledPane, new Insets(10, 0, 0, 0));
