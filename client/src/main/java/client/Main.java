@@ -17,7 +17,6 @@ import static com.google.inject.Guice.createInjector;
 
 import client.scenes.*;
 
-import client.utils.EmailManager;
 import client.utils.SceneEnum;
 import client.utils.SceneManager;
 import com.google.inject.Injector;

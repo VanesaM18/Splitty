@@ -15,8 +15,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.StackPane;
 
-import java.util.List;
-
 public class InviteScreenCtrl {
 
     private final MainCtrl mainCtrl;
@@ -45,6 +43,9 @@ public class InviteScreenCtrl {
      * Controller responsible for showing the invite code.
      * 
      * @param mainCtrl An instance of MainCtrl for coordinating with the main controller.
+     * @param emailManager An instance of EmailManager for sending emails.
+     * @param configLoader An instance of ConfigLoader for getting the server address.
+     * @param serverUtils An instance of ServerUtils for coordinating with the server
      */
     @Inject
     public InviteScreenCtrl(MainCtrl mainCtrl, EmailManager emailManager,
@@ -57,6 +58,9 @@ public class InviteScreenCtrl {
         sendInvitesTooltip.setHideDelay(javafx.util.Duration.ZERO);
     }
 
+    /**
+     * Initializes the invite view with the required elements
+     */
     public void initialize() {
         emailTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             String[] emails = newValue.split("\n");
@@ -82,6 +86,9 @@ public class InviteScreenCtrl {
         updateSendInvitesButtonState();
     }
 
+    /**
+     * Updates the state of the invite button
+     */
     private void updateSendInvitesButtonState() {
         if (!emailManager.areCredentialsValid()) {
             sendInvitesTooltip.setText("Email credentials invalid");
@@ -98,6 +105,9 @@ public class InviteScreenCtrl {
         }
     }
 
+    /**
+     * Sends invites to all email address in the text field
+     */
     public void sendInvites() {
         if (emailTextArea.getText().trim().isEmpty() || !emailManager.areCredentialsValid()) {
             return;

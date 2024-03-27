@@ -32,7 +32,8 @@ public class OpenDebtsCtrl {
      * constructs open debts
      *
      * @param mainCtrl an instance of MainCtrl
-     * @param server
+     * @param server an instance of ServerUtils
+     * @param emailManager an instance of EmailManager
      */
     @Inject
     public OpenDebtsCtrl(MainCtrl mainCtrl, ServerUtils server, EmailManager emailManager) {
