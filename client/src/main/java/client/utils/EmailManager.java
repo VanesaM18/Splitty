@@ -42,22 +42,25 @@ public class EmailManager {
             return false;
         }
         boolean status = this.sendEmail(this.email, "Test", "Test for email configuration");
+        if (status) {
+            System.out.println("Creating email session");
+        } else {
+            System.out.println("Invalid credentials for session");
+        }
         valid =  "" + status;
         return status;
     }
 
     public boolean sendEmail(String to, String title, String body) {
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", this.getEmailProvider());
-        props.put("mail.smtp.port", "587");
-
-        String email = this.email;
-        String password = this.password;
-
         if (this.session == null) {
-            System.out.println("Creating session");
+            Properties props = new Properties();
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.host", this.getEmailProvider());
+            props.put("mail.smtp.port", "587");
+
+            String email = this.email;
+            String password = this.password;
             this.session = Session.getInstance(props,
                 new Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {
@@ -74,13 +77,13 @@ public class EmailManager {
                 InternetAddress.parse(to));
             message.setSubject(title);
             message.setText(body);
-
+            message.setRecipients(Message.RecipientType.CC,
+                InternetAddress.parse(email));
             Transport.send(message);
 
             status = true;
         } catch (MessagingException e) {
             status = false;
-            e.printStackTrace();
         }
         return status;
     }
