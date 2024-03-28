@@ -114,6 +114,7 @@ public class ManagementCtrl {
         MenuItem downloadJsonMenuItem = new MenuItem("Download JSON");
         downloadJsonMenuItem.setOnAction(ignored -> {
             Event event = (Event) eventsTable.getSelectionModel().getSelectedItem();
+            if (event == null) return;
 
             downloadJsonDumpForEvent(event);
         });
@@ -121,6 +122,7 @@ public class ManagementCtrl {
         MenuItem deleteMenuItem = new MenuItem("Delete");
         deleteMenuItem.setOnAction(ignored -> {
             Event event = (Event) eventsTable.getSelectionModel().getSelectedItem();
+            if (event == null) return;
 
             server.deleteEvent(event);
         });
