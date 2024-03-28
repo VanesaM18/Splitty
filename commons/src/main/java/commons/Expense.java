@@ -232,8 +232,14 @@ public class Expense {
         return creator;
     }
 
+    /**
+     * Removes expense type from the tags.
+     * @param tag type to be removed.
+     */
     public void removeTag(ExpenseType tag) {
-        if(tags.contains(tag)) tags.remove(tag);
+        if(tags.contains(tag)) {
+            tags.remove(tag);
+        }
     }
 
     /**

@@ -149,6 +149,10 @@ public class Event {
         this.dateTime = dateTime;
     }
 
+    /**
+     * Removes expense type from the tags.
+     * @param tag type to be removed.
+     */
     public void removeTag(ExpenseType tag) {
         tags.remove(tag);
         for(Expense expense : expenses) {

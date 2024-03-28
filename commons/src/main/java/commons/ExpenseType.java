@@ -2,7 +2,6 @@ package commons;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.awt.*;
@@ -93,12 +92,15 @@ public class ExpenseType {
 
     /**
      * Checks if another object is exactly the same as this one.
-     * @param o Object that needs to be checked.
+     * @param obj Object that needs to be checked.
      * @return Weather the given object is equal to this one.
      */
     @Override
-    public boolean equals(Object o) {
-        return EqualsBuilder.reflectionEquals(this, o);
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        ExpenseType other = (ExpenseType) obj;
+        return Objects.equals(this.id, other.id);
     }
 
     /**

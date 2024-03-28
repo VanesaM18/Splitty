@@ -307,6 +307,10 @@ public class MainCtrl {
         isInOpenDebt = b;
     }
 
+    /**
+     * Shows the expense type screen.
+     * @param ev event to be considered.
+     */
     public void showExpenseTypes(Event ev) {
         primaryStage.setTitle("Expense types");
         expenseTypeCtrl.setEvent(ev);

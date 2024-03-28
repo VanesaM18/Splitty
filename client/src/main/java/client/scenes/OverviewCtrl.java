@@ -414,4 +414,10 @@ public class OverviewCtrl {
         }
     }
 
+    /**
+     * Shows the tags screen.
+     */
+    public void showTags() {
+        mainCtrl.showExpenseTypes(ev);
+    }
 }

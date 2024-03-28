@@ -3,6 +3,7 @@ package client.scenes;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
+import commons.Expense;
 import commons.ExpenseType;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,9 +11,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -21,6 +20,7 @@ import javafx.scene.text.Text;
 import javafx.util.Callback;
 
 import java.net.URL;
+import java.util.Optional;
 
 public class ExpenseTypeCtrl {
     private Event event;
@@ -50,7 +50,7 @@ public class ExpenseTypeCtrl {
      * Goes back to the expense overview.
      */
     public void back() {
-        mainCtrl.showExpense(event, null, null);
+        mainCtrl.showOverviewEvent(event);
     }
 
     /**
@@ -62,6 +62,9 @@ public class ExpenseTypeCtrl {
         this.event = ev;
     }
 
+    /**
+     * Refreshes the expense type screen.
+     */
     public void refresh() {
         if (event == null) {
             return;
@@ -103,20 +106,14 @@ public class ExpenseTypeCtrl {
                             setBackground(null);
                             return;
                         }
-
                         HBox hBox = new HBox(5);
                         hBox.setAlignment(Pos.CENTER_LEFT);
                         Text text = new Text(item.getName());
                         Button deleteButton = new Button();
                         deleteButton.setOnAction(e -> {
-                            listView.getItems().remove(item);
-                            event.removeTag(item);
-                            server.updateEvent(event);
-                            item.setEvent(null);
-                            server.updateTag(item);
+                            deleteTag(listView, item);
                         });
                         deleteButton.setAlignment(Pos.CENTER);
-
                         HBox.setHgrow(deleteButton, Priority.ALWAYS);
                         Region region = new Region();
                         HBox.setHgrow(region, Priority.ALWAYS);
@@ -127,15 +124,12 @@ public class ExpenseTypeCtrl {
                                 deleteButton.setCursor(Cursor.HAND));
                         deleteButton.setOnMouseExited(event ->
                                 deleteButton.setCursor(Cursor.DEFAULT));
-
                         Button editButton = new Button();
-
                         editButton.setOnAction(event -> {
                             // listView.getItems().remove(item);
                             // remove from event
                         });
                         editButton.setAlignment(Pos.CENTER);
-
                         HBox.setHgrow(editButton, Priority.ALWAYS);
                         attachImage(editButton, "/assets/pen-solid.png", 15, 15);
                         editButton.setStyle("-fx-background-color: transparent; " +
@@ -155,6 +149,34 @@ public class ExpenseTypeCtrl {
         tags.setStyle("-fx-cell-size: 30px; -fx-spacing: 10px;");
         tags.setCellFactory(cb);
         tags.setItems(tagsObs);
+    }
+
+    private void deleteTag(ListView<ExpenseType> listView, ExpenseType item) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation required");
+        alert.setHeaderText("Deleting an expense type");
+        alert.setContentText(item.getName()
+                + " will de deleted.");
+
+        ButtonType confirm = new ButtonType("Confirm");
+        ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(confirm, cancel);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == confirm){
+            listView.getItems().remove(item);
+            event.removeTag(item);
+            server.updateEvent(event);
+            for (Expense expense : event.getExpenses()) {
+                server.updateExpense(expense);
+            }
+            item.setEvent(null);
+            server.updateTag(item);
+            alert.close();
+        } else {
+            alert.close();
+        }
     }
 
     /**

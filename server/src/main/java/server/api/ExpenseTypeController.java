@@ -1,7 +1,6 @@
 package server.api;
 
 import commons.Event;
-import commons.Expense;
 import commons.ExpenseType;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
@@ -49,10 +48,10 @@ public class ExpenseTypeController {
     }
 
     /**
-     * Get all the expenses belonging to an event
+     * Get all the expenses types from an event
      *
-     * @param eventId The id of the event containing the expenses
-     * @return The expenses belonging to the provided event or 404 if empty
+     * @param eventId The id of the event containing the expense types
+     * @return The expense types to the provided event or 404 if empty
      */
     @GetMapping("/by_event/{id}")
     public ResponseEntity<List<ExpenseType>> getByEvent(@PathVariable("id") String eventId) {
@@ -63,6 +62,11 @@ public class ExpenseTypeController {
         return ResponseEntity.ok(tags);
     }
 
+    /**
+     * Updates the content of certain expense type.
+     * @param tag tag to be changed.
+     * @return response with the changed expense type.
+     */
     @PutMapping("/")
     public ResponseEntity<ExpenseType> update(ExpenseType tag) {
         long id = tag.getId();
