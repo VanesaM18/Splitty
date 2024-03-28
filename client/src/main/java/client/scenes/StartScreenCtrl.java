@@ -185,7 +185,13 @@ public class StartScreenCtrl implements Initializable {
      */
     public void goToAdmin() {
         updateConfig();
-        mainCtrl.showLogin();
+
+        // If already authenticated, skip the login screen
+        if (ServerUtils.isAuthenticated()) {
+            mainCtrl.showManagementOverview();
+        } else {
+            mainCtrl.showLogin();
+        }
     }
     /**
      * Clears the fields
