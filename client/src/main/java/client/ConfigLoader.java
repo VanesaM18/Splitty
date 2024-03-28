@@ -46,6 +46,8 @@ public class ConfigLoader {
                 configMap.put("recentEvents", new ArrayList<String>());
                 configMap.put("language", Main.DEFAULT_LOCALE);
                 configMap.put("startUpShown", "false");
+                configMap.put("email", "");
+                configMap.put("password", "");
                 saveConfig();
             } else {
                 configMap = objectMapper.readValue(configPath.toFile(), new TypeReference<>() {});

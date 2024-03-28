@@ -231,6 +231,7 @@ public class MainCtrl {
             openDebtsCtrl.initialize(openDebtsCtrl.getEvent());
         } else {
             overviewEventCtrl.refresh();
+            inviteScreenCtrl.refresh();
         }
     }
 
