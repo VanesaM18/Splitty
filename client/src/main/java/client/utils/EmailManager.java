@@ -114,7 +114,8 @@ public class EmailManager {
      */
     private String getEmailProvider() {
         String smtpHost = "";
-        if (this.email.equals("@") || !this.email.contains("@")) {
+        if (this.email.equals("@") || !this.email.contains("@")
+            || this.email.split("@").length == 1) {
             return "smtp.gmail.com";
         }
         switch (this.email.split("@")[1]) {
