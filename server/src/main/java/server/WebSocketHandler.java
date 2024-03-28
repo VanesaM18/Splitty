@@ -305,6 +305,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
             String method) throws Exception {
         if ("GET".equals(method)) {
             handleGetEventById(session, request);
+        } else if ("DELETE".equals(method)) {
+            handleDeleteEventById(session, request);
         }
     }
 
@@ -338,6 +340,17 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
         ResponseEntity<Event> event = eventController.getById(id);
         returnResult(session, request, event.getBody());
+    }
+
+    private void handleDeleteEventById(WebSocketSession session, WebSocketMessage request)
+            throws IOException {
+        List<Object> parameters = request.getParameters();
+        String id = (String) request.getData();
+        String auth = request.getAuthHeader();
+
+        ResponseEntity<String> deletedEvent = eventController.delete(id, auth);
+        returnResult(session, request, deletedEvent.getBody());
+        return;
     }
 
     private void handleJsonDumpApi(WebSocketSession session,

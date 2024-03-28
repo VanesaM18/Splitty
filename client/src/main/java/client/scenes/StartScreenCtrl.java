@@ -27,7 +27,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.util.Callback;
 
-import java.awt.*;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
