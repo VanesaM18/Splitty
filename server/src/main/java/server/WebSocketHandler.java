@@ -222,7 +222,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             for (WebSocketSession ses : sessions) {
                 if (connectionToEvent.containsKey(ses)
                         && connectionToEvent.get(ses).equals(inviteCode)
-                        && ses != session) {
+                        && (ses != session || "DELETE".equals(request.getMethod()))) {
                     ses.sendMessage(convMessage);
                 }
             }

@@ -9,6 +9,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import client.utils.ServerUtils;
 import javafx.stage.FileChooser;
 
@@ -41,7 +43,7 @@ public class ManagementCtrl {
     @FXML
     private TableColumn<Event, String> lastActivityColumn;
     @FXML
-    private TableColumn<Event, Button> inviteCodeColumn;
+    private TableColumn<Event, String> inviteCodeColumn;
 
 
     /**
@@ -85,6 +87,8 @@ public class ManagementCtrl {
                 .collectingAndThen(Collectors.toList(), FXCollections::observableArrayList));
         this.eventsTable.getItems().setAll(events);
         this.titleColumn.setCellValueFactory(w -> new SimpleStringProperty(w.getValue().getName()));
+        this.inviteCodeColumn
+                .setCellValueFactory(w -> new SimpleStringProperty(w.getValue().getInviteCode()));
         this.creationDateColumn.setCellValueFactory(
                 w -> new SimpleStringProperty(formatDate.apply(w.getValue().getCreationTime())));
         this.lastActivityColumn.setCellValueFactory(
@@ -111,6 +115,17 @@ public class ManagementCtrl {
     private ContextMenu createContextMenu() {
         ContextMenu cm = new ContextMenu();
 
+        MenuItem copyInviteCodeMenuItem = new MenuItem("Copy invite code");
+        copyInviteCodeMenuItem.setOnAction(ignored -> {
+            Event event = (Event) eventsTable.getSelectionModel().getSelectedItem();
+            if (event == null) return;
+
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            ClipboardContent content = new ClipboardContent();
+            content.putString(event.getInviteCode());
+            clipboard.setContent(content);
+        });
+
         MenuItem downloadJsonMenuItem = new MenuItem("Download JSON");
         downloadJsonMenuItem.setOnAction(ignored -> {
             Event event = (Event) eventsTable.getSelectionModel().getSelectedItem();
@@ -124,10 +139,22 @@ public class ManagementCtrl {
             Event event = (Event) eventsTable.getSelectionModel().getSelectedItem();
             if (event == null) return;
 
-            server.deleteEvent(event);
+            // Ask for confirmation.
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation required");
+            alert.setHeaderText("Deleting an event");
+            alert.setContentText(event.getName() + " will de deleted.");
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                // Tell server we are viewing this event, so that we are sent a message on its
+                // deletion.
+                server.sendUpdateStatus(event.getInviteCode());
+                server.deleteEvent(event);
+            }
         });
 
-        cm.getItems().addAll(downloadJsonMenuItem, deleteMenuItem);
+        cm.getItems().addAll(copyInviteCodeMenuItem, downloadJsonMenuItem, deleteMenuItem);
 
         return cm;
     }

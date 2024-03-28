@@ -15,7 +15,7 @@
     <children>
       <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%management_title" wrappingWidth="153.97265625" />
+              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%management_title" wrappingWidth="575.5726623535156" />
               <TableView fx:id="eventsTable" prefHeight="263.0" prefWidth="554.0" VBox.vgrow="ALWAYS">
                   <columns>
                       <TableColumn fx:id="titleColumn" prefWidth="138.5" text="Title" />

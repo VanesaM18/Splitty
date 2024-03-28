@@ -232,6 +232,7 @@ public class MainCtrl {
         } else {
             overviewEventCtrl.refresh();
             inviteScreenCtrl.refresh();
+            managementCtrl.refresh();
         }
     }
 
