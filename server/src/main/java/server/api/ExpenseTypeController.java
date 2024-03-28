@@ -1,13 +1,16 @@
 package server.api;
 
 import commons.Event;
+import commons.Expense;
 import commons.ExpenseType;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.EventRepository;
 import server.database.ExpenseTypeRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/expense_type")
@@ -58,5 +61,32 @@ public class ExpenseTypeController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(tags);
+    }
+
+    @PutMapping("/")
+    public ResponseEntity<ExpenseType> update(ExpenseType tag) {
+        long id = tag.getId();
+        if (id < 0) {
+            return ResponseEntity.badRequest().build();
+        }
+        ExpenseType oldExpenseType;
+        try {
+            Optional<ExpenseType> wrapped = repo.findById(id);
+            if (!wrapped.isPresent()) {
+                return ResponseEntity.notFound().build();
+            }
+            oldExpenseType = wrapped.orElse(null);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+        updateTag(tag, oldExpenseType);
+        return ResponseEntity.ok(repo.save(oldExpenseType));
+
+    }
+
+    private void updateTag(ExpenseType tag, ExpenseType oldExpenseType) {
+        oldExpenseType.setName(tag.getName());
+        oldExpenseType.setColor(tag.getColor());
+        oldExpenseType.setEvent(tag.getEvent());
     }
 }

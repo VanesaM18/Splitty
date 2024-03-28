@@ -188,9 +188,16 @@ public class WebSocketHandler extends TextWebSocketHandler {
                                     WebSocketMessage request, String method) throws Exception {
         switch (method) {
             case "POST" -> handleAddExpenseType(session, request);
-            //case "PUT" ->
-            //case "GET" ->
+            case "PUT" -> handleUpdateExpenseType(session, request);
         }
+    }
+
+    private void handleUpdateExpenseType(WebSocketSession session,
+                                         WebSocketMessage request) throws Exception {
+        ExpenseType tag = objectMapper.convertValue(
+                request.getData(), ExpenseType.class);
+        ResponseEntity<ExpenseType> savedTag = expenseTypeController.update(tag);
+        returnResult(session, request, savedTag.getBody());
     }
 
     private void handleAddExpenseType(WebSocketSession session,

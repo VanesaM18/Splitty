@@ -232,6 +232,10 @@ public class Expense {
         return creator;
     }
 
+    public void removeTag(ExpenseType tag) {
+        if(tags.contains(tag)) tags.remove(tag);
+    }
+
     /**
      * Set the participant that will receive the payment
      * 

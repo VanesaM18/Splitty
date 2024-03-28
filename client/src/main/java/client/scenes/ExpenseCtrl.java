@@ -15,6 +15,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -419,5 +420,9 @@ public class ExpenseCtrl {
         } else {
             System.out.println("Image URL is null. Check the path to the image file.");
         }
+    }
+
+    public void showTags() {
+        mainCtrl.showExpenseTypes(event);
     }
 }

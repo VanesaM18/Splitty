@@ -518,4 +518,12 @@ public class ServerUtils {
         }
         return "New update incoming";
     }
+
+    public void updateTag(ExpenseType tag) {
+        WebSocketMessage request = new WebSocketMessage();
+        request.setEndpoint("api/expense_type");
+        request.setMethod("PUT");
+        request.setData(tag);
+        sendMessageWithoutResponse(request);
+    }
 }

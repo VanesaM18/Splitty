@@ -51,6 +51,8 @@ public class MainCtrl {
     private Scene openDebt;
     private InviteScreenCtrl inviteScreenCtrl;
     private Scene invite;
+    private ExpenseTypeCtrl expenseTypeCtrl;
+    private Scene expenseType;
     private Optional<Locale> currentLocale = Optional.empty();
     private boolean isInOpenDebt = false;
 
@@ -95,6 +97,9 @@ public class MainCtrl {
 
         this.openDebtsCtrl = data.getOpenDebt().getKey();
         this.openDebt = new Scene(data.getOpenDebt().getValue());
+
+        this.expenseTypeCtrl = data.getExpenseType().getKey();
+        this.expenseType = new Scene(data.getExpenseType().getValue());
 
         primaryStage.setOnCloseRequest(event -> {
             startPageCtrl.updateConfig();
@@ -300,5 +305,12 @@ public class MainCtrl {
      */
     public void setIsInOpenDebt(boolean b) {
         isInOpenDebt = b;
+    }
+
+    public void showExpenseTypes(Event ev) {
+        primaryStage.setTitle("Expense types");
+        expenseTypeCtrl.setEvent(ev);
+        primaryStage.setScene(expenseType);
+        expenseTypeCtrl.refresh();
     }
 }
