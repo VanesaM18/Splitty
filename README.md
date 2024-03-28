@@ -14,7 +14,7 @@ If you are using Gmail, follow these steps to generate your application-specific
 
 1. Enable Two-Factor Authentication (2FA): Visit your Google Account settings to activate 2FA. This adds an extra layer of security to your account, and it's required by next step.
 2. Generate Application-Specific Password:
-   - Navigate to Google App Passwords page. (https://www.google.com/settings/security/lesssecureapps)
+   - Navigate to Google App Passwords page. (https://myaccount.google.com/apppasswords)
    - Choose or enter the name of the application you're granting access to, for example, "Splitty".
    - Follow the prompts to generate a new password. This password will be displayed on your screen.
 3. Update Configuration File:
