@@ -114,6 +114,9 @@ public class EmailManager {
      */
     private String getEmailProvider() {
         String smtpHost = "";
+        if (this.email.equals("@") || !this.email.contains("@")) {
+            return "smtp.gmail.com";
+        }
         switch (this.email.split("@")[1]) {
             case "gmail.com" -> smtpHost = "smtp.gmail.com";
             case "yahoo.com" -> smtpHost = "smtp.mail.yahoo.com";

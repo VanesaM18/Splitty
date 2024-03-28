@@ -55,8 +55,6 @@ class InviteScreenCtrlTest {
      */
     @Start
     private void start(Stage stage) throws IOException {
-        // We need to load the fxml file in this complicated manner because we need to give it
-        // access to an injector.
         ServerUtils serverUtils = Mockito.mock(ServerUtils.class);
         MainCtrl mainCtrl = Mockito.mock(MainCtrl.class);
         EmailManager emailManager = Mockito.mock(EmailManager.class);
@@ -65,8 +63,6 @@ class InviteScreenCtrlTest {
                 new FXMLLoader(getClass().getResource("/client/scenes/InviteScreen.fxml"));
         Locale locale = Locale.of("en", "EN");
         loader.setResources(ResourceBundle.getBundle("bundles.Splitty", locale));
-        Injector injector = createInjector(new MyModule());
-        loader.setControllerFactory(injector::getInstance);
         loader.setControllerFactory(parameter -> new InviteScreenCtrl(mainCtrl, emailManager, serverUtils, configLoader));
 
         // Actually load the file, and also save the controller.

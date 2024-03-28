@@ -235,6 +235,58 @@ public class ParticipantsCtrlTest {
 
         Label warning = robot.lookup("#warning").queryAs(Label.class);
         Assertions.assertThat(warning).hasText("");
+    }
+
+    @Test
+    void ok_email(FxRobot robot) {
+        // We cannot directly intereact with the controller from here, as we must be in a JavaFX
+        // theda to do so. Thus, we use the FxRobot.interact method.
+        // See more: https://github.com/TestFX/TestFX/issues/222
+        robot.interact(() -> {
+            controller.setEvent(event);
+
+            Participant p = new Participant("Leo", "st", "CY97946484768297433832859518", "DLXUNR6QAEN");
+            controller.setFields(p);
+            controller.ok();
+        });
+
+        Label warning = robot.lookup("#warning").queryAs(Label.class);
+        Assertions.assertThat(warning).hasText("Invalid email!");
+    }
+
+    @Test
+    void ok_iban(FxRobot robot) {
+        // We cannot directly intereact with the controller from here, as we must be in a JavaFX
+        // theda to do so. Thus, we use the FxRobot.interact method.
+        // See more: https://github.com/TestFX/TestFX/issues/222
+        robot.interact(() -> {
+            controller.setEvent(event);
+
+            Participant p = new Participant("Leo", "leo@mail.nl", "NL43", "DLXUNR6QAEN");
+            controller.setFields(p);
+            controller.ok();
+        });
+
+        Label warning = robot.lookup("#warning").queryAs(Label.class);
+        Assertions.assertThat(warning).hasText("Invalid IBAN!");
+
+    }
+
+    @Test
+    void ok_bic(FxRobot robot) {
+        // We cannot directly intereact with the controller from here, as we must be in a JavaFX
+        // theda to do so. Thus, we use the FxRobot.interact method.
+        // See more: https://github.com/TestFX/TestFX/issues/222
+        robot.interact(() -> {
+            controller.setEvent(event);
+
+            Participant p = new Participant("Leo", "leo@mail.nl", "CY97946484768297433832859518", "43");
+            controller.setFields(p);
+            controller.ok();
+        });
+
+        Label warning = robot.lookup("#warning").queryAs(Label.class);
+        Assertions.assertThat(warning).hasText("Invalid BIC!");
 
     }
 }
