@@ -236,7 +236,12 @@ public class StartScreenCtrl implements Initializable {
      * Refreshes the event list
      */
     public void refresh() {
-        recentEvents.getItems().setAll((List<String>) config.getProperty("recentEvents"));
+        List<String> inviteCodes = (List<String>) config.getProperty("recentEvents");
+        // Make sure to filter out any events that might no longer exist!
+        inviteCodes = inviteCodes.stream()
+            .filter(code -> server.getEventById(code) != null)
+            .toList();
+        recentEvents.getItems().setAll(inviteCodes);
     }
 
     /**
