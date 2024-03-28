@@ -228,6 +228,8 @@ public class ManagementCtrl {
      * Goes back to the starting page.
      */
     public void home() {
+        mainCtrl.setIsInManagement(false);
+
         var sceneManager = mainCtrl.getSceneManager();
         sceneManager.popScene();
         mainCtrl.showStartScreen();
