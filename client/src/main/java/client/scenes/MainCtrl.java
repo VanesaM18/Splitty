@@ -18,6 +18,7 @@ import client.utils.SceneEnum;
 import client.utils.SceneManager;
 import commons.Event;
 import commons.Expense;
+import commons.ExpenseType;
 import commons.Participant;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -331,6 +332,19 @@ public class MainCtrl {
         addEditTagsCtrl.setEvent(event);
         addEditTagsCtrl.setTitle("Add expense type");
         primaryStage.setTitle("Add expense type");
+        primaryStage.setScene(addEditTags);
+    }
+
+    /**
+     * Shows the update tag screen.
+     * @param event event to which we want to add tags.
+     * @param type tag to be edited.
+     */
+    public void showUpdateTags(Event event, ExpenseType type) {
+        addEditTagsCtrl.setEvent(event);
+        addEditTagsCtrl.setTitle("Update expense type");
+        addEditTagsCtrl.setExpenseType(type);
+        primaryStage.setTitle("Update expense type");
         primaryStage.setScene(addEditTags);
     }
 }

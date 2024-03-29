@@ -189,6 +189,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         switch (method) {
             case "POST" -> handleAddExpenseType(session, request);
             case "PUT" -> handleUpdateExpenseType(session, request);
+            case "DELETE" -> handleDeleteExpenseType(session, request);
         }
     }
 
@@ -197,6 +198,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
         ExpenseType tag = objectMapper.convertValue(
                 request.getData(), ExpenseType.class);
         ResponseEntity<ExpenseType> savedTag = expenseTypeController.update(tag);
+        returnResult(session, request, savedTag.getBody());
+    }
+
+    private void handleDeleteExpenseType(WebSocketSession session,
+                                         WebSocketMessage request) throws Exception {
+        ExpenseType tag = objectMapper.convertValue(
+                request.getData(), ExpenseType.class);
+        ResponseEntity<ExpenseType> savedTag = expenseTypeController.delete(tag);
         returnResult(session, request, savedTag.getBody());
     }
 

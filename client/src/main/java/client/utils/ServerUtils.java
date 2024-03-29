@@ -530,4 +530,16 @@ public class ServerUtils {
         request.setData(tag);
         sendMessageWithoutResponse(request);
     }
+
+    /**
+     * Updates the content of a tag.
+     * @param tag tag with changed content.
+     */
+    public void deleteTag(ExpenseType tag) {
+        WebSocketMessage request = new WebSocketMessage();
+        request.setEndpoint("api/expense_type");
+        request.setMethod("DELETE");
+        request.setData(tag);
+        sendMessageWithoutResponse(request);
+    }
 }

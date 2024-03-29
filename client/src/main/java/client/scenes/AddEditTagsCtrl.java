@@ -7,6 +7,7 @@ import commons.ExpenseType;
 import javafx.fxml.FXML;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 
 
@@ -60,7 +61,13 @@ public class AddEditTagsCtrl {
         mainCtrl.showExpenseTypes(event);
     }
     private void update() {
-
+        if(!validInput()) return;
+        expenseType.setName(name.getText());
+        expenseType.setColor(color.getValue().toString());
+        expenseType.setEvent(event);
+        server.updateTag(expenseType);
+        clearFields();
+        mainCtrl.showExpenseTypes(event);
     }
 
     private boolean validInput() {
@@ -74,8 +81,12 @@ public class AddEditTagsCtrl {
         }
         String tagName = name.getText();
         for (ExpenseType tag : event.getTags()) {
-            if(tag.getName().equals(tagName)) {
+            if(tag.getName().equals(tagName) && !tag.equals(expenseType)) {
                 alert("Expense with the same name already exists.");
+                return false;
+            }
+            if(tag.getColor().equals(color.getValue().toString()) && !tag.equals(expenseType)) {
+                alert("Expense with the same background color already exists.");
                 return false;
             }
         }
@@ -94,6 +105,7 @@ public class AddEditTagsCtrl {
      * Clears the name and the color field.
      */
     private void clearFields() {
+        expenseType = null;
         name.setText("");
         color.setValue(javafx.scene.paint.Color.WHITE);
     }
@@ -110,5 +122,15 @@ public class AddEditTagsCtrl {
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    /**
+     * Sets the expense type of event to be edited.
+     * @param expenseType tag to be updated.
+     */
+    public void setExpenseType(ExpenseType expenseType) {
+        this.expenseType = expenseType;
+        name.setText(expenseType.getName());
+        color.setValue(Color.web(expenseType.getColor()));
     }
 }

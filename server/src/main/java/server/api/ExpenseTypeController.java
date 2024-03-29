@@ -91,6 +91,35 @@ public class ExpenseTypeController {
     private void updateTag(ExpenseType tag, ExpenseType oldExpenseType) {
         oldExpenseType.setName(tag.getName());
         oldExpenseType.setColor(tag.getColor());
-        oldExpenseType.setEvent(tag.getEvent());
+    }
+
+    /**
+     * Updates the content of certain expense type.
+     * @param tag tag to be changed.
+     * @return response with the changed expense type.
+     */
+    @DeleteMapping("/")
+    public ResponseEntity<ExpenseType> delete(ExpenseType tag) {
+        long id = tag.getId();
+        if (id < 0) {
+            return ResponseEntity.badRequest().build();
+        }
+        ExpenseType oldExpenseType;
+        try {
+            Optional<ExpenseType> wrapped = repo.findById(id);
+            if (!wrapped.isPresent()) {
+                return ResponseEntity.notFound().build();
+            }
+            oldExpenseType = wrapped.orElse(null);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+        deleteTag(oldExpenseType);
+        return ResponseEntity.ok(repo.save(oldExpenseType));
+
+    }
+
+    private void deleteTag(ExpenseType oldExpenseType) {
+        oldExpenseType.setEvent(null);
     }
 }

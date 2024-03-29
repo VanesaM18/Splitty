@@ -118,26 +118,15 @@ public class ExpenseTypeCtrl {
                         Region region = new Region();
                         HBox.setHgrow(region, Priority.ALWAYS);
                         attachImage(deleteButton, "/assets/circle-xmark-solid.png", 15, 15);
-                        deleteButton.setStyle("-fx-background-color: transparent; " +
-                                "-fx-padding: 0; -fx-border: none;");
-                        deleteButton.setOnMouseEntered(event ->
-                                deleteButton.setCursor(Cursor.HAND));
-                        deleteButton.setOnMouseExited(event ->
-                                deleteButton.setCursor(Cursor.DEFAULT));
+                        buttonStyle(deleteButton);
                         Button editButton = new Button();
                         editButton.setOnAction(event -> {
-                            // listView.getItems().remove(item);
-                            // remove from event
+                            updateTag(item);
                         });
                         editButton.setAlignment(Pos.CENTER);
                         HBox.setHgrow(editButton, Priority.ALWAYS);
                         attachImage(editButton, "/assets/pen-solid.png", 15, 15);
-                        editButton.setStyle("-fx-background-color: transparent; " +
-                                "-fx-padding: 0; -fx-border: none;");
-                        editButton.setOnMouseEntered(event ->
-                                editButton.setCursor(Cursor.HAND));
-                        editButton.setOnMouseExited(event ->
-                                editButton.setCursor(Cursor.DEFAULT));
+                        buttonStyle(editButton);
                         hBox.getChildren().addAll(text, editButton, region, deleteButton);
                         setGraphic(hBox);
                         setBackground(new Background(new BackgroundFill(Color.web(item.getColor()),
@@ -151,6 +140,18 @@ public class ExpenseTypeCtrl {
         tags.setItems(tagsObs);
     }
 
+    /**
+     * Styles a button.
+     * @param button button to be styled.
+     */
+    public void buttonStyle(Button button) {
+        button.setStyle("-fx-background-color: transparent; " +
+                "-fx-padding: 0; -fx-border: none;");
+        button.setOnMouseEntered(event ->
+                button.setCursor(Cursor.HAND));
+        button.setOnMouseExited(event ->
+                button.setCursor(Cursor.DEFAULT));
+    }
     private void deleteTag(ListView<ExpenseType> listView, ExpenseType item) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation required");
@@ -172,7 +173,7 @@ public class ExpenseTypeCtrl {
                 server.updateExpense(expense);
             }
             item.setEvent(null);
-            server.updateTag(item);
+            server.deleteTag(item);
             alert.close();
         } else {
             alert.close();
@@ -202,9 +203,16 @@ public class ExpenseTypeCtrl {
     }
 
     /**
-     * Shows the add tags screne.
+     * Shows the add tags screen.
      */
     public void addTags() {
         mainCtrl.showAddTags(event);
+    }
+
+    /**
+     * Shows the update tags screen.
+     */
+    private void updateTag(ExpenseType item) {
+        mainCtrl.showUpdateTags(event, item);
     }
 }
