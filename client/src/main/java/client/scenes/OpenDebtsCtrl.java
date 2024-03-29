@@ -57,10 +57,7 @@ public class OpenDebtsCtrl {
         if (e == null) {
             return;
         }
-        if (this.e == null) {
-            return;
-        }
-        List<Debt> list = Event.paymentsToDebt(e);
+        List<Debt> list = Event.finalCalculation(e);
 
         for (Debt debt : list) {
             if (debt.getDebtor().getId() != debt.getCreditor().getId()) {

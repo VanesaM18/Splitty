@@ -35,6 +35,7 @@ public class MainCtrl {
     private SettingsCtrl settingsCtrl;
     private Scene settings;
     private ManagementCtrl managementCtrl;
+    private boolean isInManagement = false;
     private Scene management;
     private Scene overview;
     private Scene add;
@@ -140,6 +141,7 @@ public class MainCtrl {
      * displays the management overview
      */
     public void showManagementOverview() {
+        isInManagement = true;
         this.sceneManager.pushScene(SceneEnum.MANAGEMENT, null);
         primaryStage.setTitle("Management Overview");
         primaryStage.setScene(management);
@@ -238,8 +240,10 @@ public class MainCtrl {
      * Refreshes data on client side
      */
     public void refreshData() {
-        if (isInOpenDebt == true) {
+        if (isInOpenDebt) {
             openDebtsCtrl.initialize(openDebtsCtrl.getEvent());
+        } else if (isInManagement) {
+            managementCtrl.refresh();
         } else {
             overviewEventCtrl.refresh();
             inviteScreenCtrl.refresh();
@@ -308,6 +312,7 @@ public class MainCtrl {
 
     /**
      * Sets status of open debt view
+     *
      * @param b the status
      */
     public void setIsInOpenDebt(boolean b) {
@@ -347,5 +352,14 @@ public class MainCtrl {
         addEditTagsCtrl.setExpenseType(type);
         primaryStage.setTitle("Update expense type");
         primaryStage.setScene(addEditTags);
+    }
+
+    /**
+     * Sets status of management view
+     *
+     * @param b the status
+     */
+    public void setIsInManagement(boolean b) {
+        isInOpenDebt = b;
     }
 }
