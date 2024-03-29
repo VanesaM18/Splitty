@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.ConfigLoader;
+import client.utils.DomainValidator;
 import client.utils.ServerUtils;
 import client.utils.language.LanguageProcessor;
 import com.google.inject.Inject;
@@ -10,9 +11,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class SettingsCtrl {
     private final ServerUtils server;
@@ -69,34 +69,31 @@ public class SettingsCtrl {
      */
     public void saveURL() {
         String url = urlTextField.getText();
-        try {
-            new URL(url);
-        } catch (MalformedURLException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Invalid URL");
-            alert.setHeaderText("Invalid URL");
-            alert.setContentText("Please enter a valid URL.");
-            alert.showAndWait();
-            return;
-        }
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation");
-        alert.setHeaderText("Are you sure you want to proceed?");
-        alert.setContentText("Do you want to save these settings and proceed?");
+        Supplier<Boolean> onSuccessSupplier = () -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation");
+            alert.setHeaderText("Are you sure you want to proceed?");
+            alert.setContentText("Do you want to save these settings and proceed?");
 
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
 
-            Alert confirmationAlert = new Alert(Alert.AlertType.INFORMATION);
-            confirmationAlert.setTitle("URL Saved");
-            confirmationAlert.setHeaderText(null);
-            confirmationAlert.setContentText("URL has been saved.");
+                Alert confirmationAlert = new Alert(Alert.AlertType.INFORMATION);
+                confirmationAlert.setTitle("URL Saved");
+                confirmationAlert.setHeaderText(null);
+                confirmationAlert.setContentText("URL has been saved.");
 
-            confirmationAlert.showAndWait();
-            server.setServerUrl(url);
-            configLoader.updateProperty("address", url);
+                confirmationAlert.showAndWait();
+                server.setServerUrl(url);
+                configLoader.updateProperty("address", url);
 
-            goBack();
-        }
+                goBack();
+                return true;
+            }
+            return false;
+        };
+        DomainValidator domain = new DomainValidator(this.mainCtrl, this.server);
+        domain.validateUrl(url, onSuccessSupplier);
+
     }
 }

@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.ConfigLoader;
+import client.utils.DomainValidator;
 import client.utils.SceneEnum;
 import client.utils.ServerUtils;
 import client.utils.language.LanguageProcessor;
@@ -11,10 +12,9 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class AppConfigurationCtrl {
 
@@ -61,33 +61,29 @@ public class AppConfigurationCtrl {
     public void onSave() {
         String url = urlTextField.getText();
 
-        try {
-            new URL(url); // Attempt to create a URL object
-        } catch (MalformedURLException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Invalid URL");
-            alert.setHeaderText("Invalid URL");
-            alert.setContentText("Please enter a valid URL.");
-            alert.showAndWait();
-            return;
-        }
+        Supplier<Boolean> onSuccessSupplier = () -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation");
+            alert.setHeaderText("Are you sure you want to proceed?");
+            alert.setContentText("Do you want to save these settings and proceed?");
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation");
-        alert.setHeaderText("Are you sure you want to proceed?");
-        alert.setContentText("Do you want to save these settings and proceed?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                String selectedLanguage = choiceBox.getValue();
+                server.setServerUrl(url);
+                configLoader.updateProperty("address", url);
+                var sceneManager = mainCtrl.getSceneManager();
+                sceneManager.popScene();
+                sceneManager.pushScene(SceneEnum.START);
+                configLoader.updateProperty("startUpShown", "true");
+                languageProcessor.getActions().get(selectedLanguage).run();
+                return true;
+            }
+            return false;
+        };
 
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            String selectedLanguage = choiceBox.getValue();
-            server.setServerUrl(url);
-            configLoader.updateProperty("address", url);
-            var sceneManager = mainCtrl.getSceneManager();
-            sceneManager.popScene();
-            sceneManager.pushScene(SceneEnum.START);
-            configLoader.updateProperty("startUpShown", "true");
-            languageProcessor.getActions().get(selectedLanguage).run();
-        }
+        DomainValidator domain = new DomainValidator(this.mainCtrl, this.server);
+        domain.validateUrl(url, onSuccessSupplier);
     }
 
     /**
