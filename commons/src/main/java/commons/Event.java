@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
-import java.awt.*;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -26,17 +25,18 @@ public class Event {
     private LocalDateTime creationTime;
     private LocalDateTime lastUpdateTime;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(fetch = FetchType.EAGER,
+        cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE })
     private Set<Participant> participants;
 
     @OneToMany(fetch = FetchType.EAGER,
-            cascade = { CascadeType.PERSIST, CascadeType.MERGE },
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE },
             mappedBy = "event")
     @JsonManagedReference
     private Set<ExpenseType> tags;
 
     @OneToMany(fetch = FetchType.EAGER,
-            cascade = { CascadeType.PERSIST, CascadeType.MERGE },
+            cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE },
             mappedBy = "event")
     @JsonManagedReference
     private Set<Expense> expenses;

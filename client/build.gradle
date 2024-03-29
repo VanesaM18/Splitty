@@ -26,12 +26,14 @@ dependencies {
 
 	implementation group: 'jakarta.activation', name: 'jakarta.activation-api', version: '2.0.1'
 	
-	implementation 'com.google.inject:guice:5.0.0'
+	implementation 'com.google.inject:guice:7.0.0'
 
 	implementation 'org.java-websocket:Java-WebSocket:1.5.2'
 
 	implementation 'io.github.mkpaz:atlantafx-base:2.0.0'
-	
+
+	implementation 'com.sun.mail:jakarta.mail:2.0.1'
+
 	implementation 'org.openjfx:javafx-controls:17.0.2'
 	implementation 'org.openjfx:javafx-fxml:17.0.2'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.3'

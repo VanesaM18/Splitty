@@ -251,6 +251,22 @@ public class ServerUtils {
     }
 
     /**
+     * Deletes an event.
+     * 
+     * @param ev the event to be deleted.
+     */
+    public void deleteEvent(Event ev) {
+        if (isAuthenticated()) {
+            WebSocketMessage request = new WebSocketMessage();
+            request.setEndpoint("api/events/id");
+            request.setMethod("DELETE");
+            request.setData(ev.getInviteCode());
+            request.setAuthHeader(auth.get());
+            sendMessageWithoutResponse(request);
+        }
+    }
+
+    /**
      * Add expense
      * 
      * @param expense The expense to add
@@ -300,9 +316,7 @@ public class ServerUtils {
         request.setData(expense);
         request.setParameters(List.of(expense.getId()));
         try {
-            System.out.println("asdfasdfasdfdsf" + request.toString());
             var resp = sendMessageWithResponse(request);
-            System.out.println("1" + resp.toString());
         } catch (ExecutionException | InterruptedException e) {
             return;
         }

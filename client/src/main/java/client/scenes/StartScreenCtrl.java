@@ -27,7 +27,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.util.Callback;
 
-import java.awt.*;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -185,7 +184,13 @@ public class StartScreenCtrl implements Initializable {
      */
     public void goToAdmin() {
         updateConfig();
-        mainCtrl.showLogin();
+
+        // If already authenticated, skip the login screen
+        if (ServerUtils.isAuthenticated()) {
+            mainCtrl.showManagementOverview();
+        } else {
+            mainCtrl.showLogin();
+        }
     }
     /**
      * Clears the fields
@@ -231,7 +236,12 @@ public class StartScreenCtrl implements Initializable {
      * Refreshes the event list
      */
     public void refresh() {
-        recentEvents.getItems().setAll((List<String>) config.getProperty("recentEvents"));
+        List<String> inviteCodes = (List<String>) config.getProperty("recentEvents");
+        // Make sure to filter out any events that might no longer exist!
+        inviteCodes = inviteCodes.stream()
+            .filter(code -> server.getEventById(code) != null)
+            .toList();
+        recentEvents.getItems().setAll(inviteCodes);
     }
 
     /**

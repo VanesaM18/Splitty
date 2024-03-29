@@ -101,8 +101,8 @@ public class OverviewCtrl {
         this.attachImage(addParticipantButton, "/assets/user-plus-solid.png");
         this.attachImage(editParticipantButton, "/assets/pen-solid.png");
         this.attachImage(deleteParticipantButton, "/assets/bin.png");
+        this.ev = server.getEventById(ev.getInviteCode());
         if (this.ev != null) {
-            this.ev = server.getEventById(ev.getInviteCode());
             title.setText(ev.getName());
             participantsObs.clear();
             refreshParticipants();
