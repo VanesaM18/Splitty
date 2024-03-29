@@ -109,6 +109,10 @@ public class ExpenseTypeCtrl {
                         HBox hBox = new HBox(5);
                         hBox.setAlignment(Pos.CENTER_LEFT);
                         Text text = new Text(item.getName());
+                        Color c = Color.web(item.getColor());
+                        double brightness = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
+                        String closestColor = (brightness <= 0.5) ? "#ffffff" : "#000000";
+                        text.setFill(Color.web(closestColor));
                         Button deleteButton = new Button();
                         deleteButton.setOnAction(e -> {
                             deleteTag(listView, item);
