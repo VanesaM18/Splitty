@@ -16,7 +16,7 @@
             <Font name="System Bold" size="22.0" />
          </font>
       </Label>
-      <Button fx:id="addTag" layoutX="292.0" layoutY="35.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="40.0">
+      <Button fx:id="addTag" layoutX="292.0" layoutY="35.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="40.0" onAction="#addTags">
          <graphic>
             <ImageView fitHeight="22.0" fitWidth="22.0" pickOnBounds="true" preserveRatio="true">
                <image>

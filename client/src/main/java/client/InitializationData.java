@@ -22,7 +22,7 @@ public class InitializationData {
     private Pair<OpenDebtsCtrl, Parent> openDebt;
 
     private Pair<ExpenseTypeCtrl, Parent> expenseType;
-
+    private Pair<AddEditTagsCtrl, Parent> addEditTags;
     /**
      * Creates an instance of initialize data
      */
@@ -218,5 +218,21 @@ public class InitializationData {
      */
     public void setExpenseType(Pair<ExpenseTypeCtrl, Parent> expenseType) {
         this.expenseType = expenseType;
+    }
+
+    /**
+     * Gets the add / edit expense type pair
+     *
+     * @return expense type pair
+     */
+    public Pair<AddEditTagsCtrl, Parent> getAddEditTags() { return addEditTags; }
+
+    /**
+     * Sets the add / edit expense type pair
+     *
+     * @param addEditTags pair
+     */
+    public void setAddEditTags(Pair<AddEditTagsCtrl, Parent> addEditTags) {
+        this.addEditTags = addEditTags;
     }
 }

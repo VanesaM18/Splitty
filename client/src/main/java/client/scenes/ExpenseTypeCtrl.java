@@ -200,4 +200,11 @@ public class ExpenseTypeCtrl {
             System.out.println("Image URL is null. Check the path to the image file.");
         }
     }
+
+    /**
+     * Shows the add tags screne.
+     */
+    public void addTags() {
+        mainCtrl.showAddTags(event);
+    }
 }
