@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Debt;
 import commons.Event;
 import commons.Expense;
 import commons.Participant;
@@ -395,8 +396,25 @@ public class OverviewCtrl {
     /**
      * Goes to open debts page
      */
+    @FXML
     public void settleDebt() {
-        mainCtrl.showOpenDebts(this.ev);
+        List<Debt> list = Event.finalCalculation(ev);
+        if (list.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("No debts to settle.");
+
+            ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+            alert.getButtonTypes().setAll(okButton);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == okButton) {
+                mainCtrl.showOverviewEvent(ev);
+            }
+        } else {
+            mainCtrl.showOpenDebts(this.ev);
+        }
     }
 
     /**

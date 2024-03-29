@@ -339,7 +339,13 @@ public class Event {
     }
 
     /**
-     * calculates the debts in N-1
+     * This method performs the final calculation of debts.
+     * It first obtains all debts using the paymentsToDebt method.
+     * Then, it calculates the total debt per participant.
+     * After calculating total debts, it sorts participants based on their balances.
+     * It populates maps for debtors and creditors based on sorted balances.
+     * Finally, it iterates over debtors and creditors to settle debts
+     * and creates a list of Debt objects representing settled debts
      * @param event the current event
      * @return a list of (N-1) debts
      */
@@ -380,6 +386,14 @@ public class Event {
         return totalDebts2;
     }
 
+
+    /**
+     * populates debtor and creditor maps based on sorted balances.
+     * This is a helper method for the final calculation's method.
+     * @param sortedEntries a map of the debts in descending order
+     * @param debtors an empty map of debtors
+     * @param creditors an empty map of creditors
+     */
     private static void populateDebts(List<Map.Entry<Participant, Long>> sortedEntries,
                                       Map<Participant, Long> debtors,
                                       Map<Participant, Long> creditors) {
@@ -392,6 +406,13 @@ public class Event {
         }
     }
 
+    /**
+     * populates debtor and creditor maps based on sorted balances.
+     * This is similar to populate debts a helper method for final calculations.
+     * @param debtors the populated list of debtors
+     * @param creditors the populated list of creditors
+     * @param totalDebts2 an empty arraylist of debts
+     */
     private static void mappingDebts(Map<Participant, Long> debtors, Map<Participant,
             Long> creditors, List<Debt> totalDebts2) {
         // Iterate over debtors and creditors to settle debts
