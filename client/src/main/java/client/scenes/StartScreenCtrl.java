@@ -6,6 +6,7 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 
 import commons.Event;
+import commons.ExpenseType;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -130,9 +131,23 @@ public class StartScreenCtrl implements Initializable {
             return;
         }
 
-        Event event = new Event( "ABCDEF", eventName, LocalDateTime.now(), new HashSet<>());
+        Event event = new Event( "ABCDEF", eventName, LocalDateTime.now(),
+                new HashSet<>(), new HashSet<>());
         event.generateInviteCode();
         event = server.addEvent(event);
+
+        ExpenseType food = new ExpenseType("food", "#5bf562", event);
+        server.addExpenseType(food);
+        event.addType(food);
+
+        ExpenseType fees = new ExpenseType("entrance fees", "#5ba0f5", event);
+        server.addExpenseType(fees);
+        event.addType(fees);
+
+        ExpenseType travel = new ExpenseType("travel", "#f7596c", event);
+        server.addExpenseType(travel);
+        event.addType(travel);
+
         lastEvent = event.getInviteCode();
         server.sendUpdateStatus(lastEvent);
         updateConfig();
@@ -169,7 +184,13 @@ public class StartScreenCtrl implements Initializable {
      */
     public void goToAdmin() {
         updateConfig();
-        mainCtrl.showLogin();
+
+        // If already authenticated, skip the login screen
+        if (ServerUtils.isAuthenticated()) {
+            mainCtrl.showManagementOverview();
+        } else {
+            mainCtrl.showLogin();
+        }
     }
     /**
      * Clears the fields
@@ -215,7 +236,12 @@ public class StartScreenCtrl implements Initializable {
      * Refreshes the event list
      */
     public void refresh() {
-        recentEvents.getItems().setAll((List<String>) config.getProperty("recentEvents"));
+        List<String> inviteCodes = (List<String>) config.getProperty("recentEvents");
+        // Make sure to filter out any events that might no longer exist!
+        inviteCodes = inviteCodes.stream()
+            .filter(code -> server.getEventById(code) != null)
+            .toList();
+        recentEvents.getItems().setAll(inviteCodes);
     }
 
     /**

@@ -102,6 +102,7 @@ public class EventController {
     public ResponseEntity<Event> add(@RequestBody Event event) {
         // NOTE: The participant list must be empty, people can only be added to an event by using
         // the invite code. (checked in service)
+
         Optional<Event> saved = eventService.createEvent(event);
         return saved.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.badRequest().build());

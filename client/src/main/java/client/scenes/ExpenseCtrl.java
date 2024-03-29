@@ -1,31 +1,31 @@
 package client.scenes;
 
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.Currency;
 import java.util.HashSet;
+import java.util.Set;
 
 import com.google.inject.Inject;
 
 import client.utils.ServerUtils;
-import commons.Event;
-import commons.Expense;
-import commons.Monetary;
-import commons.Participant;
+import commons.*;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Cursor;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.util.Callback;
@@ -50,7 +50,15 @@ public class ExpenseCtrl {
     private final ObservableList<Participant> participantsObs = FXCollections.observableArrayList();
 
     @FXML
+    private ComboBox<ExpenseType> types;
+    private final ObservableList<ExpenseType> typesObs = FXCollections.observableArrayList();
+
+    @FXML
     private ListView<Participant> selectParticipant;
+    @FXML
+    private ListView<ExpenseType> selectedTags;
+    private final ObservableList<ExpenseType> selectedTypesObs
+            = FXCollections.observableArrayList();
 
     private final ObservableSet<Participant> selectParticipantsObs = FXCollections.observableSet();
 
@@ -79,6 +87,7 @@ public class ExpenseCtrl {
     @FXML
     public void initialize() {
         selectParticipant.setItems(participantsObs);
+        initTagsCombobox();
         initReceiverCombobox();
         initSelectParticipants();
     }
@@ -101,6 +110,7 @@ public class ExpenseCtrl {
         this.event = event;
         clearFields();
         participantsObs.addAll(event.getParticipants());
+        typesObs.addAll(event.getTags());
     }
 
     /**
@@ -117,10 +127,14 @@ public class ExpenseCtrl {
         this.description.setText(e.getName());
         this.amount.setText(e.getAmount().toString());
         this.participantsObs.clear();
+        this.typesObs.clear();
         this.selectParticipantsObs.clear();
         this.selectParticipantsObs.addAll(e.getSplitBetween());
         this.participantsObs.addAll(this.event.getParticipants());
+        this.typesObs.addAll(this.event.getTags());
         this.receiver.getSelectionModel().select(e.getCreator());
+        this.selectedTypesObs.addAll(e.getTags());
+        initTypes();
     }
 
     /**
@@ -176,6 +190,8 @@ public class ExpenseCtrl {
             expense.setReceiver(validateReceiver());
             expense.setEvent(this.event);
             expense.setSplitBetween(validateSplitBetween());
+            Set<ExpenseType> tags = new HashSet<>(selectedTypesObs);
+            expense.setTags(tags);
         } catch (Exception ex) {
             warning.setText(ex.getMessage());
             return;
@@ -224,6 +240,27 @@ public class ExpenseCtrl {
 
     }
 
+
+    private void initTagsCombobox() {
+        Callback<ListView<ExpenseType>, ListCell<ExpenseType>> cb = lv -> {
+            return new ListCell<ExpenseType>() {
+                @Override
+                protected void updateItem(ExpenseType item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setGraphic(null);
+                        return;
+                    }
+                    setGraphic(new Text(item.getName()));
+                }
+            };
+        };
+
+        types.setCellFactory(cb);
+        types.setButtonCell(cb.call(null));
+        types.setItems(typesObs);
+    }
+
     private void initSelectParticipants() {
         var getSelectedProperty = new Callback<Participant, ObservableValue<Boolean>>() {
 
@@ -264,11 +301,14 @@ public class ExpenseCtrl {
     }
 
     private void clearFields() {
+        selectedTypesObs.clear();
+        selectedTags.setItems(null);
         description.clear();
         amount.clear();
         date.setValue(null);
         selectParticipantsObs.clear();
         participantsObs.clear();
+        typesObs.clear();
     }
 
     private LocalDate getDate() throws Exception {
@@ -303,7 +343,81 @@ public class ExpenseCtrl {
         return selected;
     }
 
-    // private Set<Participant> validateSplitBetween() throws Exception {
-    // }
+    /**
+     * Adds a tag to the listView.
+     */
+    public void addTag() {
+        ExpenseType tag = types.getSelectionModel().getSelectedItem();
+        if(!selectedTypesObs.contains(tag)) selectedTypesObs.add(tag);
+        initTypes();
+    }
 
+    private void initTypes() {
+        var cb = new Callback<ListView<ExpenseType>, ListCell<ExpenseType>>() {
+            @Override
+            public ListCell<ExpenseType> call(ListView<ExpenseType> listView) {
+                return new ListCell<ExpenseType>() {
+                    @Override
+                    protected void updateItem(ExpenseType item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item == null || empty) {
+                            setGraphic(null);
+                            setBackground(null);
+                            return;
+                        }
+
+                        HBox hBox = new HBox(5);
+                        hBox.setAlignment(Pos.CENTER_LEFT);
+                        Text text = new Text(item.getName());
+                        Button deleteButton = new Button();
+                        deleteButton.setOnAction(event -> {
+                            listView.getItems().remove(item);
+                            selectedTypesObs.remove(item);
+                        });
+                        deleteButton.setAlignment(Pos.CENTER);
+
+                        HBox.setHgrow(deleteButton, Priority.ALWAYS);
+                        Region region = new Region();
+                        HBox.setHgrow(region, Priority.ALWAYS);
+                        attachImage(deleteButton, "/assets/circle-xmark-solid.png", 15, 15);
+                        deleteButton.setStyle("-fx-background-color: transparent; " +
+                                "-fx-padding: 0; -fx-border: none;");
+                        deleteButton.setOnMouseEntered(event ->
+                                deleteButton.setCursor(Cursor.HAND));
+                        deleteButton.setOnMouseExited(event ->
+                                deleteButton.setCursor(Cursor.DEFAULT));
+                        hBox.getChildren().addAll(text, region, deleteButton);
+                        setGraphic(hBox);
+                        setBackground(new Background(new BackgroundFill(Color.web(item.getColor()),
+                                new CornerRadii(20), Insets.EMPTY)));
+                    }
+                };
+            }
+        };
+        selectedTags.setStyle("-fx-cell-size: 30px; -fx-spacing: 10px;");
+        selectedTags.setCellFactory(cb);
+        selectedTags.setItems(selectedTypesObs);
+    }
+
+    /**
+     * Attaches an image to a button
+     * @param but the button to attach to
+     * @param url the url to the image
+     * @param height the height of the image
+     * @param width the width of the image
+     */
+    public void attachImage(Button but, String url, float height, float width) {
+        URL imageUrl = getClass().getResource(url);
+        if (imageUrl != null) {
+            Image image = new Image(imageUrl.toExternalForm());
+            ImageView imageView = new ImageView(image);
+            imageView.setFitHeight(height);
+            imageView.setFitWidth(width);
+            imageView.setPickOnBounds(true);
+            imageView.setPreserveRatio(true);
+            but.setGraphic(imageView);
+        } else {
+            System.out.println("Image URL is null. Check the path to the image file.");
+        }
+    }
 }

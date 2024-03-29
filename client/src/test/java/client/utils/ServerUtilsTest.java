@@ -59,7 +59,7 @@ class ServerUtilsTest {
         LocalDateTime randomDateTime = LocalDateTime.now().plusDays((long) (Math.random() * 30));
         Set<Participant> randomParticipants = generateRandomParticipants();
 
-        Event randomEvent = new Event(randomInviteCode, randomName, randomDateTime, randomParticipants);
+        Event randomEvent = new Event(randomInviteCode, randomName, randomDateTime, randomParticipants, new HashSet<>());
         randomEvent.generateInviteCode();
         return randomEvent;
     }

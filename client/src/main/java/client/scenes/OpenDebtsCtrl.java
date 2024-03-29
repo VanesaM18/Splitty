@@ -1,18 +1,20 @@
 package client.scenes;
 
+import client.utils.EmailManager;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Debt;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.*;
+
 import java.util.List;
 import javafx.geometry.Insets;
 
@@ -20,6 +22,7 @@ import javafx.geometry.Insets;
 public class OpenDebtsCtrl {
     private final MainCtrl mainCtrl;
     private final ServerUtils server;
+    private final EmailManager emailManager;
     @FXML
     private VBox debtContainer;
     private Event e;
@@ -29,12 +32,14 @@ public class OpenDebtsCtrl {
      * constructs open debts
      *
      * @param mainCtrl an instance of MainCtrl
-     * @param server
+     * @param server an instance of ServerUtils
+     * @param emailManager an instance of EmailManager
      */
     @Inject
-    public OpenDebtsCtrl(MainCtrl mainCtrl, ServerUtils server) {
+    public OpenDebtsCtrl(MainCtrl mainCtrl, ServerUtils server, EmailManager emailManager) {
         this.mainCtrl = mainCtrl;
         this.server = server;
+        this.emailManager = emailManager;
     }
 
     /**
@@ -52,48 +57,116 @@ public class OpenDebtsCtrl {
         if (e == null) {
             return;
         }
-        if (this.e == null) {
-            return;
-        }
-        List<Debt> list = Event.paymentsToDebt(e);
+        List<Debt> list = Event.finalCalculation(e);
 
         for (Debt debt : list) {
-            if(debt.getDebtor().getId() != debt.getCreditor().getId()) {
+            if (debt.getDebtor().getId() != debt.getCreditor().getId()) {
                 HBox hbox = new HBox();
-                String hboxId = "hbox_" + debt.getId();
-                hbox.setId(hboxId);
-                TitledPane titledPane = new TitledPane();
-                titledPane.setExpanded(false);
-                titledPane.setMaxWidth(Double.MAX_VALUE);
-                titledPane.setText(debt.getDebtor().getName() + " gives "
-                        + debt.getAmount().getCurrency().getSymbol()
-                        + debt.getAmount().toString()
-                        + " to " + debt.getCreditor().getName());
+                hbox.setId("hbox_" + debt.getId());
+                TitledPane titledPane = createDebtTitledPane(debt);
+                hbox.getChildren().add(titledPane);
 
-                VBox content = new VBox();
-                Label debtLabel = new Label("Bank information available, transfer the money to:\n"
-                        + "Account holder: " + debt.getCreditor().getName()
-                        + "\nIBAN: " + debt.getCreditor().getIban()
-                        + "\nBIC: " + debt.getCreditor().getBic());
-                content.getChildren().add(debtLabel);
-                titledPane.setContent(content);
+                Region region = new Region();
+                HBox.setHgrow(region, Priority.ALWAYS);
 
-                Button markReceivedButton = new Button("Mark Received");
-                markReceivedButton.setOnAction(event -> {
-                    Node parentHBox = markReceivedButton.getParent();
-                    if (parentHBox instanceof HBox) {
-                        debtContainer.getChildren().remove(parentHBox);
-                    }
-                    server.deleteDebts(debt, e);
-                    server.markDebtAsReceived(this.e.getInviteCode());
-                });
+                Button markReceivedButton = createMarkReceivedButton(debt);
+                HBox.setMargin(markReceivedButton, new Insets(0, 0, 0, 15));
+                hbox.getChildren().addAll(region, markReceivedButton);
 
-                hbox.getChildren().addAll(titledPane, markReceivedButton);
-                HBox.setMargin(titledPane, new Insets(10, 0, 0, 0));
-                HBox.setMargin(markReceivedButton, new Insets(10, 0, 0, 10));
                 debtContainer.getChildren().add(hbox);
             }
         }
+    }
+
+    private TitledPane createDebtTitledPane(Debt debt) {
+        TitledPane titledPane = new TitledPane();
+        titledPane.setExpanded(false);
+        titledPane.setMaxWidth(Double.MAX_VALUE);
+        titledPane.setText(debt.getDebtor().getName() + " gives "
+            + debt.getAmount() + " to " + debt.getCreditor().getName());
+
+        VBox content = new VBox();
+        Label debtLabel = new Label(debt.getCreditor().getIban().isEmpty()
+            ? "Bank information not available" :
+            "Bank information available, transfer to:\nAccount holder: "
+                + debt.getCreditor().getName() +
+                "\nIBAN: " + debt.getCreditor().getIban() +
+                "\nBIC: " + debt.getCreditor().getBic());
+        content.getChildren().add(debtLabel);
+
+        Pane spacer = new Pane();
+        spacer.setMinHeight(10);
+
+        content.getChildren().add(spacer);
+
+        HBox sendReminderContent = createSendReminderContent(debt);
+        content.getChildren().add(sendReminderContent);
+
+        titledPane.setContent(content);
+
+        return titledPane;
+    }
+
+    private Button createMarkReceivedButton(Debt debt) {
+        Button button = new Button("Mark Received");
+        button.setOnAction(event -> {
+            server.deleteDebts(debt, e);
+            server.markDebtAsReceived(e.getInviteCode());
+            debtContainer.getChildren().removeIf(node ->
+                node instanceof HBox && node.getId().equals("hbox_" + debt.getId()));
+        });
+        return button;
+    }
+
+    private HBox createSendReminderContent(Debt debt) {
+        HBox hbox = new HBox(10);
+        Label actionLabel = new Label("Email action: ");
+        Button sendEmailButton = new Button("Send Reminder");
+        StackPane buttonWrapper = new StackPane(sendEmailButton);
+
+        setupSendEmailButton(sendEmailButton, buttonWrapper, debt);
+
+        hbox.getChildren().addAll(actionLabel, buttonWrapper);
+        return hbox;
+    }
+
+    private void setupSendEmailButton(Button button, StackPane buttonWrapper, Debt debt) {
+        Tooltip tooltip = new Tooltip();
+        tooltip.setShowDelay(javafx.util.Duration.ZERO);
+        tooltip.setHideDelay(javafx.util.Duration.ZERO);
+
+        if (!emailManager.areCredentialsValid()) {
+            tooltip.setText("Email credentials invalid");
+            button.setDisable(true);
+        } else if (debt.getDebtor().getEmail().isEmpty()) {
+            tooltip.setText("Debtor email missing");
+            button.setDisable(true);
+        } else {
+            tooltip.setText("Send payment reminder through email to " + debt.getDebtor().getName());
+            button.setDisable(false);
+            button.setOnAction(event -> {
+                button.setDisable(true);
+                button.setText("Sending...");
+
+                new Thread(() -> {
+                    emailManager.sendEmail(debt.getDebtor().getEmail(),
+                        "Payment reminder for " + e.getName(),
+                        "You owe " + debt.getAmount() + " to " + debt.getCreditor().getName());
+
+                    Platform.runLater(() -> {
+                        button.setText("Send Reminder");
+                        button.setDisable(false);
+                    });
+                }).start();
+            });
+        }
+
+        Tooltip.install(buttonWrapper, tooltip);
+        Tooltip.install(button, tooltip);
+
+        button.styleProperty().bind(Bindings.when(button.disabledProperty())
+            .then("-fx-background-color: lightgrey; -fx-text-fill: darkgrey;")
+            .otherwise("-fx-background-color: lightblue; -fx-text-fill: black;"));
     }
 
     /**

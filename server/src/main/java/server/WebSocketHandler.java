@@ -11,10 +11,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.websocket.server.ServerEndpoint;
-import server.api.AdminController;
-import server.api.EventController;
-import server.api.ExpenseController;
-import server.api.ParticipantController;
+import server.api.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +33,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private ParticipantController participantController;
     @Autowired
     private ExpenseController expenseController;
+    @Autowired
+    private ExpenseTypeController expenseTypeController;
 
     /**
      * Creates a class for handling the websocket connection
@@ -116,6 +115,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
             || endPoint.contains("/participants")) {
             updateClients(session, request);
         }
+        if(endPoint.contains("/expense_type")) {
+            handleExpenseTypes(session, request, request.getMethod());
+        }
     }
 
     /**
@@ -183,6 +185,25 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     }
 
+    private void handleExpenseTypes(WebSocketSession session,
+                                    WebSocketMessage request, String method) throws Exception {
+        switch (method) {
+            case "POST" -> handleAddExpenseType(session, request);
+            //case "PUT" ->
+            //case "GET" ->
+        }
+    }
+
+    private void handleAddExpenseType(WebSocketSession session,
+                                      WebSocketMessage request) throws Exception {
+        ExpenseType tag = objectMapper.convertValue(request.getData(), ExpenseType.class);
+        String id = objectMapper.convertValue(request.getParameters().get(0), String.class);
+
+        String res = expenseTypeController.add(id, tag).getBody();
+        returnResult(session, request, res);
+    }
+
+
     /**
      * Send requests to refresh views to all clients that are in the same event as
      * the current one
@@ -202,7 +223,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             for (WebSocketSession ses : sessions) {
                 if (connectionToEvent.containsKey(ses)
                         && connectionToEvent.get(ses).equals(inviteCode)
-                        && ses != session) {
+                        && (ses != session || "DELETE".equals(request.getMethod()))) {
                     ses.sendMessage(convMessage);
                 }
             }
@@ -285,6 +306,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
             String method) throws Exception {
         if ("GET".equals(method)) {
             handleGetEventById(session, request);
+        } else if ("DELETE".equals(method)) {
+            handleDeleteEventById(session, request);
         }
     }
 
@@ -318,6 +341,17 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
         ResponseEntity<Event> event = eventController.getById(id);
         returnResult(session, request, event.getBody());
+    }
+
+    private void handleDeleteEventById(WebSocketSession session, WebSocketMessage request)
+            throws IOException {
+        List<Object> parameters = request.getParameters();
+        String id = (String) request.getData();
+        String auth = request.getAuthHeader();
+
+        ResponseEntity<String> deletedEvent = eventController.delete(id, auth);
+        returnResult(session, request, deletedEvent.getBody());
+        return;
     }
 
     private void handleJsonDumpApi(WebSocketSession session,
