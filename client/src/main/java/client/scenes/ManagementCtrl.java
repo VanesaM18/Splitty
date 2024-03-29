@@ -12,7 +12,7 @@ import javafx.scene.control.Alert.AlertType;
 import client.utils.ServerUtils;
 import javafx.stage.FileChooser;
 
-import javax.inject.Inject;
+import com.google.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
