@@ -472,13 +472,16 @@ public class ServerUtils {
     public void deleteDebts(Debt debt, Event e) {
         try {
             List<Expense> expenses = getAllExpensesFromEvent(e);
+            removeDoubleExpense(expenses);
             List<Expense> relevantExpenses = new ArrayList<>();
             for (Expense ex : expenses) {
                 if (ex.getCreator().equals(debt.getCreditor()) &&
-                    ex.getSplitBetween().contains(debt.getDebtor())) {
+                        ex.getSplitBetween().contains(debt.getDebtor())) {
                     relevantExpenses.add(ex);
                 }
             }
+
+
             for (Expense ex : relevantExpenses) {
                 long value = ex.getAmount().getInternalValue();
                 value = value - (value / ex.getSplitBetween().size());
@@ -490,10 +493,38 @@ public class ServerUtils {
                 request.setData(ex);
                 sendMessageWithResponse(request);
             }
+
         } catch (ExecutionException | InterruptedException er) {
             er.printStackTrace();
         }
     }
+
+    /**
+     * only adds expenses where a creditor and
+     * debtor differ completely for N-1
+     * @param expenses list of all expenses
+     */
+    public static void removeDoubleExpense(List<Expense> expenses) {
+        for (int i = 0; i < expenses.size(); i++) {
+            Expense ex1 = expenses.get(i);
+            for (int j = i + 1; j < expenses.size(); j++) {
+                Expense ex2 = expenses.get(j);
+                if (
+                        ex1.getSplitBetween().contains(ex2.getCreator()) &&
+                        ex2.getSplitBetween().contains(ex1.getCreator()) &&
+                                ex1.getCreator().equals(ex2.getSplitBetween()
+                                        .stream().findFirst().orElse(null)) &&
+                                ex2.getCreator().equals(ex1.getSplitBetween()
+                                        .stream().findFirst().orElse(null)) &&
+                        ex1.getAmount().equals(ex2.getAmount())) {
+                    expenses.remove(ex1);
+                    expenses.remove(ex2);
+                    break; // Break the inner loop since symmetric debt is found
+                }
+            }
+        }
+    }
+
 
     /**
      * Announce all client that open debts view needs to be updated for an event
