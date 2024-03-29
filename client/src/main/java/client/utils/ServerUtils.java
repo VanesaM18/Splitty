@@ -563,4 +563,28 @@ public class ServerUtils {
         }
         return "New update incoming";
     }
+
+    /**
+     * Updates the content of a tag.
+     * @param tag tag with changed content.
+     */
+    public void updateTag(ExpenseType tag) {
+        WebSocketMessage request = new WebSocketMessage();
+        request.setEndpoint("api/expense_type");
+        request.setMethod("PUT");
+        request.setData(tag);
+        sendMessageWithoutResponse(request);
+    }
+
+    /**
+     * Updates the content of a tag.
+     * @param tag tag with changed content.
+     */
+    public void deleteTag(ExpenseType tag) {
+        WebSocketMessage request = new WebSocketMessage();
+        request.setEndpoint("api/expense_type");
+        request.setMethod("DELETE");
+        request.setData(tag);
+        sendMessageWithoutResponse(request);
+    }
 }

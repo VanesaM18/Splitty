@@ -120,6 +120,10 @@ public class Main extends Application {
             FXML.load(InviteScreenCtrl.class, locale, "client", "scenes", "InviteScreen.fxml");
         var openDebt =
             FXML.load(OpenDebtsCtrl.class, locale, "client", "scenes", "OpenDebts.fxml");
+        var expenseType =
+                FXML.load(ExpenseTypeCtrl.class, locale, "client", "scenes", "ExpenseTypes.fxml");
+        var addEditTags =
+                FXML.load(AddEditTagsCtrl.class, locale, "client", "scenes", "AddEditTags.fxml");
 
         InitializationData data = new InitializationData();
         data.setAppConfiguration(appConfiguration);
@@ -132,6 +136,8 @@ public class Main extends Application {
         data.setOverviewEvent(overviewEvent);
         data.setInvite(invite);
         data.setOpenDebt(openDebt);
+        data.setExpenseType(expenseType);
+        data.setAddEditTags(addEditTags);
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         sceneManager.setMainCtrl(mainCtrl);

@@ -50,14 +50,6 @@ public class Event {
     }
 
     /**
-     * Deletes an expense type.
-     * @param type tag to be deleted.
-     */
-    public void deleteType(ExpenseType type) {
-        tags.remove(type);
-    }
-
-    /**
      * Getter of the tags.
      *
      * @return all the tags.
@@ -153,6 +145,17 @@ public class Event {
      */
     public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
+    }
+
+    /**
+     * Removes expense type from the tags.
+     * @param tag type to be removed.
+     */
+    public void removeTag(ExpenseType tag) {
+        tags.remove(tag);
+        for(Expense expense : expenses) {
+            expense.removeTag(tag);
+        }
     }
 
     /**

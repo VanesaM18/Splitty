@@ -131,7 +131,7 @@ public class ExpenseCtrl {
         this.selectParticipantsObs.clear();
         this.selectParticipantsObs.addAll(e.getSplitBetween());
         this.participantsObs.addAll(this.event.getParticipants());
-        this.typesObs.addAll(this.event.getTags());
+        this.typesObs.addAll(event.getTags());
         this.receiver.getSelectionModel().select(e.getCreator());
         this.selectedTypesObs.addAll(e.getTags());
         initTypes();
@@ -365,10 +365,14 @@ public class ExpenseCtrl {
                             setBackground(null);
                             return;
                         }
-
                         HBox hBox = new HBox(5);
                         hBox.setAlignment(Pos.CENTER_LEFT);
                         Text text = new Text(item.getName());
+                        Color c = Color.web(item.getColor());
+                        double brightness = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
+                        String closestColor = (brightness <= 0.5) ? "#ffffff" : "#000000";
+                        text.setFill(Color.web(closestColor));
+
                         Button deleteButton = new Button();
                         deleteButton.setOnAction(event -> {
                             listView.getItems().remove(item);
