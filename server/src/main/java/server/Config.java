@@ -15,13 +15,19 @@
  */
 package server;
 
+import commons.DomainModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import server.database.DomainModelRepository;
 
 import java.util.Random;
+import java.util.UUID;
 
 @Configuration
 public class Config {
+    @Autowired
+    private DomainModelRepository domainModelRepository;
 
     /**
      * Inject Random module into our spring app
@@ -30,5 +36,21 @@ public class Config {
     @Bean
     public Random getRandom() {
         return new Random();
+    }
+
+    /**
+     * gets the UUID associated with the domain model.
+     * if no domain model is found in the repository,
+     * a new one is created and saved.
+     * @return UUID of the domain model.
+     */
+    @Bean
+    public UUID getDomainUuid() {
+        DomainModel domainModel = domainModelRepository.findFirst();
+        if(domainModel == null) {
+            domainModel = new DomainModel();
+            domainModelRepository.save(domainModel);
+        }
+        return domainModel.getDomainUuid();
     }
 }

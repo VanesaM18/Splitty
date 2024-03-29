@@ -17,6 +17,7 @@ package client.utils;
 
 import client.ConfigLoader;
 import client.MyWebSocketClient;
+import client.scenes.MainCtrl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.inject.Inject;
 import commons.*;
@@ -32,6 +33,7 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -43,9 +45,10 @@ public class ServerUtils {
     private String serverUrl;
     private final Client client = ClientBuilder.newClient(new ClientConfig());
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final MyWebSocketClient webSocketClient;
+    private MyWebSocketClient webSocketClient;
     private static Optional<String> auth = Optional.empty();
-    private ConfigLoader config;
+    private final ConfigLoader config;
+    private UUID domainUuid = null;
 
     /**
      * Creates an instance of ServerUtils which is used for communicating with the
@@ -61,7 +64,6 @@ public class ServerUtils {
         this.config = config;
         this.objectMapper.registerModule(new JavaTimeModule());
     }
-
     /**
      * gets the ObjectMapper instance for handling JSON
      * serialization/deserialization
@@ -535,5 +537,32 @@ public class ServerUtils {
             throw new NotFoundException();
         }
         return "New update incoming";
+    }
+
+    /**
+     * gets the UUID associated with this domain model.
+     * @return the UUID associated with this domain model.
+     */
+    public UUID getDomainUuid() {
+        return this.domainUuid;
+    }
+
+    /**
+     * sets the UUID associated with this domain model.
+     * @param domainUuid the UUID to be associated with this domain model.
+     */
+    public void setDomainUuid(UUID domainUuid) {
+        this.domainUuid = domainUuid;
+        System.out.println("\u001B[32mConnected to server with id "
+                + domainUuid.toString() + "! ! !\u001B[0m");
+    }
+
+    /**
+     * updates the WebSocket connection using the provided MainCtrl instance.
+     * @param mainCtrl the MainCtrl instance used to update the WebSocket connection.
+     * @throws URISyntaxException if the URI syntax is invalid.
+     */
+    public void updateWebSocketConnection(MainCtrl mainCtrl) throws URISyntaxException {
+        this.webSocketClient = new MyWebSocketClient(config, mainCtrl);
     }
 }
