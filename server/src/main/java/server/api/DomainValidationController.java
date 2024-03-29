@@ -1,4 +1,4 @@
-package server;
+package server.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,5 +34,13 @@ public class DomainValidationController {
     @ResponseBody
     public String validate() {
         return domainModelUuid.toString();
+    }
+
+    /**
+     * sets domain model uuid
+     * @param domainModelUuid domain model uuid
+     */
+    public void setDomainModelUuid(UUID domainModelUuid) {
+        this.domainModelUuid = domainModelUuid;
     }
 }

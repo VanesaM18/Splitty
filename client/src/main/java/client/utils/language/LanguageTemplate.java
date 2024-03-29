@@ -17,7 +17,7 @@ public abstract class LanguageTemplate implements Language {
      * and updates the scene by popping the current one from the scene manager.
      */
     @Override
-    public void run() {
+    public void switchLanguage() {
         Locale locale = this.getLocale();
         var optionalMain = Main.getInstance();
         if (optionalMain.isPresent()) {
