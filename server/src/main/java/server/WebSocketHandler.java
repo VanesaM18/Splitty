@@ -43,6 +43,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         this.objectMapper.registerModule(new JavaTimeModule());
     }
 
+
     /**
      * Adds a new client to the lists of clients
      * 
@@ -372,7 +373,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private void handleJsonDumpApi(WebSocketSession session,
             WebSocketMessage request) throws Exception {
         if ("GET".equals(request.getMethod())) {
-            ResponseEntity<String> jsonDumpResponse = eventController.getJsonDump();
+            String authHeader = request.getAuthHeader();
+            ResponseEntity<String> jsonDumpResponse = eventController.getJsonDump(authHeader);
             if (jsonDumpResponse.getStatusCode().is2xxSuccessful()) {
                 this.returnResult(session, request, jsonDumpResponse.getBody());
             }

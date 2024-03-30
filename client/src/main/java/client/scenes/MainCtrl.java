@@ -27,7 +27,6 @@ import java.util.Locale;
 import java.util.Optional;
 
 public class MainCtrl {
-
     private Stage primaryStage;
     private SceneManager sceneManager;
     private AppConfigurationCtrl appConfigurationCtrl;
@@ -286,12 +285,20 @@ public class MainCtrl {
     }
 
 
-     /** Show expense view.
+     /**
      * gets the scene manager responsible for managing scenes in the application.
      * @return SceneManager object.
      */
     public SceneManager getSceneManager() {
         return this.sceneManager;
+    }
+
+    /**
+     * gets the primary stage of the application.
+     * @return the primary stage of the application.
+     */
+    public Stage getPrimaryStage() {
+        return primaryStage;
     }
 
     /**

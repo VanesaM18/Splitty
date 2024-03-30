@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.control.TextField?>
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.SettingsCtrl">
    <children>
       <VBox alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="400.0" prefWidth="600.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -20,6 +21,8 @@
                </font>
             </Label>
             <VBox fx:id="languages" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="347.0" />
+            <TextField fx:id="urlTextField" prefWidth="200.0" />
+            <Button mnemonicParsing="false" onAction="#saveURL" text="%save_url" />
             <HBox alignment="BOTTOM_LEFT">
                <children>
                   <Button mnemonicParsing="false" onAction="#goBack" text="%back">

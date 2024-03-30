@@ -17,6 +17,7 @@ package client.utils;
 
 import client.ConfigLoader;
 import client.MyWebSocketClient;
+import client.scenes.MainCtrl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.inject.Inject;
 import commons.*;
@@ -24,11 +25,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -37,10 +42,13 @@ import java.util.concurrent.ExecutionException;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class ServerUtils {
+    private String serverUrl;
+    private final Client client = ClientBuilder.newClient(new ClientConfig());
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final MyWebSocketClient webSocketClient;
+    private MyWebSocketClient webSocketClient;
     private static Optional<String> auth = Optional.empty();
-    private ConfigLoader config;
+    private final ConfigLoader config;
+    private UUID domainUuid = null;
 
     /**
      * Creates an instance of ServerUtils which is used for communicating with the
@@ -51,11 +59,11 @@ public class ServerUtils {
      */
     @Inject
     public ServerUtils(MyWebSocketClient webSocketClient, ConfigLoader config) {
+        this.serverUrl = (String) config.getProperty("address");
         this.webSocketClient = webSocketClient;
         this.config = config;
         this.objectMapper.registerModule(new JavaTimeModule());
     }
-
     /**
      * gets the ObjectMapper instance for handling JSON
      * serialization/deserialization
@@ -73,6 +81,22 @@ public class ServerUtils {
      */
     public MyWebSocketClient getWebSocketClient() {
         return webSocketClient;
+    }
+
+    /**
+     * gets the server url
+     * @return server url
+     */
+    public String getServerUrl() {
+        return serverUrl;
+    }
+
+    /**
+     * sets the server url
+     * @param serverUrl server url
+     */
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl = serverUrl;
     }
 
     /**
@@ -323,56 +347,69 @@ public class ServerUtils {
     }
 
     /**
-     * sends a JSON dump request to the server via WebSocket and waits for the
-     * response
-     * 
-     * @return an Optional containing the JSON dump as a String if successful,
-     *         or empty if an error occurs
+     * handles the request to retrieve a JSON dump of events from the server.
+     * if the user is authenticated, this method sends a request to the server to fetch
+     * a JSON dump of events.
+     * it includes the Authorization header with the authentication
+     * token obtained from the authentication service.
+     *
+     * @return An Optional containing a JSON dump of events if authentication is successful,
+     * or an empty Optional if authentication fails or an error occurs during the request.
      */
     public Optional<String> handleJsonDump() {
-
-        try {
-            WebSocketMessage requestMessage = new WebSocketMessage();
-            requestMessage.setEndpoint("api/events/jsonDump");
-            requestMessage.setMethod("GET");
-            WebSocketMessage response = sendMessageWithResponse(requestMessage);
-            if (response.getData() != null) {
-                return Optional.of(
-                        getObjectMapper().convertValue(response.getData(), String.class));
-            } else {
-                return Optional.empty();
-            }
-        } catch (ExecutionException | InterruptedException e) {
-            return Optional.empty();
+        if(isAuthenticated()) {
+            String jsonDump = client
+                    .target(serverUrl)
+                    .path("api/events/jsonDump")
+                    .request(APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, auth.get())
+                    .accept(APPLICATION_JSON)
+                    .get(new GenericType<String>() {
+                    });
+            return Optional.of(jsonDump);
         }
+        return Optional.empty();
     }
 
     /**
-     * retrieves a list of events from the server via WebSocket.
-     * if authentication is successful,
-     * sends a GET request to the "api/events" endpoint with the authentication
-     * header.
-     * parses and returns the list of events received in the response.
-     * 
+     * retrieves all events from the server.
+     * this method requires authentication.
+     * if the user is authenticated,
+     * it fetches all events from the server using a JAX-RS Client.
+     * if authentication fails, it returns an empty Optional.
      * @return an Optional containing the list of events if successful,
-     *         otherwise an empty Optional.
+     * otherwise an empty Optional.
      */
+//    public Optional<List<Event>> getAllEvents() {
+//        if (isAuthenticated()) {
+//            try {
+//                WebSocketMessage requestMessage = new WebSocketMessage();
+//                requestMessage.setEndpoint("api/events");
+//                requestMessage.setMethod("GET");
+//                requestMessage.setAuthHeader(auth.get());
+//                WebSocketMessage response = sendMessageWithResponse(requestMessage);
+//                if (response.getData() != null) {
+//                    return Optional.of(getObjectMapper().convertValue(response.getData(),
+//                            new TypeReference<ArrayList<Event>>() {
+//                            }));
+//                }
+//            } catch (ExecutionException | InterruptedException e) {
+//                return Optional.empty();
+//            }
+//        }
+//        return Optional.empty();
+//    }
     public Optional<List<Event>> getAllEvents() {
         if (isAuthenticated()) {
-            try {
-                WebSocketMessage requestMessage = new WebSocketMessage();
-                requestMessage.setEndpoint("api/events");
-                requestMessage.setMethod("GET");
-                requestMessage.setAuthHeader(auth.get());
-                WebSocketMessage response = sendMessageWithResponse(requestMessage);
-                if (response.getData() != null) {
-                    return Optional.of(getObjectMapper().convertValue(response.getData(),
-                            new TypeReference<ArrayList<Event>>() {
-                            }));
-                }
-            } catch (ExecutionException | InterruptedException e) {
-                return Optional.empty();
-            }
+            List<Event> events = client
+                    .target(serverUrl)
+                    .path("api/events")
+                    .request(APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, auth.get())
+                    .accept(APPLICATION_JSON)
+                    .get(new GenericType<List<Event>>() {
+                    });
+            return Optional.of(events);
         }
         return Optional.empty();
     }
@@ -587,4 +624,32 @@ public class ServerUtils {
         request.setData(tag);
         sendMessageWithoutResponse(request);
     }
+
+    /**
+     * gets the UUID associated with this domain model.
+     * @return the UUID associated with this domain model.
+     */
+    public UUID getDomainUuid() {
+        return this.domainUuid;
+    }
+
+    /**
+     * sets the UUID associated with this domain model.
+     * @param domainUuid the UUID to be associated with this domain model.
+     */
+    public void setDomainUuid(UUID domainUuid) {
+        this.domainUuid = domainUuid;
+        System.out.println("\u001B[32mConnected to server with id "
+                + domainUuid.toString() + "! ! !\u001B[0m");
+    }
+
+    /**
+     * updates the WebSocket connection using the provided MainCtrl instance.
+     * @param mainCtrl the MainCtrl instance used to update the WebSocket connection.
+     * @throws URISyntaxException if the URI syntax is invalid.
+     */
+    public void updateWebSocketConnection(MainCtrl mainCtrl) throws URISyntaxException {
+        this.webSocketClient = new MyWebSocketClient(config, mainCtrl);
+    }
+
 }

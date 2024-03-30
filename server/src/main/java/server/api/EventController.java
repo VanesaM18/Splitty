@@ -25,7 +25,7 @@ public class EventController {
      * Create a new event controller. This controller contains all api endpoints that have to do
      * with events.
      *
-     * @param eventService
+     * @param eventService event Service
      */
     public EventController(server.services.EventService eventService) {
         this.eventService = eventService;
@@ -50,26 +50,31 @@ public class EventController {
 
     /**
      * API Endpoint for getting a JSON dump of all events.
-     *
+     * @param auth authorization token obtained from the request header.
      * @return ResponseEntity with the JSON dump in the response body.
      */
     @GetMapping("/jsonDump")
-    public ResponseEntity<String> getJsonDump() {
-        List<Event> events = eventService.getAllEvents();
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        try {
-            String jsonDump = objectMapper.writeValueAsString(events);
-            // HttpHeaders headers = new HttpHeaders();
-            // headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
-            // headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;
-            // filename=events_dump.json");
-            // headers.add("Access-Control-Expose-Headers", "Content-Disposition");
-            return ResponseEntity.ok().body(jsonDump); // .headers(headers)
-        } catch (JsonProcessingException e) {
-            // TODO log error
-            return ResponseEntity.status(500).body("Error generating JSON dump");
+    public ResponseEntity<String> getJsonDump(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
+        if(eventService.isAuthenticated(auth)) {
+            List<Event> events = eventService.getAllEvents();
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            try {
+                String jsonDump = objectMapper.writeValueAsString(events);
+                HttpHeaders headers = new HttpHeaders();
+                headers.add(HttpHeaders.AUTHORIZATION, auth);
+                // headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
+                // headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;
+                // filename=events_dump.json");
+                // headers.add("Access-Control-Expose-Headers", "Content-Disposition");
+                return ResponseEntity.ok().headers(headers).body(jsonDump); // .headers(headers)
+            } catch (JsonProcessingException e) {
+                // TODO log error
+                return ResponseEntity.status(500).body("Error generating JSON dump");
+            }
         }
+        return ResponseEntity.status(401).body("Unauthorized");
     }
 
     /**

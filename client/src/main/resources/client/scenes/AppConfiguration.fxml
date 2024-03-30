@@ -6,9 +6,11 @@
 
 <AnchorPane prefHeight="250.0" prefWidth="250.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AppConfigurationCtrl">
    <children>
-      <ChoiceBox fx:id="choiceBox" layoutX="25.0" layoutY="113.0" prefWidth="200.0" />
-      <Text layoutX="35.0" layoutY="43.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%startup_welcome" wrappingWidth="200.0" />
-      <Text layoutX="35.0" layoutY="70.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%startup_title" wrappingWidth="200.0" />
-      <Button layoutX="68.0" layoutY="212.0" mnemonicParsing="false" onAction="#onSave" text="%startup_save" />
+      <ChoiceBox fx:id="choiceBox" layoutX="25.0" layoutY="95.0" prefWidth="200.0" />
+      <Text layoutX="26.0" layoutY="39.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%startup_welcome" wrappingWidth="200.0" />
+      <Text layoutX="25.0" layoutY="71.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%startup_title_language" wrappingWidth="200.0" />
+      <TextField fx:id="urlTextField" layoutX="26.0" layoutY="154.0" prefWidth="200.0" promptText="Enter URL" text="http://localhost:8080" />
+      <Button layoutX="69.0" layoutY="212.0" mnemonicParsing="false" onAction="#onSave" text="%startup_save" />
+      <Text layoutX="26.0" layoutY="149.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%startup_title_url" wrappingWidth="200.0" />
    </children>
 </AnchorPane>
