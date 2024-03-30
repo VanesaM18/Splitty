@@ -246,13 +246,17 @@ public class ExpenseCtrl {
      * Delete expense
      */
     public void deleteExpense() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation");
+        alert.setHeaderText("Are you sure you want to proceed?");
+        alert.setContentText("Do you want to delete this event?");
         try {
             server.deleteExpense(updateExpense);
         } catch (Exception err) {
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(err.getMessage());
-            alert.showAndWait();
+            var alert2 = new Alert(Alert.AlertType.ERROR);
+            alert2.initModality(Modality.APPLICATION_MODAL);
+            alert2.setContentText(err.getMessage());
+            alert2.showAndWait();
             return;
         }
 
