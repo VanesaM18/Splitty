@@ -233,6 +233,16 @@ public class Expense {
     }
 
     /**
+     * Removes expense type from the tags.
+     * @param tag type to be removed.
+     */
+    public void removeTag(ExpenseType tag) {
+        if(tags.contains(tag)) {
+            tags.remove(tag);
+        }
+    }
+
+    /**
      * Set the participant that will receive the payment
      * 
      * @param participant The participant that will receive the payment
