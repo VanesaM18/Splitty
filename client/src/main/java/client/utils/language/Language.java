@@ -15,7 +15,18 @@ public interface Language extends Runnable {
      * executes language-specific actions, changing the application's locale
      * and updating the user interface.
      */
-    void run();
+    void switchLanguage();
+
+    /**
+     * executes language-specific actions, changing the application's locale
+     * and updating the user interface.
+     * Needed in order to transform the action of switching a language
+     * to a runnable in an efficient manner.
+     */
+    @Override
+    default void run() {
+        switchLanguage();
+    }
 
     /**
      * gets the text content for the specific language.

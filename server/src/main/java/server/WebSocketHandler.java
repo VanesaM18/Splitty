@@ -43,6 +43,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         this.objectMapper.registerModule(new JavaTimeModule());
     }
 
+
     /**
      * Adds a new client to the lists of clients
      * 
@@ -188,9 +189,25 @@ public class WebSocketHandler extends TextWebSocketHandler {
                                     WebSocketMessage request, String method) throws Exception {
         switch (method) {
             case "POST" -> handleAddExpenseType(session, request);
-            //case "PUT" ->
-            //case "GET" ->
+            case "PUT" -> handleUpdateExpenseType(session, request);
+            case "DELETE" -> handleDeleteExpenseType(session, request);
         }
+    }
+
+    private void handleUpdateExpenseType(WebSocketSession session,
+                                         WebSocketMessage request) throws Exception {
+        ExpenseType tag = objectMapper.convertValue(
+                request.getData(), ExpenseType.class);
+        ResponseEntity<ExpenseType> savedTag = expenseTypeController.update(tag);
+        returnResult(session, request, savedTag.getBody());
+    }
+
+    private void handleDeleteExpenseType(WebSocketSession session,
+                                         WebSocketMessage request) throws Exception {
+        ExpenseType tag = objectMapper.convertValue(
+                request.getData(), ExpenseType.class);
+        ResponseEntity<ExpenseType> savedTag = expenseTypeController.delete(tag);
+        returnResult(session, request, savedTag.getBody());
     }
 
     private void handleAddExpenseType(WebSocketSession session,
@@ -222,7 +239,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             for (WebSocketSession ses : sessions) {
                 if (connectionToEvent.containsKey(ses)
                         && connectionToEvent.get(ses).equals(inviteCode)
-                        && ses != session) {
+                        && (ses != session || "DELETE".equals(request.getMethod()))) {
                     ses.sendMessage(convMessage);
                 }
             }
@@ -305,6 +322,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
             String method) throws Exception {
         if ("GET".equals(method)) {
             handleGetEventById(session, request);
+        } else if ("DELETE".equals(method)) {
+            handleDeleteEventById(session, request);
         }
     }
 
@@ -340,10 +359,22 @@ public class WebSocketHandler extends TextWebSocketHandler {
         returnResult(session, request, event.getBody());
     }
 
+    private void handleDeleteEventById(WebSocketSession session, WebSocketMessage request)
+            throws IOException {
+        List<Object> parameters = request.getParameters();
+        String id = (String) request.getData();
+        String auth = request.getAuthHeader();
+
+        ResponseEntity<String> deletedEvent = eventController.delete(id, auth);
+        returnResult(session, request, deletedEvent.getBody());
+        return;
+    }
+
     private void handleJsonDumpApi(WebSocketSession session,
             WebSocketMessage request) throws Exception {
         if ("GET".equals(request.getMethod())) {
-            ResponseEntity<String> jsonDumpResponse = eventController.getJsonDump();
+            String authHeader = request.getAuthHeader();
+            ResponseEntity<String> jsonDumpResponse = eventController.getJsonDump(authHeader);
             if (jsonDumpResponse.getStatusCode().is2xxSuccessful()) {
                 this.returnResult(session, request, jsonDumpResponse.getBody());
             }

@@ -7,9 +7,15 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
+
+import client.ConfigLoader;
+import client.Main;
+import client.utils.EmailManager;
+import client.utils.ServerUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.testfx.api.FxRobot;
 import org.testfx.assertions.api.Assertions;
 import org.testfx.framework.junit5.ApplicationExtension;
@@ -49,14 +55,15 @@ class InviteScreenCtrlTest {
      */
     @Start
     private void start(Stage stage) throws IOException {
-        // We need to load the fxml file in this complicated manner because we need to give it
-        // access to an injector.
+        ServerUtils serverUtils = Mockito.mock(ServerUtils.class);
+        MainCtrl mainCtrl = Mockito.mock(MainCtrl.class);
+        EmailManager emailManager = Mockito.mock(EmailManager.class);
+        ConfigLoader configLoader = Mockito.mock(ConfigLoader.class);
         FXMLLoader loader =
                 new FXMLLoader(getClass().getResource("/client/scenes/InviteScreen.fxml"));
         Locale locale = Locale.of("en", "EN");
         loader.setResources(ResourceBundle.getBundle("bundles.Splitty", locale));
-        Injector injector = createInjector(new MyModule());
-        loader.setControllerFactory(injector::getInstance);
+        loader.setControllerFactory(parameter -> new InviteScreenCtrl(mainCtrl, emailManager, serverUtils, configLoader));
 
         // Actually load the file, and also save the controller.
         pane = (Pane) loader.load();

@@ -18,6 +18,7 @@ import client.utils.SceneEnum;
 import client.utils.SceneManager;
 import commons.Event;
 import commons.Expense;
+import commons.ExpenseType;
 import commons.Participant;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -26,7 +27,6 @@ import java.util.Locale;
 import java.util.Optional;
 
 public class MainCtrl {
-
     private Stage primaryStage;
     private SceneManager sceneManager;
     private AppConfigurationCtrl appConfigurationCtrl;
@@ -34,6 +34,7 @@ public class MainCtrl {
     private SettingsCtrl settingsCtrl;
     private Scene settings;
     private ManagementCtrl managementCtrl;
+    private boolean isInManagement = false;
     private Scene management;
     private Scene overview;
     private Scene add;
@@ -51,6 +52,10 @@ public class MainCtrl {
     private Scene openDebt;
     private InviteScreenCtrl inviteScreenCtrl;
     private Scene invite;
+    private ExpenseTypeCtrl expenseTypeCtrl;
+    private Scene expenseType;
+    private AddEditTagsCtrl addEditTagsCtrl;
+    private Scene addEditTags;
     private Optional<Locale> currentLocale = Optional.empty();
     private boolean isInOpenDebt = false;
 
@@ -96,6 +101,12 @@ public class MainCtrl {
         this.openDebtsCtrl = data.getOpenDebt().getKey();
         this.openDebt = new Scene(data.getOpenDebt().getValue());
 
+        this.expenseTypeCtrl = data.getExpenseType().getKey();
+        this.expenseType = new Scene(data.getExpenseType().getValue());
+
+        this.addEditTagsCtrl = data.getAddEditTags().getKey();
+        this.addEditTags = new Scene(data.getAddEditTags().getValue());
+
         primaryStage.setOnCloseRequest(event -> {
             startPageCtrl.updateConfig();
         });
@@ -129,6 +140,7 @@ public class MainCtrl {
      * displays the management overview
      */
     public void showManagementOverview() {
+        isInManagement = true;
         this.sceneManager.pushScene(SceneEnum.MANAGEMENT, null);
         primaryStage.setTitle("Management Overview");
         primaryStage.setScene(management);
@@ -227,10 +239,13 @@ public class MainCtrl {
      * Refreshes data on client side
      */
     public void refreshData() {
-        if (isInOpenDebt == true) {
+        if (isInOpenDebt) {
             openDebtsCtrl.initialize(openDebtsCtrl.getEvent());
+        } else if (isInManagement) {
+            managementCtrl.refresh();
         } else {
             overviewEventCtrl.refresh();
+            inviteScreenCtrl.refresh();
         }
     }
 
@@ -270,12 +285,20 @@ public class MainCtrl {
     }
 
 
-     /** Show expense view.
+     /**
      * gets the scene manager responsible for managing scenes in the application.
      * @return SceneManager object.
      */
     public SceneManager getSceneManager() {
         return this.sceneManager;
+    }
+
+    /**
+     * gets the primary stage of the application.
+     * @return the primary stage of the application.
+     */
+    public Stage getPrimaryStage() {
+        return primaryStage;
     }
 
     /**
@@ -296,9 +319,54 @@ public class MainCtrl {
 
     /**
      * Sets status of open debt view
+     *
      * @param b the status
      */
     public void setIsInOpenDebt(boolean b) {
+        isInOpenDebt = b;
+    }
+
+    /**
+     * Shows the expense type screen.
+     * @param ev event to be considered.
+     */
+    public void showExpenseTypes(Event ev) {
+        primaryStage.setTitle("Expense types");
+        expenseTypeCtrl.setEvent(ev);
+        primaryStage.setScene(expenseType);
+        expenseTypeCtrl.refresh();
+    }
+
+    /**
+     * Shows the add tag screen.
+     * @param event event to which we want to add tags.
+     */
+    public void showAddTags(Event event) {
+        addEditTagsCtrl.setEvent(event);
+        addEditTagsCtrl.setTitle("Add expense type");
+        primaryStage.setTitle("Add expense type");
+        primaryStage.setScene(addEditTags);
+    }
+
+    /**
+     * Shows the update tag screen.
+     * @param event event to which we want to add tags.
+     * @param type tag to be edited.
+     */
+    public void showUpdateTags(Event event, ExpenseType type) {
+        addEditTagsCtrl.setEvent(event);
+        addEditTagsCtrl.setTitle("Update expense type");
+        addEditTagsCtrl.setExpenseType(type);
+        primaryStage.setTitle("Update expense type");
+        primaryStage.setScene(addEditTags);
+    }
+
+    /**
+     * Sets status of management view
+     *
+     * @param b the status
+     */
+    public void setIsInManagement(boolean b) {
         isInOpenDebt = b;
     }
 }

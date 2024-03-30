@@ -90,15 +90,15 @@ public class ParticipantsCtrl {
                 warning.setText("Name cannot be empty!");
                 return;
             }
-            if (p.getEmail().equals("") || !isEmailValid(p.getEmail())) {
+            if (!p.getEmail().equals("") && !isEmailValid(p.getEmail())) {
                 warning.setText("Invalid email!");
                 return;
             }
-            if (p.getIban().equals("") || !isIbanValid(p.getIban())) {
+            if (!p.getIban().equals("") && !isIbanValid(p.getIban())) {
                 warning.setText("Invalid IBAN!");
                 return;
             }
-            if (p.getBic().equals("") || !isIBicValid(p.getBic())) {
+            if (!p.getBic().equals("") && !isIBicValid(p.getBic())) {
                 warning.setText("Invalid BIC!");
                 return;
             }

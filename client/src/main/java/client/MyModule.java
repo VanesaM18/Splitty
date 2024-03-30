@@ -18,6 +18,7 @@ package client;
 import client.scenes.LoginCtrl;
 import client.scenes.MainCtrl;
 
+import client.utils.EmailManager;
 import com.google.inject.*;
 import com.google.inject.Module;
 
@@ -33,6 +34,7 @@ public class MyModule implements Module {
     public void configure(Binder binder) {
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
         binder.bind(LoginCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(EmailManager.class).in(Scopes.SINGLETON);
     }
 
     /**
@@ -48,6 +50,9 @@ public class MyModule implements Module {
         throws URISyntaxException {
         return new MyWebSocketClient(config, mainCtrl);
     }
+
+
+
 
     /**
      * Provides the configuration file for our client

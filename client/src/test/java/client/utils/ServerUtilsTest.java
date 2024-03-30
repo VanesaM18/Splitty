@@ -15,8 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -30,10 +29,11 @@ class ServerUtilsTest {
             .collect(Collectors.toList());
 
     @Test
-    void getAllEvents() {
+    void getEvent() {
         int eventCount = (int) ( Math.random() * 100);
 
-        var pz = func.apply(eventCount);
+        var pz = func.apply(1).get(0);
+        var inviteCode = pz.getInviteCode();
         var wsm = new WebSocketMessage();
         wsm.setData(pz);
         var future = CompletableFuture.supplyAsync(() -> wsm);
@@ -42,10 +42,10 @@ class ServerUtilsTest {
         when(wap.addPendingRequests(any())).thenReturn(future);
         ServerUtils severe = new ServerUtils(wap, cnf);
         ServerUtils.adminAuth(new Admin("","",""));
-        var response = severe.getAllEvents();
-        assertTrue(response.isPresent());
-        var responseList = response.get();
-        assertEquals(eventCount, responseList.size());
+        var response = severe.getEventById(inviteCode);
+        assertNotNull(response);
+        var responseId = response.getInviteCode();
+        assertEquals(inviteCode, responseId);
 
     }
 

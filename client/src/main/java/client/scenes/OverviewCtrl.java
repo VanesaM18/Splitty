@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Debt;
 import commons.Event;
 import commons.Expense;
 import commons.Participant;
@@ -100,8 +101,8 @@ public class OverviewCtrl {
         this.attachImage(addParticipantButton, "/assets/user-plus-solid.png");
         this.attachImage(editParticipantButton, "/assets/pen-solid.png");
         this.attachImage(deleteParticipantButton, "/assets/bin.png");
+        this.ev = server.getEventById(ev.getInviteCode());
         if (this.ev != null) {
-            this.ev = server.getEventById(ev.getInviteCode());
             title.setText(ev.getName());
             participantsObs.clear();
             refreshParticipants();
@@ -395,8 +396,25 @@ public class OverviewCtrl {
     /**
      * Goes to open debts page
      */
+    @FXML
     public void settleDebt() {
-        mainCtrl.showOpenDebts(this.ev);
+        List<Debt> list = Event.finalCalculation(ev);
+        if (list.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("No debts to settle.");
+
+            ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+            alert.getButtonTypes().setAll(okButton);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == okButton) {
+                mainCtrl.showOverviewEvent(ev);
+            }
+        } else {
+            mainCtrl.showOpenDebts(this.ev);
+        }
     }
 
     /**
@@ -414,4 +432,10 @@ public class OverviewCtrl {
         }
     }
 
+    /**
+     * Shows the tags screen.
+     */
+    public void showTags() {
+        mainCtrl.showExpenseTypes(ev);
+    }
 }
