@@ -250,6 +250,7 @@ public class ExpenseCtrl {
         alert.setTitle("Confirmation");
         alert.setHeaderText("Are you sure you want to proceed?");
         alert.setContentText("Do you want to delete this event?");
+        alert.showAndWait();
         try {
             server.deleteExpense(updateExpense);
         } catch (Exception err) {
