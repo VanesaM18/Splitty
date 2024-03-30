@@ -18,7 +18,7 @@ Agenda Items:
 - Talking Points (Inform/ brainstorm/ decision-making/ discuss): (20 min)
 
   - Discuss and decide on some aroused questions from the previous week:
-    
+
     - Viewed events: Should the arrow forward you to the event screen or only fill the invite code? (1 min)
     - Should we add more validation to the IBAN? Nathan had some ideas and would like to share. (1 min)
     - Discussing date and time formats. (3 min)
@@ -32,7 +32,7 @@ Agenda Items:
 - Question round: Does anyone have anything to add before the meeting closes? (1 min)
 - Closure (1 min)
 - What is everyone doing this week:
-  
+
   - Andreea - writing tests, error handling, server optimization
   - Nathan - Edit/Delete/Sync expenses
   - Vanesa - writing tests
