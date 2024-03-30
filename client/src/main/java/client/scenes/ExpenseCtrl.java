@@ -1,19 +1,15 @@
 package client.scenes;
 
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.Currency;
-import java.util.HashSet;
-import java.util.Set;
+import client.utils.ServerUtils;
 
 import com.google.inject.Inject;
 
-import client.utils.ServerUtils;
 import commons.Event;
 import commons.Expense;
+import commons.ExpenseType;
 import commons.Monetary;
 import commons.Participant;
-import commons.ExpenseType;
+
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -47,6 +43,12 @@ import javafx.stage.Modality;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.Currency;
+import java.util.HashSet;
+import java.util.Set;
+
 public class ExpenseCtrl {
     @FXML
     private TextField description;
@@ -76,7 +78,8 @@ public class ExpenseCtrl {
     private ListView<Participant> selectParticipant;
     @FXML
     private ListView<ExpenseType> selectedTags;
-    private final ObservableList<ExpenseType> selectedTypesObs = FXCollections.observableArrayList();
+    private final ObservableList<ExpenseType> selectedTypesObs =
+        FXCollections.observableArrayList();
 
     private final ObservableSet<Participant> selectParticipantsObs = FXCollections.observableSet();
 
@@ -425,8 +428,10 @@ public class ExpenseCtrl {
                         attachImage(deleteButton, "/assets/circle-xmark-solid.png", 15, 15);
                         deleteButton.setStyle("-fx-background-color: transparent; " +
                                 "-fx-padding: 0; -fx-border: none;");
-                        deleteButton.setOnMouseEntered(event -> deleteButton.setCursor(Cursor.HAND));
-                        deleteButton.setOnMouseExited(event -> deleteButton.setCursor(Cursor.DEFAULT));
+                        deleteButton.setOnMouseEntered(event ->
+                            deleteButton.setCursor(Cursor.HAND));
+                        deleteButton.setOnMouseExited(event ->
+                            deleteButton.setCursor(Cursor.DEFAULT));
                         hBox.getChildren().addAll(text, region, deleteButton);
                         setGraphic(hBox);
                         setBackground(new Background(new BackgroundFill(Color.web(item.getColor()),
