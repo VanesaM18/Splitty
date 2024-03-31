@@ -415,6 +415,28 @@ public class ServerUtils {
     }
 
     /**
+     * imports an array of events to the server.
+     * @param events array of Event objects to be imported.
+     * @return optional containing a list of imported
+     * Event objects if authentication is successful,
+     * else returns an empty Optional.
+     */
+    public Optional<List<Event>> importEvents(Event[] events) {
+        if (isAuthenticated()) {
+            List<Event> eventList = client
+                    .target(serverUrl)
+                    .path("api/events/import")
+                    .request(APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, auth.get())
+                    .accept(APPLICATION_JSON)
+                    .post(Entity.entity(events, APPLICATION_JSON), new GenericType<List<Event>>() {
+                    });
+            return Optional.of(eventList);
+        }
+        return Optional.empty();
+    }
+
+    /**
      * Send to the websocket the eventId to which the current client it's connected
      * too
      * 
