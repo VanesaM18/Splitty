@@ -1,15 +1,15 @@
 package client.scenes;
 
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.Currency;
-import java.util.HashSet;
-import java.util.Set;
+import client.utils.ServerUtils;
 
 import com.google.inject.Inject;
 
-import client.utils.ServerUtils;
-import commons.*;
+import commons.Event;
+import commons.Expense;
+import commons.ExpenseType;
+import commons.Monetary;
+import commons.Participant;
+
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -19,17 +19,37 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.Currency;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 public class ExpenseCtrl {
     @FXML
@@ -47,6 +67,9 @@ public class ExpenseCtrl {
     @FXML
     private ComboBox<Participant> receiver;
 
+    @FXML
+    private Button deleteExpenseButton;
+
     private final ObservableList<Participant> participantsObs = FXCollections.observableArrayList();
 
     @FXML
@@ -57,8 +80,8 @@ public class ExpenseCtrl {
     private ListView<Participant> selectParticipant;
     @FXML
     private ListView<ExpenseType> selectedTags;
-    private final ObservableList<ExpenseType> selectedTypesObs
-            = FXCollections.observableArrayList();
+    private final ObservableList<ExpenseType> selectedTypesObs =
+        FXCollections.observableArrayList();
 
     private final ObservableSet<Participant> selectParticipantsObs = FXCollections.observableSet();
 
@@ -87,6 +110,7 @@ public class ExpenseCtrl {
     @FXML
     public void initialize() {
         selectParticipant.setItems(participantsObs);
+        this.attachImage(deleteExpenseButton, "/assets/bin.png", 20, 20);
         initTagsCombobox();
         initReceiverCombobox();
         initSelectParticipants();
@@ -121,8 +145,10 @@ public class ExpenseCtrl {
     public void setUpdateExpense(Expense e) {
         this.updateExpense = e;
         if (e == null) {
+            deleteExpenseButton.setVisible(false);
             return;
         }
+        deleteExpenseButton.setVisible(true);
         this.date.setValue(e.getDate());
         this.description.setText(e.getName());
         this.amount.setText(e.getAmount().toString());
@@ -219,6 +245,33 @@ public class ExpenseCtrl {
         mainCtrl.showOverviewEvent(event);
     }
 
+    /**
+     * Delete expense
+     */
+    public void deleteExpense() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation");
+        alert.setHeaderText("Are you sure you want to proceed?");
+        alert.setContentText("Do you want to delete this event?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (!result.map(x -> x == ButtonType.OK).orElse(false)) {
+            return;
+        }
+        try {
+            server.deleteExpense(updateExpense);
+        } catch (Exception err) {
+            var alert2 = new Alert(Alert.AlertType.ERROR);
+            alert2.initModality(Modality.APPLICATION_MODAL);
+            alert2.setContentText(err.getMessage());
+            alert2.showAndWait();
+            return;
+        }
+
+        clearFields();
+        mainCtrl.refreshData();
+        mainCtrl.showOverviewEvent(event);
+    }
+
     private void initReceiverCombobox() {
         Callback<ListView<Participant>, ListCell<Participant>> cb = lv -> {
             return new ListCell<Participant>() {
@@ -239,7 +292,6 @@ public class ExpenseCtrl {
         receiver.setItems(participantsObs);
 
     }
-
 
     private void initTagsCombobox() {
         Callback<ListView<ExpenseType>, ListCell<ExpenseType>> cb = lv -> {
@@ -348,7 +400,8 @@ public class ExpenseCtrl {
      */
     public void addTag() {
         ExpenseType tag = types.getSelectionModel().getSelectedItem();
-        if(!selectedTypesObs.contains(tag)) selectedTypesObs.add(tag);
+        if (!selectedTypesObs.contains(tag))
+            selectedTypesObs.add(tag);
         initTypes();
     }
 
@@ -387,9 +440,9 @@ public class ExpenseCtrl {
                         deleteButton.setStyle("-fx-background-color: transparent; " +
                                 "-fx-padding: 0; -fx-border: none;");
                         deleteButton.setOnMouseEntered(event ->
-                                deleteButton.setCursor(Cursor.HAND));
+                            deleteButton.setCursor(Cursor.HAND));
                         deleteButton.setOnMouseExited(event ->
-                                deleteButton.setCursor(Cursor.DEFAULT));
+                            deleteButton.setCursor(Cursor.DEFAULT));
                         hBox.getChildren().addAll(text, region, deleteButton);
                         setGraphic(hBox);
                         setBackground(new Background(new BackgroundFill(Color.web(item.getColor()),
@@ -405,10 +458,11 @@ public class ExpenseCtrl {
 
     /**
      * Attaches an image to a button
-     * @param but the button to attach to
-     * @param url the url to the image
+     * 
+     * @param but    the button to attach to
+     * @param url    the url to the image
      * @param height the height of the image
-     * @param width the width of the image
+     * @param width  the width of the image
      */
     public void attachImage(Button but, String url, float height, float width) {
         URL imageUrl = getClass().getResource(url);

@@ -140,7 +140,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private void handleExpense(WebSocketSession session, WebSocketMessage request)
             throws Exception {
         if ("DELETE".equals(request.getMethod())) {
-            long expenseId = (Long) request.getData();
+            long expenseId = objectMapper.convertValue(request.getData(), Long.class);
             ResponseEntity<String> deletedExpense = expenseController.deleteById(expenseId);
             returnResult(session, request, deletedExpense.getBody());
             return;
