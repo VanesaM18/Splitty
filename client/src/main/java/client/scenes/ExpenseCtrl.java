@@ -21,6 +21,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -47,6 +48,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.Currency;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 public class ExpenseCtrl {
@@ -250,7 +252,10 @@ public class ExpenseCtrl {
         alert.setTitle("Confirmation");
         alert.setHeaderText("Are you sure you want to proceed?");
         alert.setContentText("Do you want to delete this event?");
-        alert.showAndWait();
+        Optional<ButtonType> result = alert.showAndWait();
+        if (!result.map(x -> x == ButtonType.OK).orElse(false)) {
+            return;
+        }
         try {
             server.deleteExpense(updateExpense);
         } catch (Exception err) {
