@@ -23,12 +23,12 @@ import com.google.inject.Injector;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Locale;
 import java.util.Optional;
 import atlantafx.base.theme.CupertinoLight;
+import javafx.scene.image.Image;
 
 public class Main extends Application {
 
@@ -69,6 +69,8 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws IOException {
         instance = this;
         this.stage = primaryStage;
+        Image image = new Image("assets/splitty logo.png");
+        stage.getIcons().add(image);
         Application.setUserAgentStylesheet(new CupertinoLight().getUserAgentStylesheet());
         this.start(configLoader.getLanguage(), configLoader.getStartScene());
     }
