@@ -9,8 +9,10 @@ import server.database.AdminRepository;
 import server.database.EventRepository;
 import server.database.ParticipantRepository;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
@@ -65,8 +67,7 @@ public class EventService {
     public Optional<Event> createEvent(Event event) {
         // NOTE: The participant list must be empty, people can only be added to an event by using
         // the invite code.
-        if (isNullOrEmpty(event.getName()) || event.getDateTime() == null
-                || (event.getParticipants() != null && !event.getParticipants().isEmpty())) {
+        if (!checkEventDetails(event)) {
             return Optional.empty();
         }
         // generate invite code
@@ -76,6 +77,32 @@ public class EventService {
             event.generateInviteCode();
         }
         return Optional.of(eventRepository.save(event));
+    }
+
+    private boolean checkEventDetails(Event event) {
+        return !(isNullOrEmpty(event.getName()) || event.getDateTime() == null
+                || (event.getParticipants() != null && !event.getParticipants().isEmpty()));
+    }
+
+    /**
+     * saves an array of events after checking the
+     * uniqueness of their id and the validity of
+     * the rest of its details.
+     * @param events array of Event objects to be saved.
+     * @return list of saved Event objects after filtering out
+     * invalid events and saving valid ones.
+     */
+    public List<Event> saveEvents(Event[] events) {
+        return Arrays.stream(events)
+                .filter(this::checkUniqueId)
+                .filter(this::checkEventDetails)
+                .map(eventRepository::save)
+                .collect(Collectors.toList());
+    }
+
+    private boolean checkUniqueId(Event event) {
+        String eventId = event.getInviteCode();
+        return !eventRepository.existsByInviteCodeEqualsIgnoreCase(eventId);
     }
 
     /**

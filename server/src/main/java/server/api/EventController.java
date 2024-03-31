@@ -109,6 +109,27 @@ public class EventController {
     }
 
     /**
+     * endpoint for adding or importing events.
+     * @param events array of Event objects to be added or imported.
+     * @param auth authorization token provided in the request header.
+     * @return responseEntity containing a list of added or
+     * imported events if authentication is successful,
+     * else returns ResponseEntity with status code 401 (Unauthorized).
+     */
+    @PostMapping(path = {"", "/import"})
+    public ResponseEntity<List<Event>> addEvents(@RequestBody Event[] events,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
+        if(eventService.isAuthenticated(auth)) {
+            if (events == null) {
+                return ResponseEntity.badRequest().build();
+            }
+            List<Event> eventList = eventService.saveEvents(events);
+            return ResponseEntity.ok(eventList);
+        }
+        return ResponseEntity.status(401).build();
+    }
+
+    /**
      * Update a pre-existing event
      *
      * @param updatedEvent The event to update.
