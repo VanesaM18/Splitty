@@ -110,6 +110,7 @@ public class ExpenseCtrl {
     @FXML
     public void initialize() {
         selectParticipant.setItems(participantsObs);
+        this.attachImage(deleteExpenseButton, "/assets/bin.png", 20, 20);
         initTagsCombobox();
         initReceiverCombobox();
         initSelectParticipants();
