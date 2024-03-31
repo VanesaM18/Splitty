@@ -116,7 +116,7 @@ public class EventController {
      * imported events if authentication is successful,
      * else returns ResponseEntity with status code 401 (Unauthorized).
      */
-    @PostMapping(path = {"", "/import"})
+    @PostMapping("/import")
     public ResponseEntity<List<Event>> addEvents(@RequestBody Event[] events,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
         if(eventService.isAuthenticated(auth)) {
