@@ -13,12 +13,12 @@
             <Font name="System Bold" size="32.0" />
          </font>
       </Label>
-      <Label layoutX="35.0" layoutY="94.0" text="Total cost 345€">
+      <Label fx:id="cost" layoutX="35.0" layoutY="94.0" text="Total cost: 345€">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <PieChart layoutX="35.0" layoutY="131.0" prefHeight="243.0" prefWidth="532.0" />
+      <PieChart fx:id="pie" layoutX="35.0" layoutY="131.0" prefHeight="243.0" prefWidth="532.0" />
       <Button layoutX="35.0" layoutY="392.0" mnemonicParsing="false" text="Back" onAction="#back">
          <font>
             <Font size="14.0" />

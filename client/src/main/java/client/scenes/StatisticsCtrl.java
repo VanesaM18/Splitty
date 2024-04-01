@@ -3,11 +3,22 @@ package client.scenes;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
+import commons.Expense;
+import commons.ExpenseType;
+import commons.Monetary;
+import javafx.fxml.FXML;
+import javafx.scene.chart.PieChart;
+
+import javafx.scene.control.*;
 
 public class StatisticsCtrl {
     private Event event;
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
+    @FXML
+    private PieChart pie;
+    @FXML
+    private Label cost;
 
     /**
      * Controller responsible for handling the editing tags
@@ -29,7 +40,37 @@ public class StatisticsCtrl {
      * @param ev the event
      */
     public void setEvent(Event ev) {
-        this.event = ev;
+        this.event = server.getEventById(ev.getInviteCode());
+        initPieChart();
+        initCost();
+    }
+
+    private void initCost() {
+        Monetary expenseCost = new Monetary(0);
+        for(Expense expense : event.getExpenses()) {
+            expenseCost = Monetary.add(expenseCost, expense.getAmount());
+        }
+        cost.setText("Total cost: " + expenseCost.toString()
+                + expenseCost.getCurrency().getSymbol());
+    }
+
+    private void initPieChart() {
+        for(ExpenseType tag : event.getTags()) {
+            Double totalCost = getAmount(tag);
+            PieChart.Data slice = new PieChart.Data(tag.getName(), totalCost);
+            pie.getData().add(slice);
+        }
+    }
+
+    private Double getAmount(ExpenseType tag) {
+        Monetary value = new Monetary(0);
+        for(Expense expense : server.getAllExpensesFromEvent(event)) {
+            for (ExpenseType expenseType : expense.getTags()) {
+                if(expenseType.getName().equals(tag.getName()))
+                    value = Monetary.add(value, expense.getAmount());
+            }
+        }
+        return Double.parseDouble(value.toString());
     }
 
     /**
@@ -37,5 +78,9 @@ public class StatisticsCtrl {
      */
     public void back() {
         mainCtrl.showOverviewEvent(event);
+        pie.getData().clear();
+//        pie = new PieChart();
+//        pie.setData(FXCollections.observableArrayList());
+
     }
 }
