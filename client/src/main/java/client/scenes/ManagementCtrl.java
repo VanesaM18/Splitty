@@ -169,7 +169,7 @@ public class ManagementCtrl {
     public void handleJsonDumpButton() {
         var optional = server.handleJsonDump();
         optional.ifPresentOrElse(dump ->
-                this.showFileChooser(dump, "splitty_jsonDump_"+ LocalDateTime.now() +".json"), () ->
+                this.showFileChooser(dump, "splitty_jsonDump_"+ UUID.randomUUID() +".json"), () ->
                 showAlert(AlertType.ERROR, "JSON Dump Error", "Failed to retrieve JSON dump"));
     }
 
