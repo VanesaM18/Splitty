@@ -34,6 +34,7 @@ import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -531,7 +532,7 @@ public class ServerUtils {
     public void deleteDebts(Debt debt, Event e) {
         try {
             List<Expense> expenses = getAllExpensesFromEvent(e);
-            removeDoubleExpense(expenses);
+//            removeDoubleExpense(expenses);
             List<Expense> relevantExpenses = new ArrayList<>();
             for (Expense ex : expenses) {
                 if (ex.getCreator().equals(debt.getCreditor()) &&
@@ -539,7 +540,6 @@ public class ServerUtils {
                     relevantExpenses.add(ex);
                 }
             }
-
 
             for (Expense ex : relevantExpenses) {
                 long value = ex.getAmount().getInternalValue();
@@ -558,6 +558,12 @@ public class ServerUtils {
         }
     }
 
+    public void deleteDebt2(Event e, Debt debt, LocalDate date) throws ExecutionException, InterruptedException {
+        Set<Participant> splitBetween = new HashSet<>();
+        splitBetween.add(debt.getCreditor());
+        Expense expense = new Expense(e, "Paid", debt.getDebtor(), debt.getAmount(), date, splitBetween);
+            addExpense(expense);
+    }
     /**
      * only adds expenses where a creditor and
      * debtor differ completely for N-1
