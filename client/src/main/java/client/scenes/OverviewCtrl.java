@@ -438,4 +438,11 @@ public class OverviewCtrl {
     public void showTags() {
         mainCtrl.showExpenseTypes(ev);
     }
+
+    /**
+     * Shows the statistics screen.
+     */
+    public void showStatistics() {
+        mainCtrl.showStatistics(ev);
+    }
 }

@@ -23,6 +23,8 @@ public class InitializationData {
 
     private Pair<ExpenseTypeCtrl, Parent> expenseType;
     private Pair<AddEditTagsCtrl, Parent> addEditTags;
+    private Pair<StatisticsCtrl, Parent> statistics;
+
     /**
      * Creates an instance of initialize data
      */
@@ -234,5 +236,21 @@ public class InitializationData {
      */
     public void setAddEditTags(Pair<AddEditTagsCtrl, Parent> addEditTags) {
         this.addEditTags = addEditTags;
+    }
+
+    /**
+     * Gets the statistics pair
+     *
+     * @return expense type pair
+     */
+    public Pair<StatisticsCtrl, Parent> getStatistics() { return statistics; }
+
+    /**
+     * Sets the statistics pair
+     *
+     * @param statistics pair
+     */
+    public void setStatistics(Pair<StatisticsCtrl, Parent> statistics) {
+        this.statistics = statistics;
     }
 }

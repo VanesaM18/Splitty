@@ -108,10 +108,8 @@ public class Main extends Application {
         var management = FXML.load(ManagementCtrl.class, locale,
                 "client", "scenes", "Management.fxml");
         var loginAdmin = FXML.load(LoginCtrl.class, locale, "client", "scenes", "LoginView.fxml");
-
         var participants =
                 FXML.load(ParticipantsCtrl.class, locale, "client", "scenes", "Participants.fxml");
-
         var expense =
             FXML.load(ExpenseCtrl.class, locale, "client", "scenes", "Expense.fxml");
         var startPage =
@@ -126,6 +124,8 @@ public class Main extends Application {
                 FXML.load(ExpenseTypeCtrl.class, locale, "client", "scenes", "ExpenseTypes.fxml");
         var addEditTags =
                 FXML.load(AddEditTagsCtrl.class, locale, "client", "scenes", "AddEditTags.fxml");
+        var statistics =
+                FXML.load(StatisticsCtrl.class, locale, "client", "scenes", "Statistics.fxml");
 
         InitializationData data = new InitializationData();
         data.setAppConfiguration(appConfiguration);
@@ -140,6 +140,7 @@ public class Main extends Application {
         data.setOpenDebt(openDebt);
         data.setExpenseType(expenseType);
         data.setAddEditTags(addEditTags);
+        data.setStatistics(statistics);
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         sceneManager.setMainCtrl(mainCtrl);
