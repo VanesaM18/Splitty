@@ -5,8 +5,6 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Debt;
-import commons.Expense;
-import commons.Participant;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
@@ -18,10 +16,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.*;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 import javafx.geometry.Insets;
 
@@ -30,7 +25,6 @@ public class OpenDebtsCtrl {
     private final MainCtrl mainCtrl;
     private final ServerUtils server;
     private final EmailManager emailManager;
-    private LocalDate date;
 
     @FXML
     private VBox debtContainer;
@@ -120,11 +114,8 @@ public class OpenDebtsCtrl {
         Button button = new Button("Mark Received");
         button.setOnAction(event -> {
 
-//            try {
-//                server.deleteDebt2(this.e, debt, date);
-//            } catch (ExecutionException | InterruptedException ex) {
-//                throw new RuntimeException(ex);
-//            }
+//            server.deleteDebt2(this.e, debt);
+
             server.deleteDebts(debt, e);
             server.markDebtAsReceived(e.getInviteCode());
             debtContainer.getChildren().removeIf(node ->

@@ -558,11 +558,17 @@ public class ServerUtils {
         }
     }
 
-    public void deleteDebt2(Event e, Debt debt, LocalDate date) throws ExecutionException, InterruptedException {
+    public void deleteDebt2(Event e, Debt debt) {
         Set<Participant> splitBetween = new HashSet<>();
         splitBetween.add(debt.getCreditor());
-        Expense expense = new Expense(e, "Paid", debt.getDebtor(), debt.getAmount(), date, splitBetween);
+        Expense expense = new Expense(e, "Paid", debt.getDebtor(), debt.getAmount(), LocalDate.now(), splitBetween);
+        System.out.print(expense.getDate());
+        try {
             addExpense(expense);
+        } catch (ExecutionException | InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
+
     }
     /**
      * only adds expenses where a creditor and
