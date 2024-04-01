@@ -1,17 +1,13 @@
 package server.services;
 
+import commons.*;
 import org.springframework.stereotype.Service;
-import commons.Admin;
-import commons.Event;
-import commons.Participant;
 import server.BasicAuthParser;
-import server.database.AdminRepository;
-import server.database.EventRepository;
-import server.database.ParticipantRepository;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import server.database.*;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,20 +15,31 @@ public class EventService {
     private final EventRepository eventRepository;
     private final AdminRepository adminRepository;
     private final ParticipantRepository participantRepository;
+    private final ExpenseRepository expenseRepository;
+    private final ExpenseTypeRepository expenseTypeRepository;
 
     /**
      * constructs a new EventService with the provided EventRepository and AdminRepository
-     * 
-     * @param eventRepository repository providing functionality for event-related operations
-     * @param adminRepository repository providing functionality for admin-related operations
+     *
+     * @param eventRepository       repository providing functionality for event-related operations
+     * @param adminRepository       repository providing functionality for admin-related operations
      * @param participantRepository repository providing functionality for participant-related
-     *        operations
+     *                              operations
+     * @param expenseRepository     repository providing functionality for expense-related
+     *                              operations
+     * @param expenseTypeRepository repository providing functionality for expenseType-related
+     *                              operations
      */
-    public EventService(EventRepository eventRepository, AdminRepository adminRepository,
-            ParticipantRepository participantRepository) {
+    public EventService(EventRepository eventRepository,
+                        AdminRepository adminRepository,
+                        ParticipantRepository participantRepository,
+                        ExpenseRepository expenseRepository,
+                        ExpenseTypeRepository expenseTypeRepository) {
         this.eventRepository = eventRepository;
         this.adminRepository = adminRepository;
         this.participantRepository = participantRepository;
+        this.expenseRepository = expenseRepository;
+        this.expenseTypeRepository = expenseTypeRepository;
     }
 
     /**
@@ -67,7 +74,7 @@ public class EventService {
     public Optional<Event> createEvent(Event event) {
         // NOTE: The participant list must be empty, people can only be added to an event by using
         // the invite code.
-        if (!checkEventDetails(event)) {
+        if (!checkNewEvent(event)) {
             return Optional.empty();
         }
         // generate invite code
@@ -79,7 +86,7 @@ public class EventService {
         return Optional.of(eventRepository.save(event));
     }
 
-    private boolean checkEventDetails(Event event) {
+    private boolean checkNewEvent(Event event) {
         return !(isNullOrEmpty(event.getName()) || event.getDateTime() == null
                 || (event.getParticipants() != null && !event.getParticipants().isEmpty()));
     }
@@ -96,8 +103,145 @@ public class EventService {
         return Arrays.stream(events)
                 .filter(this::checkUniqueId)
                 .filter(this::checkEventDetails)
-                .map(eventRepository::save)
+                .filter(this::falseIfDuplicateParticipantNames)
+                .filter(this::falseIfDuplicateParticipantIds)
+                .map(this::cleanEvent)
+                .map(this::properSave)
                 .collect(Collectors.toList());
+    }
+
+    private boolean checkEventDetails(Event event) {
+        return (!isNullOrEmpty(event.getName())
+                && !isNullOrEmpty(event.getInviteCode())
+                );
+    }
+
+    private boolean falseIfDuplicateParticipantNames(Event e) {
+        return e.getParticipants().size()
+                == e.getParticipants()
+                .stream().map(Participant::getName)
+                .distinct().count();
+    }
+
+    private boolean falseIfDuplicateParticipantIds(Event e) {
+        return e.getParticipants().size()
+                == e.getParticipants()
+                .stream().map(Participant::getId)
+                .distinct().count();
+    }
+
+
+    private Event cleanEvent(Event event) {
+        var participantSet = event.getParticipants();
+        // Participants with IDs that are in the db.
+        var conflictingParticipants = participantSet
+                .stream().filter(p -> participantRepository
+                        .existsById(p.getId())).collect(Collectors.toSet());
+        // Participants with IDs that are not in the db
+        Set<Participant> nonConflictingParticipants = participantSet
+                .stream().filter(p -> !participantRepository
+                        .existsById(p.getId())).collect(Collectors.toSet());
+        // Participants that have ID that exists in the db
+        // and the same details as their version in the db.
+        Set<Participant> conflictingButEqual = conflictingParticipants
+                .stream().filter(this::checkIfParticipantsExists)
+                .collect(Collectors.toSet());
+        // Participants that have ID that exists in the db but with other details;
+        Set<Participant> otherParticpants = conflictingParticipants
+                .stream().filter(this::checkIfParticipantHasConflictingId)
+                .collect(Collectors.toSet());
+        // Adding the other Participants to be saved into the db.
+        nonConflictingParticipants.addAll(otherParticpants);
+        // Collection of saved Participants
+        Set<Participant> goodParticpants = new HashSet<>(
+                participantRepository.saveAll(nonConflictingParticipants));
+        goodParticpants.addAll(conflictingButEqual);
+        // cleaned event
+        event.setParticipants(goodParticpants);
+        return cleanExpensesOfEvent(event);
+    }
+
+    private Event cleanExpensesOfEvent(Event event) {
+        Set<Participant> participants = event.getParticipants();
+        Set<String> participantNames = participants.stream()
+                .map(Participant::getName).collect(Collectors.toSet());
+        Map<String, Participant> participantMap = new HashMap<>();
+        participants.forEach(participant -> {
+            participantMap.put(participant.getName(),participant);
+        });
+        Set<Expense> expenses = event.getExpenses();
+        Function<Participant, Participant> correctParticipant
+                = participant -> participantMap.get(participant.getName());
+        Function<Expense, Expense> mapParticipants = expense -> {
+            expense.setSplitBetween(
+                  expense.getSplitBetween().stream()
+                          .map(correctParticipant)
+                          .collect(Collectors.toSet())
+            );
+            expense.setReceiver(correctParticipant.apply(expense.getCreator()));
+            return expense;
+        };
+        Predicate<Participant> nameCondition = participant
+                -> participantNames.contains(participant.getName());
+        Predicate<Expense> properExpense = expense
+                -> expense.getSplitBetween().stream()
+                .allMatch(nameCondition)
+                && nameCondition.test(expense.getCreator());
+        event.setExpenses(
+                expenses.stream().filter(properExpense)
+                        .map(mapParticipants)
+                        .collect(Collectors.toSet())
+        );
+        return event;
+    }
+
+    private Event properSave(Event event) {
+        Set<Expense> ball = event.getExpenses();
+        Set<ExpenseType> ballTags = event.getTags();
+        event.setExpenses(HashSet.newHashSet(0));
+        event.setTags(HashSet.newHashSet(0));
+        eventRepository.save(event);
+        event.setExpenses(ball);
+        cleanTagsOfEvent(event, ballTags);
+        expenseRepository.saveAll(ball);
+        return event;
+    }
+
+
+    private void cleanTagsOfEvent(Event event, Set<ExpenseType> tags) {
+        tags = new HashSet<>(expenseTypeRepository.saveAll(tags));
+        Map<String, ExpenseType> tagNames = new HashMap<>();
+        tags.forEach(tag -> tagNames.put(tag.getName(), tag));
+        Function<ExpenseType, ExpenseType> mapTag = tag
+                -> tagNames.get(tag.getName());
+        Function<Set<ExpenseType>, Set<ExpenseType>> mapTags =
+                someTags -> someTags
+                        .stream().map(mapTag)
+                        .collect(Collectors.toSet());
+        Set<Expense> expenses = event.getExpenses();
+        Set<Expense> cleanExpenses = new HashSet<>(expenses);
+        cleanExpenses.forEach(expense -> expense.setTags(
+                        mapTags.apply(expense.getTags())));
+        event.setExpenses(cleanExpenses);
+        event.setTags(mapTags.apply(event.getTags()));
+
+    }
+
+    private boolean checkIfParticipantsExists(Participant e) {
+        Optional<Participant> participantOptional
+                = participantRepository.findById(e.getId());
+        if(participantOptional.isEmpty())
+            return false;
+        Participant participant = participantOptional.get();
+        return Objects.equals(participant.getName(), e.getName()) &&
+                Objects.equals(participant.getBic(), e.getBic()) &&
+                Objects.equals(participant.getIban(), e.getIban()) &&
+                Objects.equals(participant.getEmail(), e.getEmail());
+    }
+
+    private boolean checkIfParticipantHasConflictingId(Participant e) {
+        return participantRepository.existsById(e.getId())
+                && !this.checkIfParticipantsExists(e);
     }
 
     private boolean checkUniqueId(Event event) {
