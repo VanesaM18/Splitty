@@ -216,7 +216,7 @@ public class ExpenseCtrl {
             expense.setReceiver(validateReceiver());
             expense.setEvent(this.event);
             expense.setSplitBetween(validateSplitBetween());
-            Set<ExpenseType> tags = new HashSet<>(selectedTypesObs);
+            Set<ExpenseType> tags = validTags(new HashSet<>(selectedTypesObs));
             expense.setTags(tags);
         } catch (Exception ex) {
             warning.setText(ex.getMessage());
@@ -243,6 +243,15 @@ public class ExpenseCtrl {
         clearFields();
         mainCtrl.refreshData();
         mainCtrl.showOverviewEvent(event);
+    }
+
+    private Set<ExpenseType> validTags(HashSet<ExpenseType> expenseTypes) {
+        event = server.getEventById(event.getInviteCode());
+        Set<ExpenseType> selected = new HashSet<ExpenseType>();
+        for(ExpenseType tag : event.getTags()) {
+            if(expenseTypes.contains(tag)) selected.add(tag);
+        }
+        return selected;
     }
 
     /**
