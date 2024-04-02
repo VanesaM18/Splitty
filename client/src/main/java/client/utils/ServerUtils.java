@@ -532,7 +532,6 @@ public class ServerUtils {
     public void deleteDebts(Debt debt, Event e) {
         try {
             List<Expense> expenses = getAllExpensesFromEvent(e);
-//            removeDoubleExpense(expenses);
             List<Expense> relevantExpenses = new ArrayList<>();
             for (Expense ex : expenses) {
                 if (ex.getCreator().equals(debt.getCreditor()) &&
@@ -558,106 +557,60 @@ public class ServerUtils {
         }
     }
 
-//    public void deleteDebt2(Event e, Debt debt) {
-//        Set<Participant> splitBetween = new HashSet<>();
-//        splitBetween.add(debt.getCreditor());
-//        Expense expense = new Expense(e, "Debt", debt.getDebtor(), debt.getAmount(), LocalDate.now(), splitBetween);
-//        System.out.print(expense.getDate());
-//        try {
-//            addExpense(expense);
-//        } catch (ExecutionException | InterruptedException ex) {
-//            throw new RuntimeException(ex);
-//        }
-//
-//    }
 
     public void removeExpensesDebts(Event e, Debt debt){
         try{
-        Set<Participant> splitBetween = new HashSet<>();
-        splitBetween.add(debt.getCreditor());
-        Expense expense = new Expense(e, "Debt", debt.getDebtor(), debt.getAmount(), LocalDate.now(), splitBetween);
-        System.out.print(expense.getDate());
-        try {
+            Set<Participant> splitBetween = new HashSet<>();
+            splitBetween.add(debt.getCreditor());
+            Expense expense = new Expense(e, "Debt", debt.getDebtor(), debt.getAmount(), LocalDate.now(), splitBetween);
             addExpense(expense);
-        } catch (ExecutionException | InterruptedException ex) {
-            throw new RuntimeException(ex);
-        }
-        List<Debt> totalDebts = e.paymentsToDebt(e);
-        List<Expense> allExpenses = getAllExpensesFromEvent(e);
-        Map<Participant, Long> debtPP = new HashMap<>();
-        Set<Participant> setParticipants = e.getParticipants();
-        e.totalDebtPP(setParticipants, totalDebts, debtPP);
 
-//        List<Expense> relevantExpensesD = new ArrayList<>();
-//        List<Expense> relevantExpensesE = new ArrayList<>();
+            Map<Participant, Long> debtPP = new HashMap<>();
+            Set<Participant> setParticipants = e.getParticipants();
+            List<Expense> allExpenses = getAllExpensesFromEvent(e);
 
-        List<Expense> relevantExpenses = new ArrayList<>();
-
-        for (Map.Entry<Participant, Long> entry : debtPP.entrySet()) {
-            Participant participant = entry.getKey();
-            Long amount = entry.getValue();
-            if (amount == 0) {
-                for (Expense ex : allExpenses) {
-//                    if (ex.getCreator().equals(participant)) {
-//                        relevantExpensesD.add(ex);
-//                    } else if (ex.getSplitBetween().contains(participant)) {
-//                        relevantExpensesE.add(ex);
-//                    }
-                    if (ex.getCreator().equals(participant) ||
-                            ex.getSplitBetween().contains(participant)) {
-                        relevantExpenses.add(ex);
+            for(Participant p : setParticipants){
+                long amount = 0;
+                for(Expense ex : allExpenses){
+                    if(ex.getCreator().equals(p) && ex.getSplitBetween().contains(p)){
+                        amount += 0;
+                    }
+                    if(ex.getCreator().equals(p)){
+                        amount += ex.getAmount().getInternalValue();
+                    }
+                    if(ex.getSplitBetween().contains(p)){
+                        amount -= ex.getAmount().getInternalValue();
                     }
                 }
-
-                for (Expense ex : relevantExpenses) {
-                    long value = ex.getAmount().getInternalValue();
-                    value = value - (value / ex.getSplitBetween().size());
-                    ex.getAmount().setInternalValue(value);
-                    ex.removeParticipant(participant);
-                    WebSocketMessage request = new WebSocketMessage();
-                    request.setEndpoint("api/expenses/id");
-                    request.setMethod("PUT");
-                    request.setData(ex);
-                    sendMessageWithResponse(request);
-                }
-
+                debtPP.put(p, amount);
             }
 
-
-        }
+            for (Map.Entry<Participant, Long> entry : debtPP.entrySet()){
+                List<Expense> relevantExpenses = new ArrayList<>();
+                if(entry.getValue() == 0){
+                    for(Expense ex : allExpenses){
+                        if(ex.getCreator().equals(entry.getKey()) || ex.getSplitBetween().contains(entry.getKey())){
+                            relevantExpenses.add(ex);
+                        }
+                    }
+                    for (Expense ex : relevantExpenses) {
+                        long value = ex.getAmount().getInternalValue();
+                        if (!ex.getSplitBetween().isEmpty()) { // Add this check
+                            value -= value / ex.getSplitBetween().size();
+                        }
+                        ex.getAmount().setInternalValue(value);
+                        ex.removeParticipant(entry.getKey());
+                        WebSocketMessage request = new WebSocketMessage();
+                        request.setEndpoint("api/expenses/id");
+                        request.setMethod("PUT");
+                        request.setData(ex);
+                        sendMessageWithResponse(request);
+                    }
+                }
+            }
         } catch (ExecutionException | InterruptedException er) {
             er.printStackTrace();
         }
-
-//            for (Expense ex : relevantExpensesD) {
-//                ex.removeEverything();
-//                WebSocketMessage request = new WebSocketMessage();
-//                request.setEndpoint("api/expenses/id");
-//                request.setMethod("PUT");
-//                request.setData(ex);
-//                try {
-//                    sendMessageWithResponse(request);
-//                } catch (ExecutionException | InterruptedException er) {
-//                    throw new RuntimeException(er);
-//                }
-//            }
-//
-//            for (Expense ex : relevantExpensesE) {
-//                long value = ex.getAmount().getInternalValue();
-//                value -= value / ex.getSplitBetween().size();
-//                ex.getAmount().setInternalValue(value);
-//                ex.removeParticipant(participant);
-//
-//                WebSocketMessage request = new WebSocketMessage();
-//                request.setEndpoint("api/expenses/id");
-//                request.setMethod("PUT");
-//                request.setData(ex);
-//                try {
-//                    sendMessageWithResponse(request);
-//                } catch (ExecutionException | InterruptedException er) {
-//                    throw new RuntimeException(er);
-//                }
-//            }
     }
 
 
