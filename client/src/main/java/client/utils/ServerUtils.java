@@ -572,6 +572,7 @@ public class ServerUtils {
 //    }
 
     public void removeExpensesDebts(Event e, Debt debt){
+        try{
         Set<Participant> splitBetween = new HashSet<>();
         splitBetween.add(debt.getCreditor());
         Expense expense = new Expense(e, "Debt", debt.getDebtor(), debt.getAmount(), LocalDate.now(), splitBetween);
@@ -587,55 +588,76 @@ public class ServerUtils {
         Set<Participant> setParticipants = e.getParticipants();
         e.totalDebtPP(setParticipants, totalDebts, debtPP);
 
-        List<Expense> relevantExpensesD = new ArrayList<>();
-        List<Expense> relevantExpensesE = new ArrayList<>();
+//        List<Expense> relevantExpensesD = new ArrayList<>();
+//        List<Expense> relevantExpensesE = new ArrayList<>();
+
+        List<Expense> relevantExpenses = new ArrayList<>();
 
         for (Map.Entry<Participant, Long> entry : debtPP.entrySet()) {
             Participant participant = entry.getKey();
             Long amount = entry.getValue();
             if (amount == 0) {
                 for (Expense ex : allExpenses) {
-                    if (ex.getCreator().equals(participant)) {
-                        relevantExpensesD.add(ex);
-                    } else if (ex.getSplitBetween().contains(participant)) {
-                        relevantExpensesE.add(ex);
+//                    if (ex.getCreator().equals(participant)) {
+//                        relevantExpensesD.add(ex);
+//                    } else if (ex.getSplitBetween().contains(participant)) {
+//                        relevantExpensesE.add(ex);
+//                    }
+                    if (ex.getCreator().equals(participant) ||
+                            ex.getSplitBetween().contains(participant)) {
+                        relevantExpenses.add(ex);
                     }
                 }
-            }
 
-            for (Expense ex : relevantExpensesD) {
-                ex.removeEverything();
-
-                WebSocketMessage request = new WebSocketMessage();
-                request.setEndpoint("api/expenses/id");
-                request.setMethod("DELETE"); // Assuming DELETE method to remove expense
-                request.setData(ex);
-                try {
+                for (Expense ex : relevantExpenses) {
+                    long value = ex.getAmount().getInternalValue();
+                    value = value - (value / ex.getSplitBetween().size());
+                    ex.getAmount().setInternalValue(value);
+                    ex.removeParticipant(participant);
+                    WebSocketMessage request = new WebSocketMessage();
+                    request.setEndpoint("api/expenses/id");
+                    request.setMethod("PUT");
+                    request.setData(ex);
                     sendMessageWithResponse(request);
-                } catch (ExecutionException | InterruptedException er) {
-                    throw new RuntimeException(er);
                 }
+
             }
 
-            for (Expense ex : relevantExpensesE) {
-                long value = ex.getAmount().getInternalValue();
-                value -= value / ex.getSplitBetween().size();
-                ex.getAmount().setInternalValue(value);
-                ex.removeParticipant(participant);
-                ex.getAmount().setInternalValue(value);
-                ex.removeParticipant(participant);
 
-                WebSocketMessage request = new WebSocketMessage();
-                request.setEndpoint("api/expenses/id");
-                request.setMethod("PUT");
-                request.setData(ex);
-                try {
-                    sendMessageWithResponse(request);
-                } catch (ExecutionException | InterruptedException er) {
-                    throw new RuntimeException(er);
-                }
-            }
         }
+        } catch (ExecutionException | InterruptedException er) {
+            er.printStackTrace();
+        }
+
+//            for (Expense ex : relevantExpensesD) {
+//                ex.removeEverything();
+//                WebSocketMessage request = new WebSocketMessage();
+//                request.setEndpoint("api/expenses/id");
+//                request.setMethod("PUT");
+//                request.setData(ex);
+//                try {
+//                    sendMessageWithResponse(request);
+//                } catch (ExecutionException | InterruptedException er) {
+//                    throw new RuntimeException(er);
+//                }
+//            }
+//
+//            for (Expense ex : relevantExpensesE) {
+//                long value = ex.getAmount().getInternalValue();
+//                value -= value / ex.getSplitBetween().size();
+//                ex.getAmount().setInternalValue(value);
+//                ex.removeParticipant(participant);
+//
+//                WebSocketMessage request = new WebSocketMessage();
+//                request.setEndpoint("api/expenses/id");
+//                request.setMethod("PUT");
+//                request.setData(ex);
+//                try {
+//                    sendMessageWithResponse(request);
+//                } catch (ExecutionException | InterruptedException er) {
+//                    throw new RuntimeException(er);
+//                }
+//            }
     }
 
 
