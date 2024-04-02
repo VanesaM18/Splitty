@@ -64,7 +64,8 @@ public class StatisticsCtrl {
             PieChart.Data slice = new PieChart.Data(tag.getName(), totalCost);
             pie.getData().add(slice);
             double percentage = (totalCost / total) * 100;
-            slice.setName(String.format("%s - %.1f%% (%.2f"+ "\u20AC)", slice.getName(), percentage, slice.getPieValue()));
+            slice.setName(String.format("%s - %.1f%% (%.2f"+ "\u20AC)",
+                    slice.getName(), percentage, slice.getPieValue()));
         }
     }
 
