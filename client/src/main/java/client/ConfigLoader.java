@@ -51,9 +51,26 @@ public class ConfigLoader {
                 saveConfig();
             } else {
                 configMap = objectMapper.readValue(configPath.toFile(), new TypeReference<>() {});
+                createMissingKey("address", "http://localhost:8080");
+                createMissingKey("recentEvents", new ArrayList<String>());
+                createMissingKey("language", Main.DEFAULT_LOCALE);
+                createMissingKey("startUpShown", "false");
+                createMissingKey("email", "");
+                createMissingKey("password", "");
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Creates missing default keys
+     * @param address the key name
+     * @param value the key value
+     */
+    private void createMissingKey(String address, Object value) {
+        if (!configMap.containsKey(address)) {
+            configMap.put(address, value);
         }
     }
 
