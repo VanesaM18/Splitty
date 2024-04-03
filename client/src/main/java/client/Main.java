@@ -142,6 +142,7 @@ public class Main extends Application {
         data.setAddEditTags(addEditTags);
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+        mainCtrl.setCurrentLocale(locale);
         sceneManager.setMainCtrl(mainCtrl);
         sceneManager.pushScene(sceneEnum);
         mainCtrl.initialize(this.stage, data, sceneManager);
