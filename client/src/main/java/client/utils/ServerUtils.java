@@ -564,50 +564,50 @@ public class ServerUtils {
             splitBetween.add(debt.getCreditor());
             Expense expense = new Expense(e, "Debt", debt.getDebtor(), debt.getAmount(), LocalDate.now(), splitBetween);
             addExpense(expense);
-
-            Map<Participant, Long> debtPP = new HashMap<>();
-            Set<Participant> setParticipants = e.getParticipants();
-            List<Expense> allExpenses = getAllExpensesFromEvent(e);
-
-            for(Participant p : setParticipants){
-                long amount = 0;
-                for(Expense ex : allExpenses){
-                    if(ex.getCreator().equals(p) && ex.getSplitBetween().contains(p)){
-                        amount += 0;
-                    }
-                    if(ex.getCreator().equals(p)){
-                        amount += ex.getAmount().getInternalValue();
-                    }
-                    if(ex.getSplitBetween().contains(p)){
-                        amount -= ex.getAmount().getInternalValue();
-                    }
-                }
-                debtPP.put(p, amount);
-            }
-
-            for (Map.Entry<Participant, Long> entry : debtPP.entrySet()){
-                List<Expense> relevantExpenses = new ArrayList<>();
-                if(entry.getValue() == 0){
-                    for(Expense ex : allExpenses){
-                        if(ex.getCreator().equals(entry.getKey()) || ex.getSplitBetween().contains(entry.getKey())){
-                            relevantExpenses.add(ex);
-                        }
-                    }
-                    for (Expense ex : relevantExpenses) {
-                        long value = ex.getAmount().getInternalValue();
-                        if (!ex.getSplitBetween().isEmpty()) { // Add this check
-                            value -= value / ex.getSplitBetween().size();
-                        }
-                        ex.getAmount().setInternalValue(value);
-                        ex.removeParticipant(entry.getKey());
-                        WebSocketMessage request = new WebSocketMessage();
-                        request.setEndpoint("api/expenses/id");
-                        request.setMethod("PUT");
-                        request.setData(ex);
-                        sendMessageWithResponse(request);
-                    }
-                }
-            }
+//
+//            Map<Participant, Long> debtPP = new HashMap<>();
+//            Set<Participant> setParticipants = e.getParticipants();
+//            List<Expense> allExpenses = getAllExpensesFromEvent(e);
+//
+////            for(Participant p : setParticipants){
+////                long amount = 0;
+////                for(Expense ex : allExpenses){
+////                    if(ex.getCreator().equals(p) && ex.getSplitBetween().contains(p)){
+////                        amount += 0;
+////                    }
+////                    if(ex.getCreator().equals(p)){
+////                        amount += ex.getAmount().getInternalValue();
+////                    }
+////                    if(ex.getSplitBetween().contains(p)){
+////                        amount -= ex.getAmount().getInternalValue();
+////                    }
+////                }
+////                debtPP.put(p, amount);
+////            }
+////
+////            for (Map.Entry<Participant, Long> entry : debtPP.entrySet()){
+////                List<Expense> relevantExpenses = new ArrayList<>();
+////                if(entry.getValue() == 0){
+////                    for(Expense ex : allExpenses){
+////                        if(ex.getCreator().equals(entry.getKey()) || ex.getSplitBetween().contains(entry.getKey())){
+////                            relevantExpenses.add(ex);
+////                        }
+////                    }
+////                    for (Expense ex : relevantExpenses) {
+////                        long value = ex.getAmount().getInternalValue();
+////                        if (!ex.getSplitBetween().isEmpty()) { // Add this check
+////                            value -= value / ex.getSplitBetween().size();
+////                        }
+////                        ex.getAmount().setInternalValue(value);
+////                        ex.removeParticipant(entry.getKey());
+////                        WebSocketMessage request = new WebSocketMessage();
+////                        request.setEndpoint("api/expenses/id");
+////                        request.setMethod("PUT");
+////                        request.setData(ex);
+////                        sendMessageWithResponse(request);
+////                    }
+////                }
+//            }
         } catch (ExecutionException | InterruptedException er) {
             er.printStackTrace();
         }
