@@ -113,10 +113,7 @@ public class OpenDebtsCtrl {
     private Button createMarkReceivedButton(Debt debt) {
         Button button = new Button("Mark Received");
         button.setOnAction(event -> {
-
-//            server.deleteDebt2(e, debt);
             server.removeExpensesDebts(e, debt);
-//            server.deleteDebts(debt, e);
             server.markDebtAsReceived(e.getInviteCode());
             debtContainer.getChildren().removeIf(node ->
                 node instanceof HBox && node.getId().equals("hbox_" + debt.getId()));

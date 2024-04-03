@@ -572,85 +572,70 @@ public class ServerUtils {
                     debt.getAmount(), LocalDate.now(), splitBetween);
             addExpense(expense);
 
-//            Map<Participant, Long> debtPP = new HashMap<>();
-//            Set<Participant> setParticipants = e.getParticipants();
-//            List<Expense> allExpenses = getAllExpensesFromEvent(e);
-//            amountPP(setParticipants, allExpenses, debtPP);
-////            for (Map.Entry<Participant, Long> entry : debtPP.entrySet()){
-////                List<Expense> relevantExpenses = new ArrayList<>();
-////                if(entry.getValue() == 0){
-////                    for(Expense ex : allExpenses){
-////                        if(ex.getCreator().equals(entry.getKey()) ||
-//                              ex.getSplitBetween().contains(entry.getKey())){
-////                            relevantExpenses.add(ex);
-////                        }
-////                    }
-////                    for (Expense ex : relevantExpenses) {
-////                        long value = ex.getAmount().getInternalValue();
-////                        if (!ex.getSplitBetween().isEmpty()) { // Add this check
-////                            value -= value / ex.getSplitBetween().size();
-////                        }
-////                        ex.getAmount().setInternalValue(value);
-////                        ex.removeParticipant(entry.getKey());
-////                        WebSocketMessage request = new WebSocketMessage();
-////                        request.setEndpoint("api/expenses/id");
-////                        request.setMethod("PUT");
-////                        request.setData(ex);
-////                        sendMessageWithResponse(request);
-////                    }
-////                }
-//            }
+            refreshExpensesList(e);
         } catch (ExecutionException | InterruptedException er) {
             er.printStackTrace();
         }
     }
 
-//    private static void amountPP(Set<Participant> setParticipants,
-//    List<Expense> allExpenses, Map<Participant, Long> debtPP) {
-//        for(Participant p : setParticipants){
-//            long amount = 0;
-//            for(Expense ex : allExpenses){
-//                if(ex.getCreator().equals(p) && ex.getSplitBetween().contains(p)){
-//                    amount += 0;
-//                }
-//                if(ex.getCreator().equals(p)){
-//                    amount += ex.getAmount().getInternalValue();
-//                }
-//                if(ex.getSplitBetween().contains(p)){
-//                    amount -= ex.getAmount().getInternalValue();
-//                }
-//            }
-//            debtPP.put(p, amount);
-//        }
-//    }
-
-
     /**
-     * only adds expenses where a creditor and
-     * debtor differ completely for N-1
-     * @param expenses list of all expenses
+     * Refreshes the expenses list for an event
+     * by removing participants that have everything settled
+     * @param e the event
      */
-    public static void removeDoubleExpense(List<Expense> expenses) {
-        for (int i = 0; i < expenses.size(); i++) {
-            Expense ex1 = expenses.get(i);
-            for (int j = i + 1; j < expenses.size(); j++) {
-                Expense ex2 = expenses.get(j);
-                if (
-                        ex1.getSplitBetween().contains(ex2.getCreator()) &&
-                        ex2.getSplitBetween().contains(ex1.getCreator()) &&
-                                ex1.getCreator().equals(ex2.getSplitBetween()
-                                        .stream().findFirst().orElse(null)) &&
-                                ex2.getCreator().equals(ex1.getSplitBetween()
-                                        .stream().findFirst().orElse(null)) &&
-                        ex1.getAmount().equals(ex2.getAmount())) {
-                    expenses.remove(ex1);
-                    expenses.remove(ex2);
-                    break; // Break the inner loop since symmetric debt is found
+    public void refreshExpensesList(Event e) {
+        List<Expense> allExpenses = getAllExpensesFromEvent(e);
+        List<Participant> canBeRemoved = participantsNoInfluence(allExpenses);
+        for (Participant p : canBeRemoved){
+            List<Expense> relevantExpenses = allExpenses
+                .stream()
+                .filter(x -> x.getSplitBetween().contains(p) || x.getCreator().equals(p))
+                .toList();
+            for (Expense ex : relevantExpenses) {
+                if (!ex.getCreator().equals(p)) {
+                    long value = ex.getAmount().getInternalValue();
+                    if (!ex.getSplitBetween().isEmpty()) {
+                        value -= value / ex.getSplitBetween().size();
+                    }
+                    ex.removeParticipant(p);
+                    ex.getAmount().setInternalValue(value);
+                    updateExpense(ex);
+                } else {
+                    deleteExpense(ex);
+                    allExpenses.remove(ex);
                 }
             }
         }
     }
 
+    /**
+     * Retrieves all participants that can be removed from expenses
+     * @param allExpenses all existing expenses
+     * @return the list of participants that can be removed
+     */
+    private List<Participant> participantsNoInfluence(List<Expense> allExpenses) {
+        if (allExpenses == null) {
+            return new ArrayList<>();
+        }
+        HashMap<Participant, Long> sumPerParticipant = new HashMap<>();
+        for (Expense ex : allExpenses) {
+            Set<Participant> split = ex.getSplitBetween();
+            long amountPerPerson = ex.getAmount().getInternalValue() / split.size();
+            for (Participant p : split) {
+                sumPerParticipant.put(p, sumPerParticipant.getOrDefault(p, 0L) + amountPerPerson);
+            }
+            sumPerParticipant.put(ex.getCreator(),
+                sumPerParticipant.getOrDefault(ex.getCreator(), 0L)
+                    - ex.getAmount().getInternalValue());
+        }
+        List<Participant> result = new ArrayList<>();
+        for (Map.Entry<Participant, Long> entry : sumPerParticipant.entrySet()) {
+            if (entry.getValue() == 0) {
+                result.add(entry.getKey());
+            }
+        }
+        return result;
+    }
 
     /**
      * Announce all client that open debts view needs to be updated for an event

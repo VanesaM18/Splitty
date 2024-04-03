@@ -107,6 +107,7 @@ public class OverviewCtrl {
             participantsObs.clear();
             refreshParticipants();
             participantNames.setItems(participantsObs);
+            server.refreshExpensesList(ev);
             this.refreshExpenses();
         }
     }
