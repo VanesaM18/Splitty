@@ -19,12 +19,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 import javafx.geometry.Insets;
+import org.checkerframework.checker.units.qual.A;
 
 
 public class OpenDebtsCtrl {
     private final MainCtrl mainCtrl;
     private final ServerUtils server;
     private final EmailManager emailManager;
+    public HBox HBoxBottom;
 
     @FXML
     private VBox debtContainer;
@@ -55,6 +57,7 @@ public class OpenDebtsCtrl {
      * @param e the current event
      */
     public void initialize(Event e){
+
         debtContainer.getChildren().clear();
         this.e = e;
         if (e == null) {
