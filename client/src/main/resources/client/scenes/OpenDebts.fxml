@@ -31,7 +31,7 @@
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
             </padding>
         </VBox>
-          <HBox fx:id="HBoxBottom" alignment="BOTTOM_LEFT" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+          <HBox alignment="BOTTOM_LEFT" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
               <children>
                   <Button mnemonicParsing="false" onAction="#back" prefHeight="30.0" text="%back" />
               </children>

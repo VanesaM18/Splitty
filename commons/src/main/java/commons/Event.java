@@ -358,7 +358,19 @@ public class Event {
         Set<Participant> setParticipants = event.getParticipants();
 
         // Calculate the total debt per participant
-        event.totalDebtPP(setParticipants, totalDebts, debtPP);
+        for (Participant participant : setParticipants) {
+            long amount = 0;
+            for (Debt debt : totalDebts) {
+                if(debt.getDebtor().equals(participant) & debt.getCreditor().equals(participant)){
+                    amount += 0;
+                } else if (debt.getCreditor().equals(participant)) {
+                    amount += debt.getAmount().getInternalValue();
+                } else if (debt.getDebtor().equals(participant)) {
+                    amount -= debt.getAmount().getInternalValue();
+                }
+            }
+            debtPP.put(participant, amount);
+        }
         List<Debt> totalDebts2 = new ArrayList<>();
 
         // Sort the debts in descending order based on the amount
@@ -375,22 +387,6 @@ public class Event {
         mappingDebts(debtors, creditors, totalDebts2);
 
         return totalDebts2;
-    }
-
-    public void totalDebtPP(Set<Participant> setParticipants, List<Debt> totalDebts, Map<Participant, Long> debtPP) {
-        for (Participant participant : setParticipants) {
-            long amount = 0;
-            for (Debt debt : totalDebts) {
-                if(debt.getDebtor().equals(participant) & debt.getCreditor().equals(participant)){
-                    amount += 0;
-                } else if (debt.getCreditor().equals(participant)) {
-                    amount += debt.getAmount().getInternalValue();
-                } else if (debt.getDebtor().equals(participant)) {
-                    amount -= debt.getAmount().getInternalValue();
-                }
-            }
-            debtPP.put(participant, amount);
-        }
     }
 
 

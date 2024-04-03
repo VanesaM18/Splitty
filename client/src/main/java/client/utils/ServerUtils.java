@@ -557,39 +557,31 @@ public class ServerUtils {
         }
     }
 
-
+    /**
+     * adds the marked received debt as an expense
+     * to cancel out the debt of the debtor
+     *
+     * @param e current event
+     * @param debt marked debt
+     */
     public void removeExpensesDebts(Event e, Debt debt){
         try{
             Set<Participant> splitBetween = new HashSet<>();
             splitBetween.add(debt.getCreditor());
-            Expense expense = new Expense(e, "Debt", debt.getDebtor(), debt.getAmount(), LocalDate.now(), splitBetween);
+            Expense expense = new Expense(e, "Debt", debt.getDebtor(),
+                    debt.getAmount(), LocalDate.now(), splitBetween);
             addExpense(expense);
-//
+
 //            Map<Participant, Long> debtPP = new HashMap<>();
 //            Set<Participant> setParticipants = e.getParticipants();
 //            List<Expense> allExpenses = getAllExpensesFromEvent(e);
-//
-////            for(Participant p : setParticipants){
-////                long amount = 0;
-////                for(Expense ex : allExpenses){
-////                    if(ex.getCreator().equals(p) && ex.getSplitBetween().contains(p)){
-////                        amount += 0;
-////                    }
-////                    if(ex.getCreator().equals(p)){
-////                        amount += ex.getAmount().getInternalValue();
-////                    }
-////                    if(ex.getSplitBetween().contains(p)){
-////                        amount -= ex.getAmount().getInternalValue();
-////                    }
-////                }
-////                debtPP.put(p, amount);
-////            }
-////
+//            amountPP(setParticipants, allExpenses, debtPP);
 ////            for (Map.Entry<Participant, Long> entry : debtPP.entrySet()){
 ////                List<Expense> relevantExpenses = new ArrayList<>();
 ////                if(entry.getValue() == 0){
 ////                    for(Expense ex : allExpenses){
-////                        if(ex.getCreator().equals(entry.getKey()) || ex.getSplitBetween().contains(entry.getKey())){
+////                        if(ex.getCreator().equals(entry.getKey()) ||
+//                              ex.getSplitBetween().contains(entry.getKey())){
 ////                            relevantExpenses.add(ex);
 ////                        }
 ////                    }
@@ -612,6 +604,25 @@ public class ServerUtils {
             er.printStackTrace();
         }
     }
+
+//    private static void amountPP(Set<Participant> setParticipants,
+//    List<Expense> allExpenses, Map<Participant, Long> debtPP) {
+//        for(Participant p : setParticipants){
+//            long amount = 0;
+//            for(Expense ex : allExpenses){
+//                if(ex.getCreator().equals(p) && ex.getSplitBetween().contains(p)){
+//                    amount += 0;
+//                }
+//                if(ex.getCreator().equals(p)){
+//                    amount += ex.getAmount().getInternalValue();
+//                }
+//                if(ex.getSplitBetween().contains(p)){
+//                    amount -= ex.getAmount().getInternalValue();
+//                }
+//            }
+//            debtPP.put(p, amount);
+//        }
+//    }
 
 
     /**

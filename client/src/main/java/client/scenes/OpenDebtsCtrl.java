@@ -15,18 +15,15 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import javafx.geometry.Insets;
-import org.checkerframework.checker.units.qual.A;
 
 
 public class OpenDebtsCtrl {
     private final MainCtrl mainCtrl;
     private final ServerUtils server;
     private final EmailManager emailManager;
-    public HBox HBoxBottom;
 
     @FXML
     private VBox debtContainer;
