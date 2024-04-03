@@ -1,8 +1,11 @@
 package client.utils.language;
 
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 
-public interface Language extends Runnable {
+import java.util.Locale;
+
+public interface Language extends Runnable, Comparable<Language> {
 
     /**
      * When called, the language of the application is changes
@@ -33,4 +36,27 @@ public interface Language extends Runnable {
      * @return text content.
      */
     String getText();
+
+    /**
+     * method for keeping the position of
+     * the language object
+     * @param other language
+     * @return position
+     */
+    @Override
+    default int compareTo(Language other) {
+        return 0;
+    }
+
+    /**
+     * gets the locale object associated with the language.
+     * @return the language's locale.
+     */
+    Locale getLocale();
+
+    /**
+     * gets the flag image representing the language.
+     * @return flag image associated with the language.
+     */
+    Image getFlag();
 }
