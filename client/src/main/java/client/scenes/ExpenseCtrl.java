@@ -182,8 +182,11 @@ public class ExpenseCtrl {
 
     private HashSet<Participant> validateSplitBetween() throws Exception {
         var newSplit = new HashSet<>(selectParticipantsObs);
-        if (newSplit.size() < 1) {
-            throw new Exception("At least one participant must be selected");
+        if (newSplit.size() < 1
+                || (newSplit.size() == 1 &&
+                        newSplit.contains(receiver.getSelectionModel().getSelectedItem()))) {
+            throw new Exception(
+                    "At least one participant that is not the receiver must be selected");
         }
         return newSplit;
     }
@@ -339,7 +342,12 @@ public class ExpenseCtrl {
         if ("".equals(textValue)) {
             throw new Exception("Amount must be specified");
         }
-        return Monetary.fromString(amount.getText(), Currency.getInstance("EUR"));
+        var am = Monetary.fromString(amount.getText(), Currency.getInstance("EUR"));
+        if (am.getInternalValue() == 0) {
+            throw new Exception("Amount must not be zero");
+        }
+
+        return am;
     }
 
     private String getName() throws Exception {

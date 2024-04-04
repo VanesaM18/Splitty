@@ -241,7 +241,9 @@ public class OverviewCtrl {
         expensesIncludingObs.clear();
 
         Participant selectedParticipant = participantComboBox.getSelectionModel().getSelectedItem();
-        for (Expense e : this.ev.getExpenses()) {
+        List<Expense> sortedExpenses = new ArrayList<>(this.ev.getExpenses());
+        java.util.Collections.sort(sortedExpenses, (a, b) -> b.getDate().compareTo(a.getDate()));
+        for (Expense e : sortedExpenses) {
             expensesAllObs.add(e);
             if (Objects.equals(e.getCreator(),
                     participantComboBox.getSelectionModel().getSelectedItem())) {
