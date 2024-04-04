@@ -31,6 +31,7 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
+import javafx.util.Pair;
 import org.glassfish.jersey.client.ClientConfig;
 
 import java.net.URISyntaxException;
@@ -453,7 +454,7 @@ public class ServerUtils {
 
     /**
      * Send a message to the server with awaiting response
-     * 
+     *
      * @param request the message body
      * @return the response from the server
      * @throws ExecutionException   if the object mapper fails
@@ -524,37 +525,68 @@ public class ServerUtils {
         setAuth(admin.getUsername(), admin.getPassword());
     }
 
-    /**
-     * Delete a debt and all expenses related to it
-     * @param debt the debt to be deleted
-     * @param e the event where the debts are
-     */
-    public void deleteDebts(Debt debt, Event e) {
-        try {
-            List<Expense> expenses = getAllExpensesFromEvent(e);
-            List<Expense> relevantExpenses = new ArrayList<>();
-            for (Expense ex : expenses) {
-                if (ex.getCreator().equals(debt.getCreditor()) &&
-                        ex.getSplitBetween().contains(debt.getDebtor())) {
-                    relevantExpenses.add(ex);
+    public List<Debt> calculateDebts(Event event) {
+        List<Debt> initialDebts = event.paymentsToDebt(event);
+        int n = event.getParticipants().size();
+        DebtMinimizationGraph solver = new DebtMinimizationGraph(n);
+        HashMap<Participant, Integer> indexing = new HashMap<>();
+        HashMap<Integer, Participant> reverseIndexing = new HashMap<>();
+        int cnt = 0;
+        for (Participant p: event.getParticipants()) {
+            indexing.put(p, cnt);
+            reverseIndexing.put(cnt, p);
+            cnt += 1;
+        }
+        for (Debt debt: initialDebts) {
+            System.out.println(indexing.get(debt.getDebtor()) + " -> " + indexing.get(debt.getCreditor()));
+            solver.addEdge(indexing.get(debt.getDebtor()), indexing.get(debt.getCreditor()), (int)debt.getAmount().getInternalValue());
+        }
+        Set<Pair<Integer, Integer>> visited = new HashSet<>();
+        while (true) {
+            Pair<Integer, Integer> unvisited = getUnvisitedEdge(solver, visited, n);
+            if (unvisited.getKey() == -1) {
+                break;
+            }
+            int mxFlow = solver.maxFlow(unvisited.getKey(), unvisited.getValue());
+            DebtMinimizationGraph residualGraph = new DebtMinimizationGraph(n);
+            for (int from = 0; from < n; ++from) {
+                List<DebtMinimizationGraph.Edge> adjacentEdges = solver.getEdgesForVertex(from);
+                for (DebtMinimizationGraph.Edge edge: adjacentEdges) {
+                    int flow = (edge.flow < 0 ? edge.capacity : (edge.capacity - edge.flow));
+                    if (flow > 0) {
+                        residualGraph.addEdge(from, edge.to, flow);
+                    }
                 }
             }
-
-            for (Expense ex : relevantExpenses) {
-                long value = ex.getAmount().getInternalValue();
-                value = value - (value / ex.getSplitBetween().size());
-                ex.getAmount().setInternalValue(value);
-                ex.removeParticipant(debt.getDebtor());
-                WebSocketMessage request = new WebSocketMessage();
-                request.setEndpoint("api/expenses/id");
-                request.setMethod("PUT");
-                request.setData(ex);
-                sendMessageWithResponse(request);
+            if (mxFlow > 0) {
+                residualGraph.addEdge(unvisited.getKey(), unvisited.getValue(), mxFlow);
             }
-
-        } catch (ExecutionException | InterruptedException er) {
-            er.printStackTrace();
+            visited.add(unvisited);
+            solver = residualGraph;
         }
+        List<Debt> result = new ArrayList<>();
+        for (int from = 0; from < n; ++from) {
+            List<DebtMinimizationGraph.Edge> adjacentEdges = solver.getEdgesForVertex(from);
+            for (DebtMinimizationGraph.Edge edge : adjacentEdges) {
+                if (edge.capacity > 0) {
+                    result.add(new Debt(reverseIndexing.get(from), new Monetary(edge.capacity), reverseIndexing.get(edge.to)));
+                }
+            }
+        }
+        return result;
+    }
+
+    private Pair<Integer, Integer> getUnvisitedEdge(DebtMinimizationGraph solver, Set<Pair<Integer, Integer>> visited, int n) {
+        for (int from = 0; from < n; ++from) {
+            List<DebtMinimizationGraph.Edge> adjacentEdges = solver.getEdgesForVertex(from);
+            for (DebtMinimizationGraph.Edge edge: adjacentEdges) {
+                Pair<Integer, Integer> vis = new Pair<>(from, edge.to);
+                if (!visited.contains(vis)) {
+                    return vis;
+                }
+            }
+        }
+        return new Pair<>(-1, -1);
     }
 
     /**
@@ -584,28 +616,8 @@ public class ServerUtils {
      * @param e the event
      */
     public void refreshExpensesList(Event e) {
-        List<Expense> allExpenses = getAllExpensesFromEvent(e);
-        List<Participant> canBeRemoved = participantsNoInfluence(allExpenses);
-        for (Participant p : canBeRemoved){
-            List<Expense> relevantExpenses = allExpenses
-                .stream()
-                .filter(x -> x.getSplitBetween().contains(p) || x.getCreator().equals(p))
-                .toList();
-            for (Expense ex : relevantExpenses) {
-                if (!ex.getCreator().equals(p)) {
-                    long value = ex.getAmount().getInternalValue();
-                    if (!ex.getSplitBetween().isEmpty()) {
-                        value -= value / ex.getSplitBetween().size();
-                    }
-                    ex.removeParticipant(p);
-                    ex.getAmount().setInternalValue(value);
-                    updateExpense(ex);
-                } else {
-                    deleteExpense(ex);
-                    allExpenses.remove(ex);
-                }
-            }
-        }
+        return;
+
     }
 
     /**

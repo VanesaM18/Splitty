@@ -326,19 +326,44 @@ public class Event {
      */
     public List<Debt> paymentsToDebt(Event event) {
         Map<Map<Participant, Participant>, Monetary> allDebts = calculatePayments(event);
-        List<Debt> listDebt = new ArrayList<>();
+        Map<String, Long> netDebts = new HashMap<>();
 
-        allDebts.entrySet().forEach(entry -> {
-            Map<Participant, Participant> pair = entry.getKey();
-            Monetary monetaryValue = entry.getValue();
+        HashMap<Long, Participant> mapping = new HashMap<>();
+        for (Participant p: event.getParticipants()) {
+            mapping.put(p.getId(), p);
+        }
+        allDebts.forEach((key, value) -> key.forEach((debtor, creditor) -> {
+            if (debtor.getId() == creditor.getId()) {
+                return;
+            }
+            long amount = value.getInternalValue();
+            String forwardKey = debtor.getId() + "->" + creditor.getId();
+            String backwardKey = creditor.getId() + "->" + debtor.getId();
+            if (netDebts.containsKey(backwardKey)) {
+                Long existingAmount = netDebts.get(backwardKey);
+                long comparison = existingAmount - amount;
+                if (comparison > 0) {
+                    netDebts.put(backwardKey, existingAmount - amount);
+                } else if (comparison < 0) {
+                    netDebts.remove(backwardKey);
+                    netDebts.put(forwardKey, amount - existingAmount);
+                } else {
+                    netDebts.remove(backwardKey);
+                }
+            } else {
+                netDebts.put(forwardKey, amount);
+            }
+        }));
 
-            pair.entrySet().forEach(innerEntry -> {
-                Participant debtorId = innerEntry.getKey();
-                Participant creditorId = innerEntry.getValue();
-                listDebt.add(new Debt(debtorId, monetaryValue, creditorId));
-            });
+        List<Debt> simplifiedDebts = new ArrayList<>();
+        netDebts.forEach((key, value) -> {
+            String[] participants = key.split("->");
+            Participant debtor = mapping.get(Long.valueOf(participants[0]));
+            Participant creditor = mapping.get(Long.valueOf(participants[1]));
+            simplifiedDebts.add(new Debt(debtor, new Monetary(value), creditor));
         });
-        return listDebt;
+
+        return simplifiedDebts;
     }
 
     /**
@@ -353,40 +378,54 @@ public class Event {
      * @return a list of (N-1) debts
      */
     public static List<Debt> finalCalculation(Event event) {
-        List<Debt> totalDebts = event.paymentsToDebt(event);
-        Map<Participant, Long> debtPP = new HashMap<>();
-        Set<Participant> setParticipants = event.getParticipants();
+        List<Debt> initialDebts = event.paymentsToDebt(event);
+        Map<Participant, Long> balances = new HashMap<>();
 
-        // Calculate the total debt per participant
-        for (Participant participant : setParticipants) {
-            long amount = 0;
-            for (Debt debt : totalDebts) {
-                if(debt.getDebtor().equals(participant) & debt.getCreditor().equals(participant)){
-                    amount += 0;
-                } else if (debt.getCreditor().equals(participant)) {
-                    amount += debt.getAmount().getInternalValue();
-                } else if (debt.getDebtor().equals(participant)) {
-                    amount -= debt.getAmount().getInternalValue();
-                }
-            }
-            debtPP.put(participant, amount);
+        for (Debt debt : initialDebts) {
+            balances.put(debt.getDebtor(),
+                balances.getOrDefault(debt.getDebtor(), 0L) - debt.getAmount().getInternalValue());
+            balances.put(debt.getCreditor(),
+                balances.getOrDefault(debt.getCreditor(), 0L) + debt.getAmount().getInternalValue());
         }
-        List<Debt> totalDebts2 = new ArrayList<>();
 
-        // Sort the debts in descending order based on the amount
-        List<Map.Entry<Participant, Long>> sortedEntries = new ArrayList<>(debtPP.entrySet());
-        sortedEntries.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
-
-        // Create maps to track debtors and creditors
         Map<Participant, Long> debtors = new HashMap<>();
         Map<Participant, Long> creditors = new HashMap<>();
+        for (Map.Entry<Participant, Long> entry : balances.entrySet()) {
+            long balance = entry.getValue();
+            if (balance < 0) {
+                debtors.put(entry.getKey(), -balance);
+            } else if (balance > 0) {
+                creditors.put(entry.getKey(), balance);
+            }
+        }
 
-        // Populate debtors and creditors maps
-        populateDebts(sortedEntries, debtors, creditors);
+        List<Debt> settledDebts = new ArrayList<>();
+        for (Map.Entry<Participant, Long> debtorEntry : debtors.entrySet()) {
+            long debtAmount = debtorEntry.getValue();
+            Iterator<Map.Entry<Participant, Long>> creditorIterator = creditors.entrySet().iterator();
 
-        mappingDebts(debtors, creditors, totalDebts2);
+            while (debtAmount > 0 && creditorIterator.hasNext()) {
+                Map.Entry<Participant, Long> creditorEntry = creditorIterator.next();
+                long creditAmount = creditorEntry.getValue();
 
-        return totalDebts2;
+                long payment = Math.min(debtAmount, creditAmount);
+                settledDebts.add(new Debt(debtorEntry.getKey(), new Monetary(payment), creditorEntry.getKey()));
+
+                debtAmount -= payment;
+                creditAmount -= payment;
+
+                if (creditAmount == 0) {
+                    creditorIterator.remove();
+                } else {
+                    creditorEntry.setValue(creditAmount);
+                }
+            }
+            if (debtAmount == 0) {
+                debtorEntry.setValue(debtAmount);
+            }
+        }
+
+        return settledDebts;
     }
 
 
