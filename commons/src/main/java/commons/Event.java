@@ -324,7 +324,7 @@ public class Event {
      * @param event the current event
      * @return list of all debts
      */
-    public static List<Debt> paymentsToDebt(Event event) {
+    public List<Debt> paymentsToDebt(Event event) {
         Map<Map<Participant, Participant>, Monetary> allDebts = calculatePayments(event);
         List<Debt> listDebt = new ArrayList<>();
 
@@ -353,7 +353,7 @@ public class Event {
      * @return a list of (N-1) debts
      */
     public static List<Debt> finalCalculation(Event event) {
-        List<Debt> totalDebts = paymentsToDebt(event);
+        List<Debt> totalDebts = event.paymentsToDebt(event);
         Map<Participant, Long> debtPP = new HashMap<>();
         Set<Participant> setParticipants = event.getParticipants();
 
