@@ -456,6 +456,11 @@ public class OverviewCtrl {
      * Shows the statistics screen.
      */
     public void showStatistics() {
+        if(ev.getExpenses() == null || ev.getExpenses().size() == 0) {
+            warning.setText("Create expenses first.");
+            return;
+        }
         mainCtrl.showStatistics(ev);
+        warning.setText("");
     }
 }
