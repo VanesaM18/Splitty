@@ -34,6 +34,7 @@ import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -531,7 +532,6 @@ public class ServerUtils {
     public void deleteDebts(Debt debt, Event e) {
         try {
             List<Expense> expenses = getAllExpensesFromEvent(e);
-            removeDoubleExpense(expenses);
             List<Expense> relevantExpenses = new ArrayList<>();
             for (Expense ex : expenses) {
                 if (ex.getCreator().equals(debt.getCreditor()) &&
@@ -539,7 +539,6 @@ public class ServerUtils {
                     relevantExpenses.add(ex);
                 }
             }
-
 
             for (Expense ex : relevantExpenses) {
                 long value = ex.getAmount().getInternalValue();
@@ -559,31 +558,84 @@ public class ServerUtils {
     }
 
     /**
-     * only adds expenses where a creditor and
-     * debtor differ completely for N-1
-     * @param expenses list of all expenses
+     * adds the marked received debt as an expense
+     * to cancel out the debt of the debtor
+     *
+     * @param e current event
+     * @param debt marked debt
      */
-    public static void removeDoubleExpense(List<Expense> expenses) {
-        for (int i = 0; i < expenses.size(); i++) {
-            Expense ex1 = expenses.get(i);
-            for (int j = i + 1; j < expenses.size(); j++) {
-                Expense ex2 = expenses.get(j);
-                if (
-                        ex1.getSplitBetween().contains(ex2.getCreator()) &&
-                        ex2.getSplitBetween().contains(ex1.getCreator()) &&
-                                ex1.getCreator().equals(ex2.getSplitBetween()
-                                        .stream().findFirst().orElse(null)) &&
-                                ex2.getCreator().equals(ex1.getSplitBetween()
-                                        .stream().findFirst().orElse(null)) &&
-                        ex1.getAmount().equals(ex2.getAmount())) {
-                    expenses.remove(ex1);
-                    expenses.remove(ex2);
-                    break; // Break the inner loop since symmetric debt is found
+    public void removeExpensesDebts(Event e, Debt debt){
+        try{
+            Set<Participant> splitBetween = new HashSet<>();
+            splitBetween.add(debt.getCreditor());
+            Expense expense = new Expense(e, "Debt", debt.getDebtor(),
+                    debt.getAmount(), LocalDate.now(), splitBetween);
+            addExpense(expense);
+
+            refreshExpensesList(e);
+        } catch (ExecutionException | InterruptedException er) {
+            er.printStackTrace();
+        }
+    }
+
+    /**
+     * Refreshes the expenses list for an event
+     * by removing participants that have everything settled
+     * @param e the event
+     */
+    public void refreshExpensesList(Event e) {
+        List<Expense> allExpenses = getAllExpensesFromEvent(e);
+        List<Participant> canBeRemoved = participantsNoInfluence(allExpenses);
+        for (Participant p : canBeRemoved){
+            List<Expense> relevantExpenses = allExpenses
+                .stream()
+                .filter(x -> x.getSplitBetween().contains(p) || x.getCreator().equals(p))
+                .toList();
+            for (Expense ex : relevantExpenses) {
+                if (!ex.getCreator().equals(p)) {
+                    long value = ex.getAmount().getInternalValue();
+                    if (!ex.getSplitBetween().isEmpty()) {
+                        value -= value / ex.getSplitBetween().size();
+                    }
+                    ex.removeParticipant(p);
+                    ex.getAmount().setInternalValue(value);
+                    updateExpense(ex);
+                } else {
+                    deleteExpense(ex);
+                    allExpenses.remove(ex);
                 }
             }
         }
     }
 
+    /**
+     * Retrieves all participants that can be removed from expenses
+     * @param allExpenses all existing expenses
+     * @return the list of participants that can be removed
+     */
+    private List<Participant> participantsNoInfluence(List<Expense> allExpenses) {
+        if (allExpenses == null) {
+            return new ArrayList<>();
+        }
+        HashMap<Participant, Long> sumPerParticipant = new HashMap<>();
+        for (Expense ex : allExpenses) {
+            Set<Participant> split = ex.getSplitBetween();
+            long amountPerPerson = ex.getAmount().getInternalValue() / split.size();
+            for (Participant p : split) {
+                sumPerParticipant.put(p, sumPerParticipant.getOrDefault(p, 0L) + amountPerPerson);
+            }
+            sumPerParticipant.put(ex.getCreator(),
+                sumPerParticipant.getOrDefault(ex.getCreator(), 0L)
+                    - ex.getAmount().getInternalValue());
+        }
+        List<Participant> result = new ArrayList<>();
+        for (Map.Entry<Participant, Long> entry : sumPerParticipant.entrySet()) {
+            if (entry.getValue() == 0) {
+                result.add(entry.getKey());
+            }
+        }
+        return result;
+    }
 
     /**
      * Announce all client that open debts view needs to be updated for an event
