@@ -59,12 +59,12 @@ public class MainCtrl {
     private Optional<Locale> currentLocale = Optional.empty();
     private boolean isInOpenDebt = false;
 
-
     /**
-     * Initializes the app with the specified primary stage and scenes for various controllers.
+     * Initializes the app with the specified primary stage and scenes for various
+     * controllers.
      *
      * @param primaryStage The primary stage of the application.
-     * @param data Contains all initialized pair of views
+     * @param data         Contains all initialized pair of views
      * @param sceneManager The SceneManager responsible for managing scenes.
      */
     public void initialize(Stage primaryStage, InitializationData data, SceneManager sceneManager) {
@@ -126,6 +126,7 @@ public class MainCtrl {
         appConfigurationCtrl.make();
         appConfigurationCtrl.refresh();
     }
+
     /**
      * Prepares and displays the settings
      */
@@ -148,7 +149,8 @@ public class MainCtrl {
     }
 
     /**
-     * Displays the login view. This method sets the title of the primary stage to "Login: Admin"
+     * Displays the login view. This method sets the title of the primary stage to
+     * "Login: Admin"
      * and sets the scene to the login scene.
      */
     public void showLogin() {
@@ -159,7 +161,8 @@ public class MainCtrl {
     }
 
     /**
-     * Displays the startScreen view. This method sets the title of the primary stage to "Start
+     * Displays the startScreen view. This method sets the title of the primary
+     * stage to "Start
      * page" and sets the scene to the login scene.
      */
     public void showStartScreen() {
@@ -176,14 +179,16 @@ public class MainCtrl {
      * This method sets the title of the primary stage to "Participants: Overview",
      * sets the scene to the participants scene
      * and sets a key pressed event handler for the participant's controller.
-     * @param ev event where to add/edit participants
-     * @param add true - add / false - edit.
+     * 
+     * @param ev     event where to add/edit participants
+     * @param add    true - add / false - edit.
      * @param change the name of the participant to be edited.
      */
     public void showParticipants(Event ev, boolean add, Participant change) {
         participantsCtrl.setAdd(add);
         participantsCtrl.setParticipantToChange(null);
-        if (!add) editParticipant(ev, change);
+        if (!add)
+            editParticipant(ev, change);
         primaryStage.setTitle((add ? "Add" : "Edit").concat(" participant"));
         primaryStage.setScene(participants);
         participantsCtrl.setEvent(ev);
@@ -218,8 +223,6 @@ public class MainCtrl {
         }
     }
 
-
-
     /**
      * Displays the invite code of the vent.
      *
@@ -251,6 +254,7 @@ public class MainCtrl {
 
     /**
      * sets the current locale of the application
+     * 
      * @param locale current locale of the application
      */
     public void setCurrentLocale(Locale locale) {
@@ -259,6 +263,7 @@ public class MainCtrl {
 
     /**
      * gets the current locale of the application
+     * 
      * @return current locale of the application
      */
     public Optional<Locale> getCurrentLocale() {
@@ -284,9 +289,9 @@ public class MainCtrl {
         isInOpenDebt = true;
     }
 
-
-     /**
+    /**
      * gets the scene manager responsible for managing scenes in the application.
+     * 
      * @return SceneManager object.
      */
     public SceneManager getSceneManager() {
@@ -295,6 +300,7 @@ public class MainCtrl {
 
     /**
      * gets the primary stage of the application.
+     * 
      * @return the primary stage of the application.
      */
     public Stage getPrimaryStage() {
@@ -328,6 +334,7 @@ public class MainCtrl {
 
     /**
      * Shows the expense type screen.
+     * 
      * @param ev event to be considered.
      */
     public void showExpenseTypes(Event ev) {
@@ -339,6 +346,7 @@ public class MainCtrl {
 
     /**
      * Shows the add tag screen.
+     * 
      * @param event event to which we want to add tags.
      */
     public void showAddTags(Event event) {
@@ -350,8 +358,9 @@ public class MainCtrl {
 
     /**
      * Shows the update tag screen.
+     * 
      * @param event event to which we want to add tags.
-     * @param type tag to be edited.
+     * @param type  tag to be edited.
      */
     public void showUpdateTags(Event event, ExpenseType type) {
         addEditTagsCtrl.setEvent(event);

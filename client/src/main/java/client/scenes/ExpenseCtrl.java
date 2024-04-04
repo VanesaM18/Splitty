@@ -1,15 +1,19 @@
 package client.scenes;
 
-import client.utils.ServerUtils;
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.Currency;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.google.inject.Inject;
 
+import client.utils.ServerUtils;
 import commons.Event;
 import commons.Expense;
 import commons.ExpenseType;
 import commons.Monetary;
 import commons.Participant;
-
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -21,7 +25,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -44,13 +47,6 @@ import javafx.stage.Modality;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.Currency;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-
 public class ExpenseCtrl {
     @FXML
     private TextField description;
@@ -67,9 +63,6 @@ public class ExpenseCtrl {
     @FXML
     private ComboBox<Participant> receiver;
 
-    @FXML
-    private Button deleteExpenseButton;
-
     private final ObservableList<Participant> participantsObs = FXCollections.observableArrayList();
 
     @FXML
@@ -80,8 +73,8 @@ public class ExpenseCtrl {
     private ListView<Participant> selectParticipant;
     @FXML
     private ListView<ExpenseType> selectedTags;
-    private final ObservableList<ExpenseType> selectedTypesObs =
-        FXCollections.observableArrayList();
+    private final ObservableList<ExpenseType> selectedTypesObs = FXCollections
+            .observableArrayList();
 
     private final ObservableSet<Participant> selectParticipantsObs = FXCollections.observableSet();
 
@@ -110,7 +103,6 @@ public class ExpenseCtrl {
     @FXML
     public void initialize() {
         selectParticipant.setItems(participantsObs);
-        this.attachImage(deleteExpenseButton, "/assets/bin.png", 20, 20);
         initTagsCombobox();
         initReceiverCombobox();
         initSelectParticipants();
@@ -145,10 +137,8 @@ public class ExpenseCtrl {
     public void setUpdateExpense(Expense e) {
         this.updateExpense = e;
         if (e == null) {
-            deleteExpenseButton.setVisible(false);
             return;
         }
-        deleteExpenseButton.setVisible(true);
         this.date.setValue(e.getDate());
         this.description.setText(e.getName());
         this.amount.setText(e.getAmount().toString());
@@ -237,33 +227,6 @@ public class ExpenseCtrl {
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.setContentText(err.getMessage());
             alert.showAndWait();
-            return;
-        }
-
-        clearFields();
-        mainCtrl.refreshData();
-        mainCtrl.showOverviewEvent(event);
-    }
-
-    /**
-     * Delete expense
-     */
-    public void deleteExpense() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation");
-        alert.setHeaderText("Are you sure you want to proceed?");
-        alert.setContentText("Do you want to delete this event?");
-        Optional<ButtonType> result = alert.showAndWait();
-        if (!result.map(x -> x == ButtonType.OK).orElse(false)) {
-            return;
-        }
-        try {
-            server.deleteExpense(updateExpense);
-        } catch (Exception err) {
-            var alert2 = new Alert(Alert.AlertType.ERROR);
-            alert2.initModality(Modality.APPLICATION_MODAL);
-            alert2.setContentText(err.getMessage());
-            alert2.showAndWait();
             return;
         }
 
@@ -406,50 +369,49 @@ public class ExpenseCtrl {
     }
 
     private void initTypes() {
-        var cb = new Callback<ListView<ExpenseType>, ListCell<ExpenseType>>() {
-            @Override
-            public ListCell<ExpenseType> call(ListView<ExpenseType> listView) {
-                return new ListCell<ExpenseType>() {
-                    @Override
-                    protected void updateItem(ExpenseType item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item == null || empty) {
-                            setGraphic(null);
-                            setBackground(null);
-                            return;
-                        }
-                        HBox hBox = new HBox(5);
-                        hBox.setAlignment(Pos.CENTER_LEFT);
-                        Text text = new Text(item.getName());
-                        Color c = Color.web(item.getColor());
-                        double brightness = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
-                        String closestColor = (brightness <= 0.5) ? "#ffffff" : "#000000";
-                        text.setFill(Color.web(closestColor));
-
-                        Button deleteButton = new Button();
-                        deleteButton.setOnAction(event -> {
-                            listView.getItems().remove(item);
-                            selectedTypesObs.remove(item);
-                        });
-                        deleteButton.setAlignment(Pos.CENTER);
-
-                        HBox.setHgrow(deleteButton, Priority.ALWAYS);
-                        Region region = new Region();
-                        HBox.setHgrow(region, Priority.ALWAYS);
-                        attachImage(deleteButton, "/assets/circle-xmark-solid.png", 15, 15);
-                        deleteButton.setStyle("-fx-background-color: transparent; " +
-                                "-fx-padding: 0; -fx-border: none;");
-                        deleteButton.setOnMouseEntered(event ->
-                            deleteButton.setCursor(Cursor.HAND));
-                        deleteButton.setOnMouseExited(event ->
-                            deleteButton.setCursor(Cursor.DEFAULT));
-                        hBox.getChildren().addAll(text, region, deleteButton);
-                        setGraphic(hBox);
-                        setBackground(new Background(new BackgroundFill(Color.web(item.getColor()),
-                                new CornerRadii(20), Insets.EMPTY)));
+        Callback<ListView<ExpenseType>, ListCell<ExpenseType>> cb = listView -> {
+            return new ListCell<ExpenseType>() {
+                @Override
+                protected void updateItem(ExpenseType item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setGraphic(null);
+                        setBackground(null);
+                        return;
                     }
-                };
-            }
+                    HBox hBox = new HBox(5);
+                    hBox.setAlignment(Pos.CENTER_LEFT);
+                    Text text = new Text(item.getName());
+                    Color c = Color.web(item.getColor());
+                    double brightness = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
+                    String closestColor = (brightness <= 0.5) ? "#ffffff" : "#000000";
+                    text.setFill(Color.web(closestColor));
+
+                    Button deleteButton = new Button();
+                    deleteButton.setOnAction(event -> {
+                        listView.getItems().remove(item);
+                        selectedTypesObs.remove(item);
+                    });
+                    deleteButton.setAlignment(Pos.CENTER);
+
+                    HBox.setHgrow(deleteButton, Priority.ALWAYS);
+                    Region region = new Region();
+                    HBox.setHgrow(region, Priority.ALWAYS);
+                    attachImage(deleteButton, "/assets/circle-xmark-solid.png", 15, 15);
+                    deleteButton.setStyle("-fx-background-color: transparent; " +
+                            "-fx-padding: 0; -fx-border: none;");
+                    deleteButton.setOnMouseEntered(event -> {
+                        deleteButton.setCursor(Cursor.HAND);
+                    });
+                    deleteButton.setOnMouseExited(event -> {
+                        deleteButton.setCursor(Cursor.DEFAULT);
+                    });
+                    hBox.getChildren().addAll(text, region, deleteButton);
+                    setGraphic(hBox);
+                    setBackground(new Background(new BackgroundFill(Color.web(item.getColor()),
+                            new CornerRadii(20), Insets.EMPTY)));
+                }
+            };
         };
         selectedTags.setStyle("-fx-cell-size: 30px; -fx-spacing: 10px;");
         selectedTags.setCellFactory(cb);

@@ -83,15 +83,6 @@
             </Label>
             <HBox alignment="TOP_RIGHT" spacing="10.0">
                <children>
-                  <Button fx:id="deleteExpenseButton" layoutX="215.0" layoutY="103.0" mnemonicParsing="false" onAction="#deleteExpense" prefHeight="7.0" prefWidth="24.0">
-                     <graphic>
-                        <ImageView fitHeight="25.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../assets/bin.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                  </Button>
                   <Button mnemonicParsing="false" onAction="#abort" prefHeight="31.0" prefWidth="76.0" text="Abort">
                      <font>
                         <Font size="15.0" />
