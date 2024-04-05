@@ -17,6 +17,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Modality;
 import javafx.util.Callback;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -41,8 +42,8 @@ public class OverviewCtrl {
 
     private final ObservableList<Expense> expensesAllObs = FXCollections.observableArrayList();
     private final ObservableList<Expense> expensesFromObs = FXCollections.observableArrayList();
-    private final ObservableList<Expense> expensesIncludingObs =
-            FXCollections.observableArrayList();
+    private final ObservableList<Expense> expensesIncludingObs = FXCollections
+            .observableArrayList();
 
     private Event ev;
 
@@ -67,8 +68,9 @@ public class OverviewCtrl {
     /**
      * Controller responsible for handling the quote overview functionality.
      * 
-     * @param server An instance of ServerUtils for server-related operations.
-     * @param mainCtrl An instance of MainCtrl for coordinating with the main controller.
+     * @param server   An instance of ServerUtils for server-related operations.
+     * @param mainCtrl An instance of MainCtrl for coordinating with the main
+     *                 controller.
      */
     @Inject
     public OverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
@@ -145,16 +147,18 @@ public class OverviewCtrl {
 
                 VBox vbox = new VBox(mainTextFlow, smallText, tags);
                 vbox.setSpacing(5);
-
                 Text dateText = new Text(item.getDate().toString());
                 dateText.setFont(Font.font("System", FontWeight.NORMAL, 12));
                 Region region = new Region();
                 HBox.setHgrow(region, Priority.ALWAYS);
                 Button editButton = new Button();
+                Button deleteButton = new Button();
                 editButton.setOnAction(e -> mainCtrl.showExpense(item.getEvent(),
                         participantComboBox.getSelectionModel().getSelectedItem(), item));
+                deleteButton.setOnAction(e -> deleteExpense(item));
+                attachImage(deleteButton, "/assets/bin.png");
                 attachImage(editButton, "/assets/pen-solid.png");
-                HBox element = new HBox(dateText, vbox, region, editButton);
+                HBox element = new HBox(dateText, vbox, region, deleteButton, editButton);
                 element.setSpacing(15);
                 setGraphic(element);
             }
@@ -252,7 +256,9 @@ public class OverviewCtrl {
         expensesIncludingObs.clear();
 
         Participant selectedParticipant = participantComboBox.getSelectionModel().getSelectedItem();
-        for (Expense e : this.ev.getExpenses()) {
+        List<Expense> sortedExpenses = new ArrayList<>(this.ev.getExpenses());
+        java.util.Collections.sort(sortedExpenses, (a, b) -> b.getDate().compareTo(a.getDate()));
+        for (Expense e : sortedExpenses) {
             expensesAllObs.add(e);
             if (Objects.equals(e.getCreator(),
                     participantComboBox.getSelectionModel().getSelectedItem())) {
@@ -286,7 +292,8 @@ public class OverviewCtrl {
     }
 
     /**
-     * Method to add a new participant. This method triggers the display of the add participant
+     * Method to add a new participant. This method triggers the display of the add
+     * participant
      * window.
      */
     public void addParticipant() {
@@ -298,7 +305,7 @@ public class OverviewCtrl {
      * Trigger the new expense dialog
      */
     public void addExpense() {
-        if(ev.getParticipants().size() < 2) {
+        if (ev.getParticipants().size() < 2) {
             warning.setText("Not enough people!");
             return;
         }
@@ -309,7 +316,8 @@ public class OverviewCtrl {
     }
 
     /**
-     * Method to edit a new participant. This method triggers the display of the edit participant
+     * Method to edit a new participant. This method triggers the display of the
+     * edit participant
      * window.
      */
     public void editParticipant() {
@@ -330,8 +338,10 @@ public class OverviewCtrl {
     }
 
     /**
-     * Open a dialog with an input box to allow the user to enter a new event name. The name that is
-     * entered is made to be new event name. If the user cancels the dialog, no action is performed.
+     * Open a dialog with an input box to allow the user to enter a new event name.
+     * The name that is
+     * entered is made to be new event name. If the user cancels the dialog, no
+     * action is performed.
      */
     public void editTitle() {
         TextInputDialog dialog = new TextInputDialog(ev.getName());
@@ -364,7 +374,7 @@ public class OverviewCtrl {
             warning.setText("First chose a participant.");
             return;
         }
-        if(partOfExpense(participantNames.getSelectionModel().getSelectedItem())) {
+        if (partOfExpense(participantNames.getSelectionModel().getSelectedItem())) {
             warning.setText("Settle debt first!");
             return;
         }
@@ -381,7 +391,7 @@ public class OverviewCtrl {
         alert.getButtonTypes().setAll(confirm, cancel);
 
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == confirm){
+        if (result.get() == confirm) {
             warning.setText("");
             ev.removeParticipant(participantNames.getSelectionModel().getSelectedItem());
             server.updateEvent(ev);
@@ -394,15 +404,45 @@ public class OverviewCtrl {
     }
 
     /**
+     * Delete an expense
+     *
+     * @param e The expense to delete
+     */
+    public void deleteExpense(Expense e) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation");
+        alert.setHeaderText("Are you sure you want to proceed?");
+        alert.setContentText("Do you want to delete this event?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (!result.map(x -> x == ButtonType.OK).orElse(false)) {
+            return;
+        }
+        try {
+            server.deleteExpense(e);
+        } catch (Exception err) {
+            var alert2 = new Alert(Alert.AlertType.ERROR);
+            alert2.initModality(Modality.APPLICATION_MODAL);
+            alert2.setContentText(err.getMessage());
+            alert2.showAndWait();
+            return;
+        }
+
+        refresh();
+    }
+
+    /**
      * Checks weather a participant is part of an expense.
+     * 
      * @param participant participant to be checked.
      * @return weather the participant is part of any expense.
      */
     private boolean partOfExpense(Participant participant) {
         Set<Expense> expenses = ev.getExpenses();
-        for(Expense expense : expenses) {
-            if(expense.getCreator().equals(participant)) return true;
-            if(expense.getSplitBetween().contains(participant)) return true;
+        for (Expense expense : expenses) {
+            if (expense.getCreator().equals(participant))
+                return true;
+            if (expense.getSplitBetween().contains(participant))
+                return true;
         }
         return false;
     }
@@ -457,7 +497,7 @@ public class OverviewCtrl {
      * Shows the statistics screen.
      */
     public void showStatistics() {
-        if(ev.getExpenses() == null || ev.getExpenses().size() == 0) {
+        if (ev.getExpenses() == null || ev.getExpenses().size() == 0) {
             warning.setText("Create expenses first.");
             return;
         }
