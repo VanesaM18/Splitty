@@ -56,6 +56,8 @@ public class MainCtrl {
     private Scene expenseType;
     private AddEditTagsCtrl addEditTagsCtrl;
     private Scene addEditTags;
+    private StatisticsCtrl statisticsCtrl;
+    private Scene statistics;
     private Optional<Locale> currentLocale = Optional.empty();
     private boolean isInOpenDebt = false;
 
@@ -107,10 +109,12 @@ public class MainCtrl {
         this.addEditTagsCtrl = data.getAddEditTags().getKey();
         this.addEditTags = new Scene(data.getAddEditTags().getValue());
 
+        this.statisticsCtrl = data.getStatistics().getKey();
+        this.statistics = new Scene(data.getStatistics().getValue());
+
         primaryStage.setOnCloseRequest(event -> {
             startPageCtrl.updateConfig();
         });
-
         settingsCtrl.make();
         sceneManager.showCurrentScene();
         primaryStage.show();
@@ -368,5 +372,15 @@ public class MainCtrl {
      */
     public void setIsInManagement(boolean b) {
         isInOpenDebt = b;
+    }
+
+    /**
+     * Shows the statistics scene.
+     * @param ev event to be considered.
+     */
+    public void showStatistics(Event ev) {
+        statisticsCtrl.setEvent(ev);
+        primaryStage.setTitle("Statistics");
+        primaryStage.setScene(statistics);
     }
 }
