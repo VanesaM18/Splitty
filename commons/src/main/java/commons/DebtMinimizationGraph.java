@@ -14,6 +14,8 @@ public class DebtMinimizationGraph {
         }
     }
 
+    public int maxChainValue;
+    public int firstValueFinal;
     private List<List<Edge>> graph;
     private int[] level;
     private int[] start;
@@ -31,6 +33,9 @@ public class DebtMinimizationGraph {
         graph.get(from).add(new Edge(to, 0, capacity, graph.get(to).size()));
         graph.get(to).add(
             new Edge(from, 0, 0, graph.get(from).size() - 1));
+    }
+    public void addEdgeWithoutReverse(int from, int to, int capacity) {
+        graph.get(from).add(new Edge(to, 0, capacity, graph.get(to).size()));
     }
 
     private boolean bfs(int source, int sink) {
@@ -83,5 +88,111 @@ public class DebtMinimizationGraph {
     }
     public List<Edge> getEdgesForVertex(int vertex) {
         return graph.get(vertex);
+    }
+
+    public List<Integer> getConnectedNodes(int from) {
+        List<Integer> reachableNodes = new ArrayList<>();
+        boolean[] visited = new boolean[graph.size()];
+        Arrays.fill(visited, false);
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(from);
+        visited[from] = true;
+        while (!queue.isEmpty()) {
+            int currentNode = queue.poll();
+            reachableNodes.add(currentNode);
+            for (Edge edge : graph.get(currentNode)) {
+                if (!visited[edge.to] && edge.capacity != 0) {
+                    visited[edge.to] = true;
+                    queue.offer(edge.to);
+                }
+            }
+        }
+        return reachableNodes;
+    }
+
+    public void minimizeDebtChains(int participantCount) {
+        HashSet<Integer> visited = new HashSet<>();
+        while (true) {
+            int which = getWhich(participantCount, visited);
+            if (which == -1) {
+                break;
+            }
+            visited.add(which);
+            while (true) {
+                List<Integer> maxChain = new ArrayList<>();
+                maxChainValue = Integer.MIN_VALUE;
+                firstValueFinal = -1;
+                HashSet<Integer> visitedChain = new HashSet<>();
+                findMaxChain(which, new ArrayList<>(), 0, maxChain, visitedChain, -1);
+                if (maxChain.size() > 2) {
+                    for (int i = 0; i < maxChain.size() - 1; i++) {
+                        removeEdgeOrUpdate(maxChain.get(i), maxChain.get(i + 1));
+                    }
+                    int from = maxChain.get(0);
+                    int to = maxChain.get(maxChain.size() - 1);
+                    addEdgeWithoutReverse(from, to, maxChainValue);
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+
+    private int getWhich(int participantCount, HashSet<Integer> visited) {
+        Map<Integer, Integer> inDegrees = new HashMap<>();
+        for (int i = 0; i < participantCount; i++) {
+            inDegrees.put(i, 0);
+        }
+        for (List<Edge> edges : getGraph()) {
+            for (Edge edge : edges) {
+                if (edge.capacity != 0) {
+                    inDegrees.put(edge.to, inDegrees.getOrDefault(edge.to, 0) + 1);
+                }
+            }
+        }
+        int minn = Integer.MAX_VALUE;
+        int which = -1;
+        for (int i = 0; i < participantCount; i++) {
+            if (inDegrees.get(i) != 0 && inDegrees.get(i) < minn && !visited.contains(i)) {
+                minn = inDegrees.get(i);
+                which = i;
+            }
+        }
+        return which;
+    }
+
+    private void findMaxChain(int currentNode, List<Integer> currentChain, int currentSum,  List<Integer> maxChain, HashSet<Integer> visitedChain, int firstValue) {
+        currentChain.add(currentNode);
+        visitedChain.add(currentNode);
+        boolean isEndNode = true;
+        for (DebtMinimizationGraph.Edge edge : getGraph().get(currentNode)) {
+            if (edge.capacity > 0 && !visitedChain.contains(edge.to) && (edge.capacity <= firstValue || firstValue == -1)) {
+                isEndNode = false;
+                if (firstValue == -1) {
+                    firstValue = edge.capacity;
+                }
+                findMaxChain(edge.to, new ArrayList<>(currentChain), currentSum + edge.capacity, maxChain, visitedChain, firstValue);
+            }
+        }
+        if (isEndNode && currentChain.size() > maxChainValue && firstValue != -1) {
+            maxChainValue = currentChain.size();
+            firstValueFinal = firstValue;
+            maxChain.clear();
+            maxChain.addAll(currentChain);
+        }
+    }
+
+    private void removeEdgeOrUpdate(int from, int to) {
+        for (Edge e: getGraph().get(from)) {
+            if (e.to == to) {
+                e.capacity -= firstValueFinal;
+                break;
+            }
+        }
+        getGraph().get(from).removeIf(edge -> edge.to == to && edge.capacity == 0);
+    }
+
+    public List<List<Edge>> getGraph() {
+        return graph;
     }
 }

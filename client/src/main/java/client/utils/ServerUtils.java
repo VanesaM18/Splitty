@@ -538,83 +538,30 @@ public class ServerUtils {
             cnt += 1;
         }
         for (Debt debt: initialDebts) {
-            solver.addEdge(indexing.get(debt.getDebtor()), indexing.get(debt.getCreditor()), (int)debt.getAmount().getInternalValue());
+            solver.addEdge(indexing.get(debt.getDebtor()), indexing.get(debt.getCreditor()),
+                (int)debt.getAmount().getInternalValue());
         }
-        List<Participant> ordered = participantsInAmountOrder(event.getExpenses());
-        Set<Pair<Integer, Integer>> visited = new HashSet<>();
-        while (true) {
-            Pair<Integer, Integer> unvisited = getUnvisitedEdge(solver, visited, ordered, indexing);
-            System.out.println(unvisited);
-            if (unvisited.getKey() == -1) {
-                break;
-            }
-            for (int from = 0; from < n; ++from) {
-                List<DebtMinimizationGraph.Edge> adjacentEdges = solver.getEdgesForVertex(from);
-                for (DebtMinimizationGraph.Edge edge: adjacentEdges) {
-                    if (edge.capacity != 0) {
-                        System.out.println(from + "->" + edge.to + " " + edge.capacity);
+        for (int from = 0; from < n; ++from) {
+            List<Integer> toS = solver.getConnectedNodes(from);
+            for (Integer to: toS) {
+                if (to != from) {
+                    int mxFlow = solver.maxFlow(from, to);
+                    DebtMinimizationGraph residual = getResidualGraph(n, solver, from, to);
+                    if (mxFlow > 0) {
+                        residual.addEdge(from, to, mxFlow);
                     }
+                    solver = residual;
                 }
             }
-            int mxFlow = solver.maxFlow(unvisited.getKey(), unvisited.getValue());
-            System.out.println(mxFlow);
-            for (int from = 0; from < n; ++from) {
-                List<DebtMinimizationGraph.Edge> adjacentEdges = solver.getEdgesForVertex(from);
-                for (DebtMinimizationGraph.Edge edge: adjacentEdges) {
-                    if (edge.capacity != 0) {
-                        System.out.println(from + "->" + edge.to + " " + edge.flow);
-                    }
-                }
-            }
-            System.out.println("SPATIU");
-            System.out.println("SPATIU");
-            System.out.println("SPATIU");
-            DebtMinimizationGraph residualGraph = new DebtMinimizationGraph(n);
-            for (int from = 0; from < n; ++from) {
-                List<DebtMinimizationGraph.Edge> adjacentEdges = solver.getEdgesForVertex(from);
-                for (DebtMinimizationGraph.Edge edge: adjacentEdges) {
-                    int flow = (edge.flow < 0 ? edge.capacity : (edge.capacity - edge.flow));
-                    if (flow > 0 && (from != unvisited.getKey() || edge.to != unvisited.getValue())) {
-                        residualGraph.addEdge(from, edge.to, flow);
-                    }
-                }
-            }
-            if (mxFlow > 0) {
-                residualGraph.addEdge(unvisited.getKey(), unvisited.getValue(), mxFlow);
-            }
-            visited.add(unvisited);
-            solver = residualGraph;
         }
-        visited = new HashSet<>();
-        while (true) {
-            Pair<Integer, Integer> unvisited = getUnvisitedEdge(solver, visited, ordered, indexing);
-            System.out.println(unvisited);
-            if (unvisited.getKey() == -1) {
-                break;
-            }
-            int mxFlow = solver.maxFlow(unvisited.getKey(), unvisited.getValue());
-            DebtMinimizationGraph residualGraph = new DebtMinimizationGraph(n);
-            for (int from = 0; from < n; ++from) {
-                List<DebtMinimizationGraph.Edge> adjacentEdges = solver.getEdgesForVertex(from);
-                for (DebtMinimizationGraph.Edge edge: adjacentEdges) {
-                    int flow = (edge.flow < 0 ? edge.capacity : (edge.capacity - edge.flow));
-                    if (flow > 0 && (from != unvisited.getKey() || edge.to != unvisited.getValue())) {
-                        residualGraph.addEdge(from, edge.to, flow);
-                    }
-                }
-            }
-            if (mxFlow > 0) {
-                residualGraph.addEdge(unvisited.getKey(), unvisited.getValue(), mxFlow);
-            }
-            visited.add(unvisited);
-            solver = residualGraph;
-        }
+        solver.minimizeDebtChains(n);
         List<Debt> resultDebts = new ArrayList<>();
         for (int from = 0; from < n; ++from) {
             List<DebtMinimizationGraph.Edge> adjacentEdges = solver.getEdgesForVertex(from);
             for (DebtMinimizationGraph.Edge edge : adjacentEdges) {
                 if (edge.capacity > 0) {
-                    resultDebts.add(new Debt(reverseIndexing.get(from), new Monetary(edge.capacity), reverseIndexing.get(edge.to)));
+                    resultDebts.add(new Debt(reverseIndexing.get(from),
+                        new Monetary(edge.capacity), reverseIndexing.get(edge.to)));
                 }
             }
         }
@@ -633,6 +580,22 @@ public class ServerUtils {
         return result;
     }
 
+    private static DebtMinimizationGraph getResidualGraph(int n,
+                                                                  DebtMinimizationGraph solver,
+                                                                  int x_from, int x_to) {
+        DebtMinimizationGraph residualGraph = new DebtMinimizationGraph(n);
+        for (int from = 0; from < n; ++from) {
+            List<DebtMinimizationGraph.Edge> adjacentEdges = solver.getEdgesForVertex(from);
+            for (DebtMinimizationGraph.Edge edge: adjacentEdges) {
+                int flow = (edge.flow < 0 ? edge.capacity : (edge.capacity - edge.flow));
+                if (flow > 0 && (from != x_from || edge.to != x_to)) {
+                    residualGraph.addEdge(from, edge.to, flow);
+                }
+            }
+        }
+        return residualGraph;
+    }
+
     private static Map<Pair<Participant, Participant>, Long> getUnifiedDebts(
         List<Debt> resultDebts) {
         Map<Pair<Participant, Participant>, Long> netBalances = new HashMap<>();
@@ -649,26 +612,6 @@ public class ServerUtils {
             netBalances.put(key, currentBalance + amount);
         }
         return netBalances;
-    }
-
-    private Pair<Integer, Integer> getUnvisitedEdge(DebtMinimizationGraph solver, Set<Pair<Integer, Integer>> visited, List<Participant> ordered,  HashMap<Participant, Integer> indexing) {
-        for (Participant participant : ordered) {
-            int from = indexing.get(participant);
-            List<DebtMinimizationGraph.Edge> adjacentEdges = solver.getEdgesForVertex(from);
-            int maxx = 0;
-            Pair<Integer, Integer> result = new Pair<>(-1, -1);
-            for (DebtMinimizationGraph.Edge edge : adjacentEdges) {
-                Pair<Integer, Integer> vis = new Pair<>(from, edge.to);
-                if (!visited.contains(vis) && edge.capacity > maxx) {
-                    maxx = edge.capacity;
-                    result = vis;
-                }
-            }
-            if (result.getKey() != -1) {
-                return result;
-            }
-        }
-        return new Pair<>(-1, -1);
     }
 
     /**
@@ -700,34 +643,6 @@ public class ServerUtils {
     public void refreshExpensesList(Event e) {
         return;
 
-    }
-
-    /**
-     * Retrieves all participants that can be removed from expenses
-     * @param allExpenses all existing expenses
-     * @return the list of participants that can be removed
-     */
-    public List<Participant> participantsInAmountOrder(Set<Expense> allExpenses) {
-        if (allExpenses == null) {
-            return new ArrayList<>();
-        }
-        HashMap<Participant, Long> sumPerParticipant = new HashMap<>();
-        for (Expense ex : allExpenses) {
-            Set<Participant> split = ex.getSplitBetween();
-            long amountPerPerson = ex.getAmount().getInternalValue() / split.size();
-            for (Participant p : split) {
-                sumPerParticipant.put(p, sumPerParticipant.getOrDefault(p, 0L) + amountPerPerson);
-            }
-            sumPerParticipant.put(ex.getCreator(),
-                sumPerParticipant.getOrDefault(ex.getCreator(), 0L) - ex.getAmount().getInternalValue());
-        }
-        List<Map.Entry<Participant, Long>> sortedEntries = new ArrayList<>(sumPerParticipant.entrySet());
-        sortedEntries.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
-        List<Participant> result = new ArrayList<>();
-        for (Map.Entry<Participant, Long> entry : sortedEntries) {
-            result.add(entry.getKey());
-        }
-        return result;
     }
 
     /**
