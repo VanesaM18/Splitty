@@ -538,7 +538,6 @@ public class ServerUtils {
             cnt += 1;
         }
         for (Debt debt: initialDebts) {
-            System.out.println(indexing.get(debt.getDebtor()) + " -> " + indexing.get(debt.getCreditor()));
             solver.addEdge(indexing.get(debt.getDebtor()), indexing.get(debt.getCreditor()), (int)debt.getAmount().getInternalValue());
         }
         Set<Pair<Integer, Integer>> visited = new HashSet<>();
@@ -553,7 +552,7 @@ public class ServerUtils {
                 List<DebtMinimizationGraph.Edge> adjacentEdges = solver.getEdgesForVertex(from);
                 for (DebtMinimizationGraph.Edge edge: adjacentEdges) {
                     int flow = (edge.flow < 0 ? edge.capacity : (edge.capacity - edge.flow));
-                    if (flow > 0) {
+                    if (flow > 0 && (from != unvisited.getKey() || edge.to != unvisited.getValue())) {
                         residualGraph.addEdge(from, edge.to, flow);
                     }
                 }
@@ -564,16 +563,46 @@ public class ServerUtils {
             visited.add(unvisited);
             solver = residualGraph;
         }
-        List<Debt> result = new ArrayList<>();
+        List<Debt> resultDebts = new ArrayList<>();
         for (int from = 0; from < n; ++from) {
             List<DebtMinimizationGraph.Edge> adjacentEdges = solver.getEdgesForVertex(from);
             for (DebtMinimizationGraph.Edge edge : adjacentEdges) {
                 if (edge.capacity > 0) {
-                    result.add(new Debt(reverseIndexing.get(from), new Monetary(edge.capacity), reverseIndexing.get(edge.to)));
+                    resultDebts.add(new Debt(reverseIndexing.get(from), new Monetary(edge.capacity), reverseIndexing.get(edge.to)));
                 }
             }
         }
+        Map<Pair<Participant, Participant>, Long> netBalances =
+            getUnifiedDebts(resultDebts);
+        List<Debt> result = new ArrayList<>();
+        for (Map.Entry<Pair<Participant, Participant>, Long> entry : netBalances.entrySet()) {
+            Pair<Participant, Participant> key = entry.getKey();
+            Long balance = entry.getValue();
+            if (balance > 0) {
+                result.add(new Debt(key.getKey(), new Monetary(balance), key.getValue()));
+            } else if (balance < 0) {
+                result.add(new Debt(key.getValue(), new Monetary(-balance), key.getKey()));
+            }
+        }
         return result;
+    }
+
+    private static Map<Pair<Participant, Participant>, Long> getUnifiedDebts(
+        List<Debt> resultDebts) {
+        Map<Pair<Participant, Participant>, Long> netBalances = new HashMap<>();
+        for (Debt debt : resultDebts) {
+            Participant debtor = debt.getDebtor();
+            Participant creditor = debt.getCreditor();
+            Long amount = debt.getAmount().getInternalValue();
+            Pair<Participant, Participant> key = new Pair<>(debtor, creditor);
+            if (netBalances.containsKey(new Pair<>(creditor, debtor))) {
+                key = new Pair<>(creditor, debtor);
+                amount = -amount;
+            }
+            Long currentBalance = netBalances.getOrDefault(key, 0L);
+            netBalances.put(key, currentBalance + amount);
+        }
+        return netBalances;
     }
 
     private Pair<Integer, Integer> getUnvisitedEdge(DebtMinimizationGraph solver, Set<Pair<Integer, Integer>> visited, int n) {
