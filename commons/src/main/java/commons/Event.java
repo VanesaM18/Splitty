@@ -367,69 +367,6 @@ public class Event {
     }
 
     /**
-     * This method performs the final calculation of debts.
-     * It first obtains all debts using the paymentsToDebt method.
-     * Then, it calculates the total debt per participant.
-     * After calculating total debts, it sorts participants based on their balances.
-     * It populates maps for debtors and creditors based on sorted balances.
-     * Finally, it iterates over debtors and creditors to settle debts
-     * and creates a list of Debt objects representing settled debts
-     * @param event the current event
-     * @return a list of (N-1) debts
-     */
-    public static List<Debt> finalCalculation(Event event) {
-        List<Debt> initialDebts = event.paymentsToDebt(event);
-        Map<Participant, Long> balances = new HashMap<>();
-
-        for (Debt debt : initialDebts) {
-            balances.put(debt.getDebtor(),
-                balances.getOrDefault(debt.getDebtor(), 0L) - debt.getAmount().getInternalValue());
-            balances.put(debt.getCreditor(),
-                balances.getOrDefault(debt.getCreditor(), 0L) + debt.getAmount().getInternalValue());
-        }
-
-        Map<Participant, Long> debtors = new HashMap<>();
-        Map<Participant, Long> creditors = new HashMap<>();
-        for (Map.Entry<Participant, Long> entry : balances.entrySet()) {
-            long balance = entry.getValue();
-            if (balance < 0) {
-                debtors.put(entry.getKey(), -balance);
-            } else if (balance > 0) {
-                creditors.put(entry.getKey(), balance);
-            }
-        }
-
-        List<Debt> settledDebts = new ArrayList<>();
-        for (Map.Entry<Participant, Long> debtorEntry : debtors.entrySet()) {
-            long debtAmount = debtorEntry.getValue();
-            Iterator<Map.Entry<Participant, Long>> creditorIterator = creditors.entrySet().iterator();
-
-            while (debtAmount > 0 && creditorIterator.hasNext()) {
-                Map.Entry<Participant, Long> creditorEntry = creditorIterator.next();
-                long creditAmount = creditorEntry.getValue();
-
-                long payment = Math.min(debtAmount, creditAmount);
-                settledDebts.add(new Debt(debtorEntry.getKey(), new Monetary(payment), creditorEntry.getKey()));
-
-                debtAmount -= payment;
-                creditAmount -= payment;
-
-                if (creditAmount == 0) {
-                    creditorIterator.remove();
-                } else {
-                    creditorEntry.setValue(creditAmount);
-                }
-            }
-            if (debtAmount == 0) {
-                debtorEntry.setValue(debtAmount);
-            }
-        }
-
-        return settledDebts;
-    }
-
-
-    /**
      * populates debtor and creditor maps based on sorted balances.
      * This is a helper method for the final calculation's method.
      * @param sortedEntries a map of the debts in descending order
