@@ -2,10 +2,7 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
-import commons.Debt;
-import commons.Event;
-import commons.Expense;
-import commons.Participant;
+import commons.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -142,9 +139,13 @@ public class OverviewCtrl {
                 TextFlow mainTextFlow = new TextFlow(textBoldP1, new Text(" paid "),
                         textBoldP2, new Text(" for "), textBoldP3);
                 Text smallText = OverviewCtrl.getText(item);
+                Text tags = OverviewCtrl.getTags(item);
                 smallText.setFont(Font.font("System", FontWeight.NORMAL, 10));
                 smallText.setFill(Color.GRAY.darker().darker());
-                VBox vbox = new VBox(mainTextFlow, smallText);
+                tags.setFont(Font.font("System", FontWeight.NORMAL, 10));
+                tags.setFill(Color.GRAY.darker().darker());
+
+                VBox vbox = new VBox(mainTextFlow, smallText, tags);
                 vbox.setSpacing(5);
                 Text dateText = new Text(item.getDate().toString());
                 dateText.setFont(Font.font("System", FontWeight.NORMAL, 12));
@@ -168,6 +169,19 @@ public class OverviewCtrl {
         expensesAll.setItems(expensesAllObs);
         expensesFrom.setItems(expensesFromObs);
         expensesIncluding.setItems(expensesIncludingObs);
+    }
+
+    private static Text getTags(Expense item) {
+        Set<ExpenseType> expenseTypesSet = item.getTags();
+        StringBuilder s = new StringBuilder();
+        Iterator<ExpenseType> it = expenseTypesSet.iterator();
+        for (int i = 0; i < expenseTypesSet.size(); ++i) {
+            s.append(it.next().getName());
+            if (i != expenseTypesSet.size() - 1) {
+                s.append(", ");
+            }
+        }
+        return new Text(s.toString());
     }
 
     /**
@@ -477,5 +491,17 @@ public class OverviewCtrl {
      */
     public void showTags() {
         mainCtrl.showExpenseTypes(ev);
+    }
+
+    /**
+     * Shows the statistics screen.
+     */
+    public void showStatistics() {
+        if (ev.getExpenses() == null || ev.getExpenses().size() == 0) {
+            warning.setText("Create expenses first.");
+            return;
+        }
+        mainCtrl.showStatistics(ev);
+        warning.setText("");
     }
 }
