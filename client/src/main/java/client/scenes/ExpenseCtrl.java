@@ -126,6 +126,8 @@ public class ExpenseCtrl {
         this.event = event;
         clearFields();
         participantsObs.addAll(event.getParticipants());
+        // Make sure participants are show in a consistent, sorted order.
+        this.participantsObs.sort((p1, p2) -> p1.getName().compareToIgnoreCase(p2.getName()));
         typesObs.addAll(event.getTags());
     }
 
