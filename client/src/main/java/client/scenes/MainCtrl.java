@@ -36,8 +36,6 @@ public class MainCtrl {
     private ManagementCtrl managementCtrl;
     private boolean isInManagement = false;
     private Scene management;
-    private Scene overview;
-    private Scene add;
     private ParticipantsCtrl participantsCtrl;
     private Scene participants;
     private Scene expense;
