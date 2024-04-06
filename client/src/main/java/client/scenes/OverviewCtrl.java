@@ -231,11 +231,12 @@ public class OverviewCtrl {
     }
 
     private void refreshParticipants() {
-
         participantsObs.clear();
         for (Participant p : this.ev.getParticipants()) {
             participantsObs.add(p);
         }
+        // Make sure the participants appear in a consistent, sorted order.
+        participantsObs.sort((p1, p2) -> p1.getName().compareToIgnoreCase(p2.getName()));
     }
 
     private void refreshExpenses() {
@@ -412,7 +413,7 @@ public class OverviewCtrl {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation");
         alert.setHeaderText("Are you sure you want to proceed?");
-        alert.setContentText("Do you want to delete this event?");
+        alert.setContentText("Do you want to delete this expense?");
         Optional<ButtonType> result = alert.showAndWait();
         if (!result.map(x -> x == ButtonType.OK).orElse(false)) {
             return;
