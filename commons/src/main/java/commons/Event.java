@@ -326,69 +326,45 @@ public class Event {
      */
     public List<Debt> paymentsToDebt(Event event) {
         Map<Map<Participant, Participant>, Monetary> allDebts = calculatePayments(event);
-        List<Debt> listDebt = new ArrayList<>();
+        Map<String, Long> netDebts = new HashMap<>();
 
-        allDebts.entrySet().forEach(entry -> {
-            Map<Participant, Participant> pair = entry.getKey();
-            Monetary monetaryValue = entry.getValue();
-
-            pair.entrySet().forEach(innerEntry -> {
-                Participant debtorId = innerEntry.getKey();
-                Participant creditorId = innerEntry.getValue();
-                listDebt.add(new Debt(debtorId, monetaryValue, creditorId));
-            });
-        });
-        return listDebt;
-    }
-
-    /**
-     * This method performs the final calculation of debts.
-     * It first obtains all debts using the paymentsToDebt method.
-     * Then, it calculates the total debt per participant.
-     * After calculating total debts, it sorts participants based on their balances.
-     * It populates maps for debtors and creditors based on sorted balances.
-     * Finally, it iterates over debtors and creditors to settle debts
-     * and creates a list of Debt objects representing settled debts
-     * @param event the current event
-     * @return a list of (N-1) debts
-     */
-    public static List<Debt> finalCalculation(Event event) {
-        List<Debt> totalDebts = event.paymentsToDebt(event);
-        Map<Participant, Long> debtPP = new HashMap<>();
-        Set<Participant> setParticipants = event.getParticipants();
-
-        // Calculate the total debt per participant
-        for (Participant participant : setParticipants) {
-            long amount = 0;
-            for (Debt debt : totalDebts) {
-                if(debt.getDebtor().equals(participant) & debt.getCreditor().equals(participant)){
-                    amount += 0;
-                } else if (debt.getCreditor().equals(participant)) {
-                    amount += debt.getAmount().getInternalValue();
-                } else if (debt.getDebtor().equals(participant)) {
-                    amount -= debt.getAmount().getInternalValue();
-                }
-            }
-            debtPP.put(participant, amount);
+        HashMap<Long, Participant> mapping = new HashMap<>();
+        for (Participant p: event.getParticipants()) {
+            mapping.put(p.getId(), p);
         }
-        List<Debt> totalDebts2 = new ArrayList<>();
+        allDebts.forEach((key, value) -> key.forEach((debtor, creditor) -> {
+            if (debtor.getId() == creditor.getId()) {
+                return;
+            }
+            long amount = value.getInternalValue();
+            String forwardKey = debtor.getId() + "->" + creditor.getId();
+            String backwardKey = creditor.getId() + "->" + debtor.getId();
+            if (netDebts.containsKey(backwardKey)) {
+                Long existingAmount = netDebts.get(backwardKey);
+                long comparison = existingAmount - amount;
+                if (comparison > 0) {
+                    netDebts.put(backwardKey, existingAmount - amount);
+                } else if (comparison < 0) {
+                    netDebts.remove(backwardKey);
+                    netDebts.put(forwardKey, amount - existingAmount);
+                } else {
+                    netDebts.remove(backwardKey);
+                }
+            } else {
+                netDebts.put(forwardKey, amount);
+            }
+        }));
 
-        // Sort the debts in descending order based on the amount
-        List<Map.Entry<Participant, Long>> sortedEntries = new ArrayList<>(debtPP.entrySet());
-        sortedEntries.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+        List<Debt> simplifiedDebts = new ArrayList<>();
+        netDebts.forEach((key, value) -> {
+            String[] participants = key.split("->");
+            Participant debtor = mapping.get(Long.valueOf(participants[0]));
+            Participant creditor = mapping.get(Long.valueOf(participants[1]));
+            simplifiedDebts.add(new Debt(debtor, new Monetary(value), creditor));
+        });
 
-        // Create maps to track debtors and creditors
-        Map<Participant, Long> debtors = new HashMap<>();
-        Map<Participant, Long> creditors = new HashMap<>();
-
-        // Populate debtors and creditors maps
-        populateDebts(sortedEntries, debtors, creditors);
-
-        mappingDebts(debtors, creditors, totalDebts2);
-
-        return totalDebts2;
+        return simplifiedDebts;
     }
-
 
     /**
      * populates debtor and creditor maps based on sorted balances.

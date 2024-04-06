@@ -452,7 +452,7 @@ public class OverviewCtrl {
      */
     @FXML
     public void settleDebt() {
-        List<Debt> list = Event.finalCalculation(ev);
+        List<Debt> list = server.calculateDebts(ev);
         if (list.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");

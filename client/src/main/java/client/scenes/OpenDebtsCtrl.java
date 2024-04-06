@@ -60,7 +60,7 @@ public class OpenDebtsCtrl {
         if (e == null) {
             return;
         }
-        List<Debt> list = Event.finalCalculation(e);
+        List<Debt> list = server.calculateDebts(e);
 
         for (Debt debt : list) {
             if (debt.getDebtor().getId() != debt.getCreditor().getId()) {
