@@ -169,7 +169,7 @@ public class ExpenseTypeCtrl {
         alert.getButtonTypes().setAll(confirm, cancel);
 
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == confirm){
+        if (result.isPresent() && result.get() == confirm){
             listView.getItems().remove(item);
             event.removeTag(item);
             server.updateEvent(event);
