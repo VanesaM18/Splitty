@@ -231,11 +231,12 @@ public class OverviewCtrl {
     }
 
     private void refreshParticipants() {
-
         participantsObs.clear();
         for (Participant p : this.ev.getParticipants()) {
             participantsObs.add(p);
         }
+        // Make sure the participants appear in a consistent, sorted order.
+        participantsObs.sort((p1, p2) -> p1.getName().compareToIgnoreCase(p2.getName()));
     }
 
     private void refreshExpenses() {
