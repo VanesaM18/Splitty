@@ -4,10 +4,14 @@ package client.scenes;
 import client.MyModule;
 import com.google.inject.Injector;
 import commons.Event;
+import commons.Participant;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.BeforeAll;
@@ -17,6 +21,7 @@ import org.testfx.api.FxRobot;
 import org.testfx.assertions.api.Assertions;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
+import org.testfx.robot.Motion;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -29,7 +34,11 @@ import static com.google.inject.Guice.createInjector;
 
 @ExtendWith(ApplicationExtension.class)
 public class OverviewCtrlTest {
-    private final Event event = new Event("testCode", "name", LocalDateTime.now(), Set.of(), new HashSet<>());
+    private final Event event = new Event("testCode", "name", LocalDateTime.now(), Set.of(
+            new Participant("Nathan", "nathan@example.org", "IL434700657700148540079", "XLTXTJSX"),
+            new Participant("Sem", "sem@example.org", "QA02RSADO4966W8630650U7KG1171", "XAVTTOAI"),
+            new Participant("Femke", "femke@example.org", "DK7787948201327760", "RTFWNFFXRDJ")),
+            Set.of());
 
     Pane pane;
     OverviewCtrl controller;
@@ -52,7 +61,8 @@ public class OverviewCtrlTest {
      */
     @Start
     private void start(Stage stage) throws IOException {
-        // We need to load the fxml file in this complicated manner because we need to give it
+        // We need to load the fxml file in this complicated manner because we need to
+        // give it
         // access to an injector.
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/Overview.fxml"));
         Locale locale = Locale.of("en", "EN");
@@ -73,7 +83,8 @@ public class OverviewCtrlTest {
      */
     @Test
     void eventDetailsAreShown(FxRobot robot) {
-        // We cannot directly intereact with the controller from here, as we must be in a JavaFX
+        // We cannot directly intereact with the controller from here, as we must be in
+        // a JavaFX
         // theda to do so. Thus, we use the FxRobot.interact method.
         // See more: https://github.com/TestFX/TestFX/issues/222
         robot.interact(() -> {

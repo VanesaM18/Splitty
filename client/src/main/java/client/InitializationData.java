@@ -29,30 +29,33 @@ public class InitializationData {
 
     /**
      * Creates an instance of initialize data
+     *
+     * @param fxml         FXML Loader, injected.
+     * @param configLoader The config loader, injected.
      */
     @Inject
-    public InitializationData(MyFXML FXML, ConfigLoader configLoader) {
+    public InitializationData(MyFXML fxml, ConfigLoader configLoader) {
         var locale = configLoader.getLanguage();
 
-        settings = FXML.load(SettingsCtrl.class, locale, "client", "scenes", "Settings.fxml");
-        login = FXML.load(LoginCtrl.class, locale, "client", "scenes", "LoginView.fxml");
-        expense = FXML.load(ExpenseCtrl.class, locale, "client", "scenes", "Expense.fxml");
-        overviewEvent = FXML.load(OverviewCtrl.class, locale, "client", "scenes", "Overview.fxml");
-        invite = FXML.load(InviteScreenCtrl.class, locale, "client", "scenes", "InviteScreen.fxml");
-        openDebt = FXML.load(OpenDebtsCtrl.class, locale, "client", "scenes", "OpenDebts.fxml");
-        management = FXML.load(ManagementCtrl.class, locale,
+        settings = fxml.load(SettingsCtrl.class, locale, "client", "scenes", "Settings.fxml");
+        login = fxml.load(LoginCtrl.class, locale, "client", "scenes", "LoginView.fxml");
+        expense = fxml.load(ExpenseCtrl.class, locale, "client", "scenes", "Expense.fxml");
+        overviewEvent = fxml.load(OverviewCtrl.class, locale, "client", "scenes", "Overview.fxml");
+        invite = fxml.load(InviteScreenCtrl.class, locale, "client", "scenes", "InviteScreen.fxml");
+        openDebt = fxml.load(OpenDebtsCtrl.class, locale, "client", "scenes", "OpenDebts.fxml");
+        management = fxml.load(ManagementCtrl.class, locale,
                 "client", "scenes", "Management.fxml");
-        startPage = FXML.load(
+        startPage = fxml.load(
                 StartScreenCtrl.class, locale, "client", "scenes", "StartScreen.fxml");
-        expenseType = FXML.load(
+        expenseType = fxml.load(
                 ExpenseTypeCtrl.class, locale, "client", "scenes", "ExpenseTypes.fxml");
-        addEditTags = FXML.load(
+        addEditTags = fxml.load(
                 AddEditTagsCtrl.class, locale, "client", "scenes", "AddEditTags.fxml");
-        participant = FXML.load(
+        participant = fxml.load(
                 ParticipantsCtrl.class, locale, "client", "scenes", "Participants.fxml");
-        appConfiguration = FXML.load(AppConfigurationCtrl.class, locale,
+        appConfiguration = fxml.load(AppConfigurationCtrl.class, locale,
                 "client", "scenes", "AppConfiguration.fxml");
-        statistics = FXML.load(
+        statistics = fxml.load(
                 StatisticsCtrl.class, locale, "client", "scenes", "Statistics.fxml");
     }
 

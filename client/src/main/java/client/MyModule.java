@@ -37,6 +37,7 @@ import client.scenes.ParticipantsCtrl;
 import client.scenes.SettingsCtrl;
 import client.scenes.StartScreenCtrl;
 import client.scenes.StatisticsCtrl;
+import client.utils.SceneManager;
 
 public class MyModule implements Module {
 
@@ -47,6 +48,7 @@ public class MyModule implements Module {
      */
     @Override
     public void configure(Binder binder) {
+        binder.bind(SceneManager.class).in(Scopes.SINGLETON);
         binder.bind(AddEditTagsCtrl.class).in(Scopes.SINGLETON);
         binder.bind(AppConfigurationCtrl.class).in(Scopes.SINGLETON);
         binder.bind(ExpenseCtrl.class).in(Scopes.SINGLETON);
