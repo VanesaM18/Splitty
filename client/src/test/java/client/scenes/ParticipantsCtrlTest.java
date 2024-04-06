@@ -20,6 +20,8 @@ import org.testfx.framework.junit5.Start;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import static com.google.inject.Guice.createInjector;
@@ -55,6 +57,8 @@ public class ParticipantsCtrlTest {
         // access to an injector.
         FXMLLoader loader =
                 new FXMLLoader(getClass().getResource("/client/scenes/Participants.fxml"));
+        Locale locale = Locale.of("en", "EN");
+        loader.setResources(ResourceBundle.getBundle("bundles.Splitty", locale));
         Injector injector = createInjector(new TestModule());
         loader.setControllerFactory(injector::getInstance);
 

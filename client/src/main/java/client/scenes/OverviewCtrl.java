@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
+import client.utils.language.LanguageProcessor;
 import com.google.inject.Inject;
 import commons.Debt;
 import commons.Event;
@@ -31,6 +32,7 @@ public class OverviewCtrl {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
+    private final LanguageProcessor languageProcessor;
     @FXML
     private ListView<Expense> expensesAll;
     @FXML
@@ -54,6 +56,8 @@ public class OverviewCtrl {
     @FXML
     private Button editTitleButton;
     @FXML
+    private TitledPane languageNavigator;
+    @FXML
     private Button addParticipantButton;
     @FXML
     private Button deleteParticipantButton;
@@ -72,11 +76,14 @@ public class OverviewCtrl {
      * 
      * @param server An instance of ServerUtils for server-related operations.
      * @param mainCtrl An instance of MainCtrl for coordinating with the main controller.
+     * @param languageProcessor instance of LanguageProcessor.
      */
     @Inject
-    public OverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
+    public OverviewCtrl(ServerUtils server, MainCtrl mainCtrl,
+                        LanguageProcessor languageProcessor) {
         this.server = server;
         this.mainCtrl = mainCtrl;
+        this.languageProcessor = languageProcessor;
     }
 
     /**
@@ -109,6 +116,9 @@ public class OverviewCtrl {
             participantNames.setItems(participantsObs);
             this.refreshExpenses();
         }
+
+        languageProcessor.populateTitledPane(languageNavigator, mainCtrl.getCurrentLocale()
+                .orElse(Locale.of("en","EN")));
     }
 
     /**
@@ -118,6 +128,7 @@ public class OverviewCtrl {
     public void initialize() {
         initExpenses();
         initParticipants();
+        languageNavigator.setExpanded(false);
     }
 
     private void initExpenses() {

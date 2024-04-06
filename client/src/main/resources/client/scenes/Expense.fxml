@@ -35,31 +35,31 @@
                   <RowConstraints />
                </rowConstraints>
                <children>
-                  <Label text="Name">
+                  <Label text="%what_for_label">
                      <font>
                         <Font name="System Bold" size="22.0" />
                      </font>
                   </Label>
                   <TextField fx:id="description" maxWidth="1.7976931348623157E308" prefHeight="26.0" prefWidth="291.0" GridPane.columnIndex="1" />
-                  <Label text="Date" GridPane.rowIndex="1">
+                  <Label text="%when_label" GridPane.rowIndex="1">
                      <font>
                         <Font name="System Bold" size="22.0" />
                      </font>
                   </Label>
-                  <Label text="Amount" GridPane.rowIndex="2">
+                  <Label text="%how_much_label" GridPane.rowIndex="2">
                      <font>
                         <Font name="System Bold" size="22.0" />
                      </font>
                   </Label>
                   <DatePicker fx:id="date" maxWidth="1.7976931348623157E308" prefHeight="26.0" prefWidth="236.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <TextField fx:id="amount" maxWidth="1.7976931348623157E308" prefHeight="26.0" prefWidth="176.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  <Label text="Receiver" GridPane.rowIndex="3">
+                  <Label text="%who_paid_label" GridPane.rowIndex="3">
                      <font>
                         <Font name="System Bold" size="22.0" />
                      </font>
                   </Label>
                   <ComboBox fx:id="receiver" maxWidth="1.7976931348623157E308" prefHeight="26.0" prefWidth="176.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                  <Label text="Expense types" GridPane.rowIndex="4">
+                  <Label text="%expense_type_label" GridPane.rowIndex="4">
                      <font>
                         <Font name="System Bold" size="22.0" />
                      </font>
@@ -70,7 +70,7 @@
             <Region prefHeight="26.0" prefWidth="380.0" />
             <ListView fx:id="selectedTags" accessibleRole="IMAGE_VIEW" orientation="HORIZONTAL" prefHeight="65.0" prefWidth="380.0" />
             <Region prefHeight="26.0" prefWidth="380.0" />
-            <Label text="Participants">
+            <Label text="%how_to_split_label">
                <font>
                   <Font name="System Bold" size="22.0" />
                </font>
@@ -92,12 +92,12 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button mnemonicParsing="false" onAction="#abort" prefHeight="31.0" prefWidth="76.0" text="Abort">
+                  <Button mnemonicParsing="false" onAction="#abort" prefHeight="31.0" prefWidth="76.0" text="%abort_button">
                      <font>
                         <Font size="15.0" />
                      </font>
                   </Button>
-                  <Button defaultButton="true" mnemonicParsing="false" onAction="#ok" prefHeight="24.0" prefWidth="62.0" text="Ok">
+                  <Button defaultButton="true" mnemonicParsing="false" onAction="#ok" prefHeight="24.0" prefWidth="62.0" text="%ok_button">
                      <font>
                         <Font size="15.0" />
                      </font>

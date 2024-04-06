@@ -26,10 +26,7 @@ import javafx.util.Callback;
 
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class StartScreenCtrl implements Initializable {
     private final ServerUtils server;
@@ -43,6 +40,8 @@ public class StartScreenCtrl implements Initializable {
     private TextField joinEventField;
     @FXML
     private ListView<String> recentEvents;
+    @FXML
+    private HBox mainHBox;
     @FXML
     private TitledPane languageNavigator;
     private String lastEvent;
@@ -123,6 +122,7 @@ public class StartScreenCtrl implements Initializable {
         });
         languageNavigator.setExpanded(false);
     }
+
     /**
      * Handles creating a new event based on the input from the createEventField.
      */
@@ -244,7 +244,8 @@ public class StartScreenCtrl implements Initializable {
             .filter(code -> server.getEventById(code) != null)
             .toList();
         recentEvents.getItems().setAll(inviteCodes);
-        languageProcessor.populateTitledPane(languageNavigator, mainCtrl.getCurrentLocale().get());
+        languageProcessor.populateTitledPane(languageNavigator, mainCtrl
+                .getCurrentLocale().orElse(Locale.of("en","EN")));
     }
 
     /**

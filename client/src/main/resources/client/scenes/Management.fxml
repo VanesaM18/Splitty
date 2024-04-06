@@ -17,17 +17,17 @@
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%rightclick_for_options" />
               <TableView fx:id="eventsTable" prefHeight="263.0" prefWidth="554.0" VBox.vgrow="ALWAYS">
                   <columns>
-                      <TableColumn fx:id="titleColumn" prefWidth="138.5" text="Title" />
-                      <TableColumn fx:id="inviteCodeColumn" prefWidth="124.0" text="Event code">
+                      <TableColumn fx:id="titleColumn" prefWidth="138.5" text="%title_column" />
+                      <TableColumn fx:id="inviteCodeColumn" prefWidth="124.0" text="%invitecode_column">
 
                 </TableColumn>
-                      <TableColumn fx:id="creationDateColumn" minWidth="138.5" prefWidth="165.0" text="Creation Date" />
-                      <TableColumn fx:id="lastActivityColumn" prefWidth="151.0" text="Last Activity" />
+                      <TableColumn fx:id="creationDateColumn" minWidth="138.5" prefWidth="165.0" text="%creationdate_column" />
+                      <TableColumn fx:id="lastActivityColumn" prefWidth="151.0" text="%lastactivity_column" />
                   </columns>
               </TableView>
             <HBox>
                <children>
-                    <Button mnemonicParsing="false" onAction="#home" text="Home" />
+                    <Button mnemonicParsing="false" onAction="#home" text="%home_button" />
                   <Region prefWidth="200.0" HBox.hgrow="ALWAYS" />
                     <Button fx:id="jsonDumpButton" onAction="#handleJsonDumpButton" text="%jsondump_button" />
                   <Button mnemonicParsing="false" onAction="#handleImportJsonDumpButton" text="%import_jsondump_button" />
