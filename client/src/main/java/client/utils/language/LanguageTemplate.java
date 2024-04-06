@@ -72,7 +72,7 @@ public abstract class LanguageTemplate implements Language {
         try {
             Image img = getFlag();
             ImageView imageView = new ImageView(img);
-            imageView.setFitHeight(50);
+            imageView.setFitHeight(20);
             imageView.setPreserveRatio(true);
             button.setGraphic(imageView);
         } catch (IllegalArgumentException e) {

@@ -123,7 +123,7 @@ public class LanguageProcessor {
     }
 
     /**
-     * Returns a scrollable box with all the language buttons.
+     * scroll pane with all the language buttons.
      * @return ScrollPane containing language buttons.
      */
     public ScrollPane getLanguageSelector() {
@@ -151,12 +151,27 @@ public class LanguageProcessor {
                 .toList().get(0);
         Image img = currentLanguage.getFlag();
         ImageView imageView = new ImageView(img);
-        imageView.setFitHeight(30);
+        imageView.setFitHeight(23);
         imageView.setPreserveRatio(true);
         titledPane.setGraphic(imageView);
         VBox languageButtons = new VBox(20);
-        languageButtons.getChildren().addAll(toArray(languages));
+        Button[] languageArray = toArray(languages);
+        for (Button button : languageArray) {
+            if(button.getText().contains(currentLanguage.getText())) {
+                button.setText(button.getText() + "\n (active)");
+            }
+        }
+        languageButtons.getChildren().addAll(languageArray);
         titledPane.setContent(languageButtons);
+        titledPane.expandedProperty().addListener((observable, oldValue, newValue) -> {
+            if(!oldValue && newValue && observable.getValue()) {
+                titledPane.setPrefWidth(250);
+                titledPane.setPrefHeight(300);
+            } else if (oldValue && !newValue && !observable.getValue()) {
+                titledPane.setPrefWidth(0);
+                titledPane.setPrefHeight(0);
+            }
+        });
     }
 
 }
