@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OverviewCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OverviewCtrl">
    <children>
       <VBox spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -79,7 +79,7 @@
                   <Label fx:id="warning" textFill="RED" />
                </children>
             </HBox>
-            <ListView fx:id="participantNames" minHeight="40.0" orientation="HORIZONTAL" prefHeight="40.0" prefWidth="421.0" />
+            <ListView fx:id="participantNames" minHeight="-Infinity" orientation="HORIZONTAL" prefHeight="50.0" prefWidth="421.0" />
             <Region prefHeight="5.0" />
             <Label prefHeight="39.0" text="%expenses">
                <font>
