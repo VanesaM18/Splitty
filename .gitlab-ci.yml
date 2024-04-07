@@ -21,4 +21,6 @@ build:
   artifacts:
     paths:
       - ./coverage
+    reports:
+      junit: ./*/build/test-results/test/**/TEST-*
   coverage: /TestCoverage:(\d+)%/
