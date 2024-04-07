@@ -18,7 +18,7 @@ import java.util.*;
 public class LanguageProcessor {
 
     private final List<Language> languages;
-    private final Map<String, Language> actions = new HashMap<>();;
+    private final Map<String, Language> actions = new HashMap<>();
 
     /**
      * constructs a LanguageProcessor instance.
@@ -78,7 +78,10 @@ public class LanguageProcessor {
     }
 
     private void createActions() {
-        this.languages.forEach(language ->
+        Collections.sort(languages);
+        var actionLanguages = new ArrayList<>(languages);
+        actionLanguages.removeLast();
+        actionLanguages.forEach(language ->
                 actions.put(language.getText(), language));
     }
 

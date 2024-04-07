@@ -38,6 +38,19 @@ public interface Language extends Runnable, Comparable<Language> {
     String getText();
 
     /**
+     * Returning the priority of the language.
+     * If low priority it will not be at the
+     * top of the display list. Meaning that
+     * low priority is corespondent to a high
+     * priority index;
+     *
+     * @return priority index
+     */
+    default int getPriority() {
+        return 0;
+    }
+
+    /**
      * method for keeping the position of
      * the language object
      * @param other language
@@ -45,7 +58,7 @@ public interface Language extends Runnable, Comparable<Language> {
      */
     @Override
     default int compareTo(Language other) {
-        return 0;
+        return this.getPriority() - other.getPriority();
     }
 
     /**

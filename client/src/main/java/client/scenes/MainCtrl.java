@@ -125,8 +125,9 @@ public class MainCtrl {
         this.sceneManager.pushScene(SceneEnum.STARTUP, null);
         primaryStage.setTitle("Application Setup");
         primaryStage.setScene(appConfiguration);
-        appConfigurationCtrl.make();
+
         appConfigurationCtrl.refresh();
+        appConfigurationCtrl.make();
     }
 
     /**

@@ -4,13 +4,14 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="250.0" prefWidth="250.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AppConfigurationCtrl">
+<AnchorPane prefHeight="300.0" prefWidth="250.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AppConfigurationCtrl">
    <children>
-      <ChoiceBox fx:id="choiceBox" layoutX="25.0" layoutY="95.0" prefWidth="200.0" />
-      <Text layoutX="26.0" layoutY="39.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%startup_welcome" wrappingWidth="200.0" />
-      <Text layoutX="25.0" layoutY="71.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%startup_title_language" wrappingWidth="200.0" />
-      <TextField fx:id="urlTextField" layoutX="26.0" layoutY="154.0" prefWidth="200.0" promptText="Enter URL" text="http://localhost:8080" />
-      <Button layoutX="69.0" layoutY="212.0" mnemonicParsing="false" onAction="#onSave" text="%startup_save" />
-      <Text layoutX="26.0" layoutY="149.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%startup_title_url" wrappingWidth="200.0" />
+<!--      <ChoiceBox fx:id="choiceBox" blendMode="SRC_ATOP" layoutX="25.0" layoutY="93.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="0.0" pickOnBounds="false" prefWidth="200.0" snapToPixel="false" />-->
+      <Text layoutX="26.0" layoutY="49.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%startup_welcome" wrappingWidth="200.0" />
+      <Text layoutX="25.0" layoutY="92.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%startup_title_language" wrappingWidth="200.0" />
+      <TextField fx:id="urlTextField" layoutX="26.0" layoutY="183.0" prefWidth="200.0" promptText="Enter URL" text="http://localhost:8080" />
+      <Button layoutX="69.0" layoutY="244.0" mnemonicParsing="false" onAction="#onSave" text="%startup_save" />
+      <Text layoutX="26.0" layoutY="171.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%startup_title_url" wrappingWidth="200.0" />
+      <ComboBox fx:id="comboBox" layoutX="25.0" layoutY="113.0" prefHeight="24.0" prefWidth="200.0" />
    </children>
 </AnchorPane>

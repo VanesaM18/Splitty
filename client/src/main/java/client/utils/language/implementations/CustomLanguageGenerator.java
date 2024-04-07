@@ -1,7 +1,6 @@
 package client.utils.language.implementations;
 
 import client.MyFXML;
-import client.utils.language.Language;
 import client.utils.language.LanguageTemplate;
 import javafx.stage.FileChooser;
 
@@ -65,11 +64,11 @@ public class CustomLanguageGenerator extends LanguageTemplate {
     /**
      * method for keeping the position of
      * the language object
-     * @param other language
+     *
      * @return position
      */
     @Override
-    public int compareTo(Language other) {
+    public int getPriority() {
         return 1;
     }
 }
