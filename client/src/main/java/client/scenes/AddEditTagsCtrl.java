@@ -63,7 +63,12 @@ public class AddEditTagsCtrl {
     private void update() {
         if(!validInput()) return;
         expenseType.setName(name.getText());
-        expenseType.setColor(color.getValue().toString());
+        String colorString = color.getValue().toString();
+        if(!colorString.startsWith("#")) {
+            colorString = colorString.substring(2);
+            colorString = "#" + colorString;
+        }
+        expenseType.setColor(colorString);
         expenseType.setEvent(event);
         server.updateTag(expenseType);
         clearFields();

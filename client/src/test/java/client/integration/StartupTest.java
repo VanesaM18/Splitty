@@ -44,7 +44,8 @@ public class StartupTest extends TestClient {
                 injector.getInstance(InitializationData.class),
                 injector.getInstance(SceneManager.class)));
 
-        ComboBox selection = robot.lookup("#comboBox").queryAs(ComboBox.class);
+        @SuppressWarnings("unchecked")
+        ComboBox<String> selection = robot.lookup("#comboBox").queryAs(ComboBox.class);
         TextField urlTextField = robot.lookup("#urlTextField").queryAs(TextField.class);
 
         Assertions.assertEquals("English", selection.getSelectionModel().getSelectedItem());
