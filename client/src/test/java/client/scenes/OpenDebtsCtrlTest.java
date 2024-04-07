@@ -3,12 +3,9 @@ package client.scenes;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
+
+import javafx.application.Platform;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +25,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(ApplicationExtension.class)
 class OpenDebtsCtrlTest {
@@ -120,8 +122,37 @@ class OpenDebtsCtrlTest {
     void backButtonGoesBack(FxRobot robot) {
         robot.clickOn("Back");
 
-        Mockito.verify(mainCtrl, Mockito.times(1)).setIsInOpenDebt(false);
-        Mockito.verify(mainCtrl, Mockito.times(1)).refreshData();
-        Mockito.verify(mainCtrl, Mockito.times(1)).showOverviewEvent(null);
+        verify(mainCtrl, times(1)).setIsInOpenDebt(false);
+        verify(mainCtrl, times(1)).refreshData();
+        verify(mainCtrl, times(1)).showOverviewEvent(null);
+    }
+
+    @Test
+    void initializeShouldClearDebtsIfEventIsNull(FxRobot robot) {
+        Platform.runLater(() -> {
+            controller.initialize(null);
+        });
+        robot.sleep(3000);
+        verify(serverUtils, times(0)).calculateDebts(event);
+    }
+    @Test
+    void startLongPollingUpdatesUIWhenDataChanges(FxRobot robot) {
+        String updatedInviteCode = "UPDATED";
+        Set<Participant> participantSet = new HashSet<>(participants);
+        Event updatedEvent = new Event(
+            event.getInviteCode(),
+            event.getName(),
+            event.getDateTime(),
+            participantSet,
+            new HashSet<>()
+        );
+
+        Mockito.when(serverUtils.longPollDebts(event.getInviteCode())).thenReturn(updatedInviteCode);
+        Mockito.when(serverUtils.getEventById(event.getInviteCode())).thenReturn(updatedEvent);
+
+        controller.startLongPolling();
+        robot.sleep(2000);
+
+        verify(mainCtrl, times(2)).showOpenDebts(any(Event.class));
     }
 }

@@ -28,7 +28,7 @@ public class OpenDebtsCtrl {
     @FXML
     private VBox debtContainer;
     private Event e;
-    private Thread longPollingThread;
+    Thread longPollingThread;
 
     /**
      * constructs open debts
