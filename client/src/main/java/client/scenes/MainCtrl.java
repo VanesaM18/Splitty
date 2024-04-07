@@ -192,8 +192,8 @@ public class MainCtrl {
         if (!add)
             editParticipant(ev, change);
         primaryStage.setTitle((add ? "Add" : "Edit").concat(" participant"));
-        primaryStage.setScene(participants);
         participantsCtrl.setEvent(ev);
+        primaryStage.setScene(participants);
         participants.setOnKeyPressed(e -> participantsCtrl.keyPressed(e));
     }
 
