@@ -36,6 +36,14 @@ public class DebtMinimizationGraph {
         public int getCapacity() {
             return capacity;
         }
+
+        /**
+         * Sets a new value for the flow
+         * @param flow the flow value
+         */
+        public void setFlow(int flow) {
+            this.flow = flow;
+        }
     }
 
     private int maxChainValue;
@@ -123,6 +131,9 @@ public class DebtMinimizationGraph {
      * @return the max flow
      */
     public int maxFlow(int source, int sink) {
+        if (source == sink) {
+            return -1;
+        }
         int totalFlow = 0;
         while (bfs(source, sink)) {
             Arrays.fill(start, 0);
@@ -192,7 +203,7 @@ public class DebtMinimizationGraph {
                     }
                     int from = maxChain.get(0);
                     int to = maxChain.get(maxChain.size() - 1);
-                    addEdgeWithoutReverse(from, to, maxChainValue);
+                    addEdge(from, to, firstValueFinal);
                 } else {
                     break;
                 }
@@ -213,7 +224,7 @@ public class DebtMinimizationGraph {
         int minn = Integer.MAX_VALUE;
         int which = -1;
         for (int i = 0; i < participantCount; i++) {
-            if (inDegrees.get(i) != 0 && inDegrees.get(i) < minn && !visited.contains(i)) {
+            if (inDegrees.get(i) < minn && !visited.contains(i)) {
                 minn = inDegrees.get(i);
                 which = i;
             }
