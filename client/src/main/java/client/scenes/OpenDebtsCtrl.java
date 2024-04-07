@@ -54,7 +54,6 @@ public class OpenDebtsCtrl {
      * @param e the current event
      */
     public void initialize(Event e){
-
         debtContainer.getChildren().clear();
         this.e = e;
         if (e == null) {
