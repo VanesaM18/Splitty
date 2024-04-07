@@ -15,12 +15,19 @@ public class SceneManager {
     private Event event;
 
     /**
-     * Create a scene manager
-     *
-     * @param mainCtrl The main controller
+     * SceneManager constructor
+     * @param mainCtrl MainCtrl instance
      */
     @Inject
     public SceneManager(MainCtrl mainCtrl) {
+        this.mainCtrl = mainCtrl;
+    }
+
+    /**
+     * sets the MainCtrl instance
+     * @param mainCtrl MainCtrl instance to set
+     */
+    public void setMainCtrl(MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
     }
 

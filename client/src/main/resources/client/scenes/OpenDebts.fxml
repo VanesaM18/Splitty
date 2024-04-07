@@ -14,7 +14,7 @@
         <VBox spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
                 <HBox alignment="CENTER_LEFT" prefHeight="46.0" prefWidth="422.0" spacing="10.0">
-                    <Label prefHeight="46.0" text="Open Debts">
+                    <Label prefHeight="46.0" text="%open_debts">
                         <font>
                             <Font name="System Bold" size="31.0" />
                         </font>

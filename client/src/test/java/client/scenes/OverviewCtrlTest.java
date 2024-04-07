@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
+
+import client.utils.language.LanguageProcessor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -54,6 +56,7 @@ public class OverviewCtrlTest {
     OverviewCtrl controller;
     ServerUtils serverUtils;
     MainCtrl mainCtrl;
+    LanguageProcessor languageProcessor;
     SceneManager sceneManager;
 
     @BeforeAll
@@ -79,6 +82,7 @@ public class OverviewCtrlTest {
         serverUtils = Mockito.mock(ServerUtils.class);
         mainCtrl = Mockito.mock(MainCtrl.class);
         sceneManager = Mockito.mock();
+        languageProcessor = Mockito.mock(LanguageProcessor.class);
         Mockito.when(mainCtrl.getSceneManager()).thenReturn(sceneManager);
         Mockito.when(serverUtils.getEventById("test")).thenReturn(event);
 
@@ -88,7 +92,7 @@ public class OverviewCtrlTest {
         Locale locale = Locale.of("en", "EN");
         loader.setResources(ResourceBundle.getBundle("bundles.Splitty", locale));
         loader.setControllerFactory(parameter -> {
-            OverviewCtrl ctrl = new OverviewCtrl(serverUtils, mainCtrl);
+            OverviewCtrl ctrl = new OverviewCtrl(serverUtils, mainCtrl, languageProcessor);
             // Make sure the event is set here, before returning the controller!
             // Otherwise, we set the event too late and a lot of code is executed with a null event
             ctrl.setEvent(event);
