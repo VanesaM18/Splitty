@@ -122,7 +122,8 @@ public class OverviewCtrlTest {
      */
     @Test
     void eventDetailsAreShown(FxRobot robot) {
-        // We cannot directly intereact with the controller from here, as we must be in a JavaFX
+        // We cannot directly intereact with the controller from here, as we must be in
+        // a JavaFX
         // theda to do so. Thus, we use the FxRobot.interact method.
         // See more: https://github.com/TestFX/TestFX/issues/222
         robot.interact(() -> {

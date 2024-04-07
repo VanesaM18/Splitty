@@ -15,18 +15,32 @@ public class ConfigLoader {
     private final ObjectMapper objectMapper;
     private final Path configPath;
 
+    {
+        objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        configPath = getConfigFilePath();
+    }
+
     /**
      * Creates a class which loads the config file
      */
     public ConfigLoader() {
         this.configMap = new HashMap<>();
-        this.configPath = getConfigFilePath();
-        this.objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
         loadConfig();
     }
+
     /**
-        Saves the config at the specific path
-    **/
+     * Instead of loading from config, take config from the map.
+     * Used for testing
+     *
+     * @param config The application configuration
+     */
+    public ConfigLoader(Map<String, Object> config) {
+        this.configMap = new HashMap<>(config);
+    }
+
+    /**
+     * Saves the config at the specific path
+     **/
     public void saveConfig() {
         try {
             Files.createDirectories(configPath.getParent());
@@ -37,7 +51,8 @@ public class ConfigLoader {
     }
 
     /**
-     *  Loads the config from the specific file path, if it does not exist it tries to create it
+     * Loads the config from the specific file path, if it does not exist it tries
+     * to create it
      */
     public void loadConfig() {
         try {
@@ -50,7 +65,8 @@ public class ConfigLoader {
                 configMap.put("password", "");
                 saveConfig();
             } else {
-                configMap = objectMapper.readValue(configPath.toFile(), new TypeReference<>() {});
+                configMap = objectMapper.readValue(configPath.toFile(), new TypeReference<>() {
+                });
                 createMissingKey("address", "http://localhost:8080");
                 createMissingKey("recentEvents", new ArrayList<String>());
                 createMissingKey("language", Main.DEFAULT_LOCALE);
@@ -65,8 +81,9 @@ public class ConfigLoader {
 
     /**
      * Creates missing default keys
+     * 
      * @param address the key name
-     * @param value the key value
+     * @param value   the key value
      */
     private void createMissingKey(String address, Object value) {
         if (!configMap.containsKey(address)) {
@@ -76,6 +93,7 @@ public class ConfigLoader {
 
     /**
      * Tries to get the config file from the specific folder
+     * 
      * @return the path to the config file
      */
     private static Path getConfigFilePath() {
@@ -101,6 +119,7 @@ public class ConfigLoader {
 
     /**
      * Get a specific property from the file
+     * 
      * @param key the property
      * @return the value of the property
      */
@@ -110,7 +129,8 @@ public class ConfigLoader {
 
     /**
      * Updates the config with a new (key, value) pair
-     * @param key the key of the new property
+     * 
+     * @param key   the key of the new property
      * @param value the value of the new property
      */
     public void updateProperty(String key, Object value) {
@@ -119,8 +139,9 @@ public class ConfigLoader {
 
     /**
      * gets the language stored in the config file and parses it to a Locale
+     * 
      * @return the Locale of the language if parsing is possible,
-     * the default Locale otherwise
+     *         the default Locale otherwise
      */
     public Locale getLanguage() {
         var props = this.getProperty("language");
@@ -153,6 +174,7 @@ public class ConfigLoader {
      * the "startUpShown" property in the configuration.
      * if the "startUpShown" property is "false", returns the startup scene,
      * otherwise, returns the main start scene.
+     * 
      * @return SceneEnum representing the initial scene to be displayed.
      */
     public SceneEnum getStartScene() {

@@ -33,7 +33,6 @@ import javafx.scene.image.Image;
 public class Main extends Application {
 
     private static final Injector INJECTOR = createInjector(new MyModule());
-    private static final MyFXML FXML = new MyFXML(INJECTOR);
     public static final Locale DEFAULT_LOCALE = Locale.of("en", "EN");
     private static Main instance;
     private Stage stage;
@@ -51,7 +50,7 @@ public class Main extends Application {
      *
      * @param args to be passed to the client
      * @throws URISyntaxException if anything happens related to URI
-     * @throws IOException if anything happens related to IO
+     * @throws IOException        if anything happens related to IO
      */
     public static void main(String[] args) throws URISyntaxException, IOException {
         launch();
@@ -60,9 +59,11 @@ public class Main extends Application {
     /**
      * It starts the client
      * 
-     * @param primaryStage the primary stage for this application, onto which the application scene
-     *        can be set. Applications may create other stages, if needed, but they will not be
-     *        primary stages.
+     * @param primaryStage the primary stage for this application, onto which the
+     *                     application scene
+     *                     can be set. Applications may create other stages, if
+     *                     needed, but they will not be
+     *                     primary stages.
      * @throws IOException any IO related error
      */
     @Override
@@ -86,6 +87,7 @@ public class Main extends Application {
 
     /**
      * gets the scene manager
+     * 
      * @return SceneManager object
      */
     public SceneManager getSceneManager() {
@@ -102,48 +104,10 @@ public class Main extends Application {
     public void start(Locale locale, SceneEnum sceneEnum) throws IOException {
         this.configLoader.updateProperty("language", locale);
         this.configLoader.saveConfig();
-        var appConfiguration = FXML.load(AppConfigurationCtrl.class, locale,
-                "client", "scenes", "AppConfiguration.fxml");
-        var settings = FXML.load(SettingsCtrl.class, locale, "client", "scenes", "Settings.fxml");
-        var management = FXML.load(ManagementCtrl.class, locale,
-                "client", "scenes", "Management.fxml");
-        var loginAdmin = FXML.load(LoginCtrl.class, locale, "client", "scenes", "LoginView.fxml");
-        var participants =
-                FXML.load(ParticipantsCtrl.class, locale, "client", "scenes", "Participants.fxml");
-        var expense =
-            FXML.load(ExpenseCtrl.class, locale, "client", "scenes", "Expense.fxml");
-        var startPage =
-                FXML.load(StartScreenCtrl.class, locale, "client", "scenes", "StartScreen.fxml");
-        var overviewEvent =
-                FXML.load(OverviewCtrl.class, locale, "client", "scenes", "Overview.fxml");
-        var invite =
-            FXML.load(InviteScreenCtrl.class, locale, "client", "scenes", "InviteScreen.fxml");
-        var openDebt =
-            FXML.load(OpenDebtsCtrl.class, locale, "client", "scenes", "OpenDebts.fxml");
-        var expenseType =
-                FXML.load(ExpenseTypeCtrl.class, locale, "client", "scenes", "ExpenseTypes.fxml");
-        var addEditTags =
-                FXML.load(AddEditTagsCtrl.class, locale, "client", "scenes", "AddEditTags.fxml");
-        var statistics =
-                FXML.load(StatisticsCtrl.class, locale, "client", "scenes", "Statistics.fxml");
 
-        InitializationData data = new InitializationData();
-        data.setAppConfiguration(appConfiguration);
-        data.setSettings(settings);
-        data.setManagement(management);
-        data.setLogin(loginAdmin);
-        data.setParticipant(participants);
-        data.setExpense(expense);
-        data.setStartPage(startPage);
-        data.setOverviewEvent(overviewEvent);
-        data.setInvite(invite);
-        data.setOpenDebt(openDebt);
-        data.setExpenseType(expenseType);
-        data.setAddEditTags(addEditTags);
-        data.setStatistics(statistics);
+        InitializationData data = INJECTOR.getInstance(InitializationData.class);
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        sceneManager.setMainCtrl(mainCtrl);
         sceneManager.pushScene(sceneEnum);
         mainCtrl.initialize(this.stage, data, sceneManager);
 
