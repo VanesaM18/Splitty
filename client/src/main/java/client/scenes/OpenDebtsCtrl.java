@@ -28,7 +28,7 @@ public class OpenDebtsCtrl {
     @FXML
     private VBox debtContainer;
     private Event e;
-    Thread longPollingThread;
+    private Thread longPollingThread;
 
     /**
      * constructs open debts
@@ -230,6 +230,13 @@ public class OpenDebtsCtrl {
             e = server.getEventById(e.getInviteCode());
         }
         return e;
+    }
+
+    /*
+        Get the long polling thread
+     */
+    public Thread getLongPollingThread() {
+        return longPollingThread;
     }
 }
 
