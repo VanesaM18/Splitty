@@ -35,10 +35,12 @@ public class SceneManager {
 
     /**
      * gets the current scene from the scene history.
+     *
+     * Used for testing
      * 
      * @return current scene.
      */
-    private SceneEnum getCurrentScene() {
+    public SceneEnum getCurrentScene() {
         return sceneHistory.peek();
     }
 

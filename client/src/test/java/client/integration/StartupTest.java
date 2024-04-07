@@ -43,6 +43,7 @@ public class StartupTest extends TestClient {
                 injector.getInstance(InitializationData.class),
                 injector.getInstance(SceneManager.class)));
 
+        @SuppressWarnings("unchecked")
         ChoiceBox<String> selection = robot.lookup("#choiceBox").queryAs(ChoiceBox.class);
         TextField urlTextField = robot.lookup("#urlTextField").queryAs(TextField.class);
 
