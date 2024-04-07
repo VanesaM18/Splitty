@@ -19,12 +19,15 @@ import java.util.List;
 import javafx.geometry.Insets;
 
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 
 
 public class OpenDebtsCtrl {
     private final MainCtrl mainCtrl;
     private final ServerUtils server;
     private final EmailManager emailManager;
+    public VBox vboxContainer;
+    public HBox hboxContainer;
 
     @FXML
     private VBox debtContainer;
@@ -67,15 +70,17 @@ public class OpenDebtsCtrl {
                 HBox hbox = new HBox();
                 hbox.setId("hbox_" + debt.getId());
                 TitledPane titledPane = createDebtTitledPane(debt);
-                hbox.getChildren().add(titledPane);
+                HBox.setHgrow(titledPane, Priority.ALWAYS);
 
                 Region region = new Region();
                 HBox.setHgrow(region, Priority.ALWAYS);
 
                 Button markReceivedButton = createMarkReceivedButton(debt);
-                HBox.setMargin(markReceivedButton, new Insets(0, 0, 0, 15));
-                hbox.getChildren().addAll(region, markReceivedButton);
 
+                HBox.setMargin(markReceivedButton, new Insets(0, 0, 0, 30));
+                hbox.getChildren().addAll(titledPane, region, markReceivedButton);
+                hbox.prefWidthProperty().bind(hboxContainer.widthProperty());
+                HBox.setHgrow(hbox, Priority.ALWAYS);
                 debtContainer.getChildren().add(hbox);
             }
         }
@@ -88,9 +93,9 @@ public class OpenDebtsCtrl {
         titledPane.setText(debt.getDebtor().getName() + " gives "
             + debt.getAmount() + " to " + debt.getCreditor().getName());
         HBox graphicContainer = sideImagesDebt(debt);
+
         graphicContainer.setAlignment(Pos.CENTER_RIGHT);
         titledPane.setGraphic(graphicContainer);
-
         titledPane.setContentDisplay(ContentDisplay.RIGHT);
 
         VBox content = new VBox();
@@ -146,16 +151,10 @@ public class OpenDebtsCtrl {
         }
         HBox hboxE = getSubHBox(tooltipSetE, imageViewEnvelope);
         HBox hboxB = getSubHBox(tooltipSetB, imageViewBank);
-        graphicContainer.getChildren().addAll(hboxE, hboxB);
+        Region spacer = new Region();
+        spacer.setPrefWidth(10);
+        graphicContainer.getChildren().addAll(spacer, hboxE, hboxB);
         return graphicContainer;
-    }
-
-    private static HBox getSubHBox(String tooltipSetE, ImageView imageViewEnvelope) {
-        Tooltip tooltipE = new Tooltip(tooltipSetE);
-        HBox hboxE = new HBox();
-        hboxE.getChildren().addAll(imageViewEnvelope);
-        Tooltip.install(hboxE, tooltipE);
-        return hboxE;
     }
 
     private static ImageView settingImage(Image imageEnvelopeG) {
@@ -165,6 +164,14 @@ public class OpenDebtsCtrl {
         imageViewEnvelopeG.setFitWidth(desiredWidth);
         imageViewEnvelopeG.setFitHeight(desiredHeight);
         return imageViewEnvelopeG;
+    }
+
+    private static HBox getSubHBox(String tooltipSetE, ImageView imageViewEnvelope) {
+        Tooltip tooltipE = new Tooltip(tooltipSetE);
+        HBox hboxE = new HBox();
+        hboxE.getChildren().addAll(imageViewEnvelope);
+        Tooltip.install(hboxE, tooltipE);
+        return hboxE;
     }
 
 
