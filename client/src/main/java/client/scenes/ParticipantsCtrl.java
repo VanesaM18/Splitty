@@ -60,7 +60,6 @@ public class ParticipantsCtrl {
      */
     public void abort() {
         clearFields();
-        warning.setText("");
         mainCtrl.showOverviewEvent(null);
     }
 
@@ -105,7 +104,6 @@ public class ParticipantsCtrl {
             p = server.addParticipant(p);
             ev.addParticipant(p);
             server.updateEvent(ev);
-            warning.setText("");
         } catch (WebApplicationException e) {
 
             var alert = new Alert(Alert.AlertType.ERROR);
@@ -238,6 +236,7 @@ public class ParticipantsCtrl {
      * @param ev the event
      */
     public void setEvent(Event ev) {
+        warning.setText("");
         this.ev = ev;
     }
 
