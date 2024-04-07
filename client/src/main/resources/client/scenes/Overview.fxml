@@ -27,7 +27,7 @@
                      </graphic>
                   </Button>
                   <Region prefHeight="200.0" HBox.hgrow="ALWAYS" />
-                  <Button minWidth="102.0" mnemonicParsing="false" onAction="#sendInvites" prefHeight="30.0" text="%send_invites" />
+                  <Button mnemonicParsing="false" onAction="#sendInvites" prefHeight="30.0" text="%send_invites" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="39.0" prefWidth="422.0">
@@ -119,7 +119,7 @@
                <children>
                   <Button mnemonicParsing="false" onAction="#back" prefHeight="30.0" text="%back" />
                   <Region HBox.hgrow="ALWAYS" />
-                  <Button mnemonicParsing="false" onAction="#showTags" prefHeight="31.0" prefWidth="93.0" text="%see_tags" />
+                  <Button mnemonicParsing="false" onAction="#showTags" prefHeight="31.0" text="%see_tags" />
                   <Region prefHeight="30.0" prefWidth="15.0" />
                   <Button mnemonicParsing="false" onAction="#settleDebt" prefHeight="30.0" text="%settle_debts" />
                </children>
