@@ -8,11 +8,9 @@ import commons.Debt;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.image.Image;
 
@@ -89,68 +87,10 @@ public class OpenDebtsCtrl {
         titledPane.setMaxWidth(Double.MAX_VALUE);
         titledPane.setText(debt.getDebtor().getName() + " gives "
             + debt.getAmount() + " to " + debt.getCreditor().getName());
-        HBox graphicContainer = new HBox();
-        ImageView imageViewBank;
-        ImageView imageViewEnvelope;
-        double desiredWidth = 25;
-        double desiredHeight = 25;
-        Image imageBankG = new Image("assets/bank-icon-grey.png");
-        ImageView imageViewBankG = new ImageView(imageBankG);
-        imageViewBankG.setFitWidth(desiredWidth);
-        imageViewBankG.setFitHeight(desiredHeight);
-        Image imageBankB = new Image("assets/bank-icon.png");
-        ImageView imageViewBankB = new ImageView(imageBankB);
-        imageViewBankB.setFitWidth(desiredWidth);
-        imageViewBankB.setFitHeight(desiredHeight);
-        if(debt.getCreditor().getIban().isEmpty() || debt.getDebtor().getIban().isEmpty()){
-            System.out.println("B1");
-            imageViewBank = imageViewBankG;
-        } else{
-            System.out.println("B2");
-            imageViewBank = imageViewBankB;
-        }
-        Label hoverLabel = new Label("hoverText");
-
-        // Hide the label initially
-        hoverLabel.setVisible(false);
-
-        // Show the label when mouse enters the image
-        imageViewBank.setOnMouseEntered(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                hoverLabel.setVisible(true);
-            }
-        });
-
-        // Hide the label when mouse exits the image
-        imageViewBank.setOnMouseExited(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                hoverLabel.setVisible(false);
-            }
-        });
-
-        // Position the label below the image
-        StackPane.setAlignment(hoverLabel, javafx.geometry.Pos.BOTTOM_CENTER);
-
-
-        Image imageEnvelopeG = new Image("assets/envelope-icon-grey.png");
-        ImageView imageViewEnvelopeG = new ImageView(imageEnvelopeG);
-        imageViewEnvelopeG.setFitWidth(desiredWidth);
-        imageViewEnvelopeG.setFitHeight(desiredHeight);
-        Image imageEnvelopeB = new Image("assets/envelope-icon.png");
-        ImageView imageViewEnvelopeB = new ImageView(imageEnvelopeB);
-        imageViewEnvelopeB.setFitWidth(desiredWidth);
-        imageViewEnvelopeB.setFitHeight(desiredHeight);
-        if(debt.getCreditor().getEmail().isEmpty() || debt.getDebtor().getEmail().isEmpty()){
-            imageViewEnvelope = imageViewEnvelopeG;
-        } else{
-            imageViewEnvelope = imageViewEnvelopeB;
-        }
-
-        graphicContainer.getChildren().addAll(imageViewEnvelope, imageViewBank, hoverLabel);
+        HBox graphicContainer = sideImagesDebt(debt);
         graphicContainer.setAlignment(Pos.CENTER_RIGHT);
         titledPane.setGraphic(graphicContainer);
+
         titledPane.setContentDisplay(ContentDisplay.RIGHT);
 
         VBox content = new VBox();
@@ -174,6 +114,59 @@ public class OpenDebtsCtrl {
 
         return titledPane;
     }
+
+    private static HBox sideImagesDebt(Debt debt) {
+        HBox graphicContainer = new HBox();
+        ImageView imageViewBank;
+        ImageView imageViewEnvelope;
+        String tooltipSetE;
+        String tooltipSetB;
+        Image imageBankG = new Image("assets/bank-icon-grey.png");
+        Image imageBankB = new Image("assets/bank-icon.png");
+        ImageView imageViewBankG = settingImage(imageBankG);
+        ImageView imageViewBankB = settingImage(imageBankB);
+        if(debt.getCreditor().getIban().isEmpty() || debt.getDebtor().getIban().isEmpty()){
+            imageViewBank = imageViewBankG;
+            tooltipSetB = "IBAN not set";
+        } else{
+            imageViewBank = imageViewBankB;
+            tooltipSetB = "IBAN set";
+        }
+        Image imageEnvelopeG = new Image("assets/envelope-icon-grey.png");
+        Image imageEnvelopeB = new Image("assets/envelope-icon.png");
+        ImageView imageViewEnvelopeG = settingImage(imageEnvelopeG);
+        ImageView imageViewEnvelopeB = settingImage(imageEnvelopeB);
+        if(debt.getCreditor().getEmail().isEmpty() || debt.getDebtor().getEmail().isEmpty()){
+            imageViewEnvelope = imageViewEnvelopeG;
+            tooltipSetE = "e-mail not set";
+
+        } else{
+            imageViewEnvelope = imageViewEnvelopeB;
+            tooltipSetE = "e-mail set";
+        }
+        HBox hboxE = getSubHBox(tooltipSetE, imageViewEnvelope);
+        HBox hboxB = getSubHBox(tooltipSetB, imageViewBank);
+        graphicContainer.getChildren().addAll(hboxE, hboxB);
+        return graphicContainer;
+    }
+
+    private static HBox getSubHBox(String tooltipSetE, ImageView imageViewEnvelope) {
+        Tooltip tooltipE = new Tooltip(tooltipSetE);
+        HBox hboxE = new HBox();
+        hboxE.getChildren().addAll(imageViewEnvelope);
+        Tooltip.install(hboxE, tooltipE);
+        return hboxE;
+    }
+
+    private static ImageView settingImage(Image imageEnvelopeG) {
+        double desiredWidth = 25;
+        double desiredHeight = 25;
+        ImageView imageViewEnvelopeG = new ImageView(imageEnvelopeG);
+        imageViewEnvelopeG.setFitWidth(desiredWidth);
+        imageViewEnvelopeG.setFitHeight(desiredHeight);
+        return imageViewEnvelopeG;
+    }
+
 
     private Button createMarkReceivedButton(Debt debt) {
         Button button = new Button("Mark Received");
