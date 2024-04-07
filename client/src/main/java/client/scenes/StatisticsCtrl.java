@@ -8,8 +8,7 @@ import commons.ExpenseType;
 import commons.Monetary;
 import javafx.fxml.FXML;
 import javafx.scene.chart.PieChart;
-
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
 
 public class StatisticsCtrl {
     private Event event;
@@ -55,17 +54,20 @@ public class StatisticsCtrl {
     }
 
     private void initPieChart() {
+        pie.setLegendVisible(false);
         Double total = 0.0;
         for(Expense expense : server.getAllExpensesFromEvent(event)) {
             total += Double.parseDouble(expense.getAmount().toString())*expense.getTags().size();
         }
         for(ExpenseType tag : event.getTags()) {
             Double totalCost = getAmount(tag);
+            if(totalCost == 0.0) continue;
             PieChart.Data slice = new PieChart.Data(tag.getName(), totalCost);
             pie.getData().add(slice);
             double percentage = (totalCost / total) * 100;
             slice.setName(String.format("%s - %.1f%% (%.2f"+ "\u20AC)",
                     slice.getName(), percentage, slice.getPieValue()));
+            slice.getNode().setStyle("-fx-pie-color: " + tag.getColor() +";");
         }
     }
 
