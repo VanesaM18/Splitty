@@ -7,7 +7,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OpenDebtsCtrl">
     <children>
-        <VBox fx:id="vboxContainer" prefHeight="360.0" prefWidth="543.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="0.0">
+        <VBox prefHeight="360.0" prefWidth="543.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="0.0">
             <children>
                 <HBox alignment="CENTER_LEFT" prefHeight="46.0" prefWidth="422.0" spacing="10.0">
                     <Label prefHeight="46.0" text="Open Debts">

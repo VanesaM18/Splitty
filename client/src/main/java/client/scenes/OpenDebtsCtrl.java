@@ -19,15 +19,14 @@ import java.util.List;
 import javafx.geometry.Insets;
 
 import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
 
 
 public class OpenDebtsCtrl {
     private final MainCtrl mainCtrl;
     private final ServerUtils server;
     private final EmailManager emailManager;
-    public VBox vboxContainer;
-    public HBox hboxContainer;
+    @FXML
+    private HBox hboxContainer;
 
     @FXML
     private VBox debtContainer;
