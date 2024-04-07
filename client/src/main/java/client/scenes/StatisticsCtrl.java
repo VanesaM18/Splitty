@@ -40,7 +40,7 @@ public class StatisticsCtrl {
      * @param ev the event
      */
     public void setEvent(Event ev) {
-        this.event = server.getEventById(ev.getInviteCode());
+        this.event = ev;
         initPieChart();
         initCost();
     }
