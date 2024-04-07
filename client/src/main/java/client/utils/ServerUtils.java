@@ -532,7 +532,6 @@ public class ServerUtils {
      */
     public List<Debt> calculateDebts(Event event) {
         List<Debt> initialDebts = event.paymentsToDebt(event);
-        System.out.println(initialDebts);
         int n = event.getParticipants().size();
         DebtMinimizationGraph solver = new DebtMinimizationGraph(n);
         HashMap<Participant, Integer> indexing = new HashMap<>();
