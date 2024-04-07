@@ -297,5 +297,13 @@ public class OpenDebtsCtrl {
         }
         return e;
     }
+
+    /**
+        Get the long polling thread
+        @return the long polling thread
+     **/
+    public Thread getLongPollingThread() {
+        return longPollingThread;
+    }
 }
 

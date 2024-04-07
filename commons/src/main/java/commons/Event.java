@@ -293,6 +293,7 @@ public class Event {
      */
     public static Map<Map<Participant, Participant>, Monetary> calculatePayments(Event event){
         Set<Expense> eventExpenses = event.getExpenses();
+        System.out.println(eventExpenses);
         Iterator<Expense> iteratorExpense = eventExpenses.iterator();
         Map<Map<Participant, Participant>, Monetary> allDebts = new HashMap<>();
 
