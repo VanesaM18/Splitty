@@ -31,9 +31,11 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
+import javafx.util.Pair;
 import org.glassfish.jersey.client.ClientConfig;
 
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -452,7 +454,7 @@ public class ServerUtils {
 
     /**
      * Send a message to the server with awaiting response
-     * 
+     *
      * @param request the message body
      * @return the response from the server
      * @throws ExecutionException   if the object mapper fails
@@ -524,66 +526,194 @@ public class ServerUtils {
     }
 
     /**
-     * Delete a debt and all expenses related to it
-     * @param debt the debt to be deleted
-     * @param e the event where the debts are
+     * Optimizes and calculates the debts for an event
+     * @param event the event
+     * @return the list of optimized debts
      */
-    public void deleteDebts(Debt debt, Event e) {
-        try {
-            List<Expense> expenses = getAllExpensesFromEvent(e);
-            removeDoubleExpense(expenses);
-            List<Expense> relevantExpenses = new ArrayList<>();
-            for (Expense ex : expenses) {
-                if (ex.getCreator().equals(debt.getCreditor()) &&
-                        ex.getSplitBetween().contains(debt.getDebtor())) {
-                    relevantExpenses.add(ex);
+    public List<Debt> calculateDebts(Event event) {
+        List<Debt> initialDebts = event.paymentsToDebt(event);
+        int n = event.getParticipants().size();
+        DebtMinimizationGraph solver = new DebtMinimizationGraph(n);
+        HashMap<Participant, Integer> indexing = new HashMap<>();
+        HashMap<Integer, Participant> reverseIndexing = new HashMap<>();
+        int cnt = 0;
+        for (Participant p: event.getParticipants()) {
+            indexing.put(p, cnt);
+            reverseIndexing.put(cnt, p);
+            cnt += 1;
+        }
+        solver =
+            getMinimizationGraph(indexing, initialDebts, solver, n);
+        solver.minimizeDebtChains(n);
+        List<Debt> resultDebts = new ArrayList<>();
+        optimizeDebts(n, solver, resultDebts, reverseIndexing);
+        Map<Pair<Participant, Participant>, Long> netBalances =
+            getUnifiedDebts(resultDebts);
+        List<Debt> result = new ArrayList<>();
+        for (Map.Entry<Pair<Participant, Participant>, Long> entry : netBalances.entrySet()) {
+            Pair<Participant, Participant> key = entry.getKey();
+            Long balance = entry.getValue();
+            if (balance > 0) {
+                result.add(new Debt(key.getKey(), new Monetary(balance), key.getValue()));
+            } else if (balance < 0) {
+                result.add(new Debt(key.getValue(), new Monetary(-balance), key.getKey()));
+            }
+        }
+        return result;
+    }
+
+    private static DebtMinimizationGraph
+            getMinimizationGraph(HashMap<Participant, Integer> indexing,
+                                 List<Debt> initialDebts,
+                                 DebtMinimizationGraph solver,
+                                 int n) {
+        for (Debt debt: initialDebts) {
+            solver.addEdge(indexing.get(debt.getDebtor()), indexing.get(debt.getCreditor()),
+                (int)debt.getAmount().getInternalValue());
+        }
+        for (int from = 0; from < n; ++from) {
+            List<Integer> toS = solver.getConnectedNodes(from);
+            for (Integer to: toS) {
+                if (to != from) {
+                    int mxFlow = solver.maxFlow(from, to);
+                    DebtMinimizationGraph residual = getResidualGraph(n, solver, from, to);
+                    if (mxFlow > 0) {
+                        residual.addEdge(from, to, mxFlow);
+                    }
+                    solver = residual;
                 }
             }
+        }
+        return solver;
+    }
 
-
-            for (Expense ex : relevantExpenses) {
-                long value = ex.getAmount().getInternalValue();
-                value = value - (value / ex.getSplitBetween().size());
-                ex.getAmount().setInternalValue(value);
-                ex.removeParticipant(debt.getDebtor());
-                WebSocketMessage request = new WebSocketMessage();
-                request.setEndpoint("api/expenses/id");
-                request.setMethod("PUT");
-                request.setData(ex);
-                sendMessageWithResponse(request);
+    private void optimizeDebts(int n, DebtMinimizationGraph solver, List<Debt> resultDebts,
+                                  HashMap<Integer, Participant> reverseIndexing) {
+        for (int from = 0; from < n; ++from) {
+            List<DebtMinimizationGraph.Edge> adjacentEdges = solver.getEdgesForVertex(from);
+            for (DebtMinimizationGraph.Edge edge : adjacentEdges) {
+                if (edge.getCapacity() > 0) {
+                    resultDebts.add(new Debt(reverseIndexing.get(from),
+                        new Monetary(edge.getCapacity()), reverseIndexing.get(edge.getTo())));
+                }
             }
+        }
+    }
 
+    private static DebtMinimizationGraph getResidualGraph(int n,
+                                                                  DebtMinimizationGraph solver,
+                                                                  int xFrom, int xTo) {
+        DebtMinimizationGraph residualGraph = new DebtMinimizationGraph(n);
+        for (int from = 0; from < n; ++from) {
+            List<DebtMinimizationGraph.Edge> adjacentEdges = solver.getEdgesForVertex(from);
+            for (DebtMinimizationGraph.Edge edge: adjacentEdges) {
+                int flow = (edge.getFlow() < 0 ? edge.getCapacity()
+                    : (edge.getCapacity() - edge.getFlow()));
+                if (flow > 0 && (from != xFrom || edge.getTo() != xTo)) {
+                    residualGraph.addEdge(from, edge.getTo(), flow);
+                }
+            }
+        }
+        return residualGraph;
+    }
+
+    private static Map<Pair<Participant, Participant>, Long> getUnifiedDebts(
+        List<Debt> resultDebts) {
+        Map<Pair<Participant, Participant>, Long> netBalances = new HashMap<>();
+        for (Debt debt : resultDebts) {
+            Participant debtor = debt.getDebtor();
+            Participant creditor = debt.getCreditor();
+            Long amount = debt.getAmount().getInternalValue();
+            Pair<Participant, Participant> key = new Pair<>(debtor, creditor);
+            if (netBalances.containsKey(new Pair<>(creditor, debtor))) {
+                key = new Pair<>(creditor, debtor);
+                amount = -amount;
+            }
+            Long currentBalance = netBalances.getOrDefault(key, 0L);
+            netBalances.put(key, currentBalance + amount);
+        }
+        return netBalances;
+    }
+
+    /**
+     * adds the marked received debt as an expense
+     * to cancel out the debt of the debtor
+     *
+     * @param e current event
+     * @param debt marked debt
+     */
+    public void removeExpensesDebts(Event e, Debt debt){
+        try{
+            Set<Participant> splitBetween = new HashSet<>();
+            splitBetween.add(debt.getCreditor());
+            Expense expense = new Expense(e, "Debt", debt.getDebtor(),
+                    debt.getAmount(), LocalDate.now(), splitBetween);
+            addExpense(expense);
+
+            refreshExpensesList(e);
         } catch (ExecutionException | InterruptedException er) {
             er.printStackTrace();
         }
     }
 
     /**
-     * only adds expenses where a creditor and
-     * debtor differ completely for N-1
-     * @param expenses list of all expenses
+     * Refreshes the expenses list for an event
+     * by removing participants that have everything settled
+     * @param e the event
      */
-    public static void removeDoubleExpense(List<Expense> expenses) {
-        for (int i = 0; i < expenses.size(); i++) {
-            Expense ex1 = expenses.get(i);
-            for (int j = i + 1; j < expenses.size(); j++) {
-                Expense ex2 = expenses.get(j);
-                if (
-                        ex1.getSplitBetween().contains(ex2.getCreator()) &&
-                        ex2.getSplitBetween().contains(ex1.getCreator()) &&
-                                ex1.getCreator().equals(ex2.getSplitBetween()
-                                        .stream().findFirst().orElse(null)) &&
-                                ex2.getCreator().equals(ex1.getSplitBetween()
-                                        .stream().findFirst().orElse(null)) &&
-                        ex1.getAmount().equals(ex2.getAmount())) {
-                    expenses.remove(ex1);
-                    expenses.remove(ex2);
-                    break; // Break the inner loop since symmetric debt is found
+    public void refreshExpensesList(Event e) {
+        List<Expense> allExpenses = getAllExpensesFromEvent(e);
+        List<Participant> canBeRemoved = participantsNoInfluence(allExpenses);
+        for (Participant p : canBeRemoved){
+            List<Expense> relevantExpenses = allExpenses
+                .stream()
+                .filter(x -> x.getSplitBetween().contains(p) || x.getCreator().equals(p))
+                .toList();
+            for (Expense ex : relevantExpenses) {
+                if (!ex.getCreator().equals(p)) {
+                    long value = ex.getAmount().getInternalValue();
+                    if (!ex.getSplitBetween().isEmpty()) {
+                        value -= value / ex.getSplitBetween().size();
+                    }
+                    ex.removeParticipant(p);
+                    ex.getAmount().setInternalValue(value);
+                    updateExpense(ex);
+                } else {
+                    deleteExpense(ex);
+                    allExpenses.remove(ex);
                 }
             }
         }
     }
 
+    /**
+     * Retrieves all participants that can be removed from expenses
+     * @param allExpenses all existing expenses
+     * @return the list of participants that can be removed
+     */
+    private List<Participant> participantsNoInfluence(List<Expense> allExpenses) {
+        if (allExpenses == null) {
+            return new ArrayList<>();
+        }
+        HashMap<Participant, Long> sumPerParticipant = new HashMap<>();
+        for (Expense ex : allExpenses) {
+            Set<Participant> split = ex.getSplitBetween();
+            long amountPerPerson = ex.getAmount().getInternalValue() / split.size();
+            for (Participant p : split) {
+                sumPerParticipant.put(p, sumPerParticipant.getOrDefault(p, 0L) + amountPerPerson);
+            }
+            sumPerParticipant.put(ex.getCreator(),
+                sumPerParticipant.getOrDefault(ex.getCreator(), 0L)
+                    - ex.getAmount().getInternalValue());
+        }
+        List<Participant> result = new ArrayList<>();
+        for (Map.Entry<Participant, Long> entry : sumPerParticipant.entrySet()) {
+            if (entry.getValue() == 0) {
+                result.add(entry.getKey());
+            }
+        }
+        return result;
+    }
 
     /**
      * Announce all client that open debts view needs to be updated for an event

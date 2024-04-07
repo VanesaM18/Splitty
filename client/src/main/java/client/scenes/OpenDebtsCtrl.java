@@ -16,6 +16,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.*;
 
 import java.util.List;
+
 import javafx.geometry.Insets;
 
 
@@ -23,6 +24,7 @@ public class OpenDebtsCtrl {
     private final MainCtrl mainCtrl;
     private final ServerUtils server;
     private final EmailManager emailManager;
+
     @FXML
     private VBox debtContainer;
     private Event e;
@@ -57,7 +59,7 @@ public class OpenDebtsCtrl {
         if (e == null) {
             return;
         }
-        List<Debt> list = Event.finalCalculation(e);
+        List<Debt> list = server.calculateDebts(e);
 
         for (Debt debt : list) {
             if (debt.getDebtor().getId() != debt.getCreditor().getId()) {
@@ -110,7 +112,7 @@ public class OpenDebtsCtrl {
     private Button createMarkReceivedButton(Debt debt) {
         Button button = new Button("Mark Received");
         button.setOnAction(event -> {
-            server.deleteDebts(debt, e);
+            server.removeExpensesDebts(e, debt);
             server.markDebtAsReceived(e.getInviteCode());
             debtContainer.getChildren().removeIf(node ->
                 node instanceof HBox && node.getId().equals("hbox_" + debt.getId()));

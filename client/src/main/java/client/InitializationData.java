@@ -1,5 +1,7 @@
 package client;
 
+import com.google.inject.Inject;
+
 import client.scenes.*;
 import javafx.scene.Parent;
 import javafx.util.Pair;
@@ -23,10 +25,38 @@ public class InitializationData {
 
     private Pair<ExpenseTypeCtrl, Parent> expenseType;
     private Pair<AddEditTagsCtrl, Parent> addEditTags;
+    private Pair<StatisticsCtrl, Parent> statistics;
+
     /**
      * Creates an instance of initialize data
+     *
+     * @param fxml         FXML Loader, injected.
+     * @param configLoader The config loader, injected.
      */
-    public InitializationData() {
+    @Inject
+    public InitializationData(MyFXML fxml, ConfigLoader configLoader) {
+        var locale = configLoader.getLanguage();
+
+        settings = fxml.load(SettingsCtrl.class, locale, "client", "scenes", "Settings.fxml");
+        login = fxml.load(LoginCtrl.class, locale, "client", "scenes", "LoginView.fxml");
+        expense = fxml.load(ExpenseCtrl.class, locale, "client", "scenes", "Expense.fxml");
+        overviewEvent = fxml.load(OverviewCtrl.class, locale, "client", "scenes", "Overview.fxml");
+        invite = fxml.load(InviteScreenCtrl.class, locale, "client", "scenes", "InviteScreen.fxml");
+        openDebt = fxml.load(OpenDebtsCtrl.class, locale, "client", "scenes", "OpenDebts.fxml");
+        management = fxml.load(ManagementCtrl.class, locale,
+                "client", "scenes", "Management.fxml");
+        startPage = fxml.load(
+                StartScreenCtrl.class, locale, "client", "scenes", "StartScreen.fxml");
+        expenseType = fxml.load(
+                ExpenseTypeCtrl.class, locale, "client", "scenes", "ExpenseTypes.fxml");
+        addEditTags = fxml.load(
+                AddEditTagsCtrl.class, locale, "client", "scenes", "AddEditTags.fxml");
+        participant = fxml.load(
+                ParticipantsCtrl.class, locale, "client", "scenes", "Participants.fxml");
+        appConfiguration = fxml.load(AppConfigurationCtrl.class, locale,
+                "client", "scenes", "AppConfiguration.fxml");
+        statistics = fxml.load(
+                StatisticsCtrl.class, locale, "client", "scenes", "Statistics.fxml");
     }
 
     /**
@@ -39,95 +69,8 @@ public class InitializationData {
     }
 
     /**
-     * Set expense pair
-     *
-     * @param expense The expense pair
-     */
-    public void setExpense(Pair<ExpenseCtrl, Parent> expense) {
-        this.expense = expense;
-    }
-
-    /**
-     * sets the appConfiguration pair
-     * @param appConfiguration pair
-     */
-    public void setAppConfiguration(Pair<AppConfigurationCtrl, Parent> appConfiguration) {
-        this.appConfiguration = appConfiguration;
-    }
-    /**
-     * Sets the settings pair
-     *
-     * @param settings pair
-     */
-    public void setSettings(Pair<SettingsCtrl, Parent> settings) {
-        this.settings = settings;
-    }
-
-    /**
-     * sets the management pair
-     *
-     * @param management pair
-     */
-    public void setManagement(Pair<ManagementCtrl, Parent> management) {
-        this.management = management;
-    }
-
-    /**
-     * Sets the participant pair
-     *
-     * @param participant pair
-     */
-    public void setParticipant(Pair<ParticipantsCtrl, Parent> participant) {
-        this.participant = participant;
-    }
-
-    /**
-     * Sets the login pair
-     *
-     * @param login pair
-     */
-    public void setLogin(Pair<LoginCtrl, Parent> login) {
-        this.login = login;
-    }
-
-    /**
-     * Sets the startPage pair
-     *
-     * @param startPage pair
-     */
-    public void setStartPage(Pair<StartScreenCtrl, Parent> startPage) {
-        this.startPage = startPage;
-    }
-
-    /**
-     * Sets the overviewEvent pair
-     *
-     * @param overviewEvent pair
-     */
-    public void setOverviewEvent(Pair<OverviewCtrl, Parent> overviewEvent) {
-        this.overviewEvent = overviewEvent;
-    }
-
-    /**
-     * Sets the invite pair
-     *
-     * @param invite pair
-     */
-    public void setInvite(Pair<InviteScreenCtrl, Parent> invite) {
-        this.invite = invite;
-    }
-
-    /**
-     * Sets the open debt pair
-     *
-     * @param openDebt pair
-     */
-    public void setOpenDebt(Pair<OpenDebtsCtrl, Parent> openDebt) {
-        this.openDebt = openDebt;
-    }
-
-    /**
      * gets the appConfiguration pair
+     * 
      * @return appConfiguration pair
      */
     public Pair<AppConfigurationCtrl, Parent> getAppConfiguration() {
@@ -202,22 +145,17 @@ public class InitializationData {
      *
      * @return open debt pair
      */
-    public Pair<OpenDebtsCtrl, Parent> getOpenDebt() { return openDebt;}
+    public Pair<OpenDebtsCtrl, Parent> getOpenDebt() {
+        return openDebt;
+    }
 
     /**
      * Gets the expense type pair
      *
      * @return expense type pair
      */
-    public Pair<ExpenseTypeCtrl, Parent> getExpenseType() { return expenseType; }
-
-    /**
-     * Sets the expense type pair
-     *
-     * @param expenseType pair
-     */
-    public void setExpenseType(Pair<ExpenseTypeCtrl, Parent> expenseType) {
-        this.expenseType = expenseType;
+    public Pair<ExpenseTypeCtrl, Parent> getExpenseType() {
+        return expenseType;
     }
 
     /**
@@ -225,14 +163,25 @@ public class InitializationData {
      *
      * @return expense type pair
      */
-    public Pair<AddEditTagsCtrl, Parent> getAddEditTags() { return addEditTags; }
+    public Pair<AddEditTagsCtrl, Parent> getAddEditTags() {
+        return addEditTags;
+    }
 
     /**
-     * Sets the add / edit expense type pair
+     * Gets the statistics pair
      *
-     * @param addEditTags pair
+     * @return expense type pair
      */
-    public void setAddEditTags(Pair<AddEditTagsCtrl, Parent> addEditTags) {
-        this.addEditTags = addEditTags;
+    public Pair<StatisticsCtrl, Parent> getStatistics() {
+        return statistics;
+    }
+
+    /**
+     * Sets the statistics pair
+     *
+     * @param statistics pair
+     */
+    public void setStatistics(Pair<StatisticsCtrl, Parent> statistics) {
+        this.statistics = statistics;
     }
 }

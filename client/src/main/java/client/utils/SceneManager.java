@@ -6,6 +6,8 @@ import commons.Event;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
+import com.google.inject.Inject;
+
 public class SceneManager {
     private MainCtrl mainCtrl;
     private final Stack<SceneEnum> sceneHistory = new Stack<>();;
@@ -13,15 +15,18 @@ public class SceneManager {
     private Event event;
 
     /**
-     * sets the MainCtrl instance.
-     * @param mainCtrl MainCtrl instance to set.
+     * Create a scene manager
+     *
+     * @param mainCtrl The main controller
      */
-    public void setMainCtrl(MainCtrl mainCtrl) {
+    @Inject
+    public SceneManager(MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
     }
 
     /**
      * gets the current event.
+     * 
      * @return current event.
      */
     public Event getEvent() {
@@ -30,6 +35,7 @@ public class SceneManager {
 
     /**
      * gets the current scene from the scene history.
+     * 
      * @return current scene.
      */
     private SceneEnum getCurrentScene() {
@@ -53,15 +59,17 @@ public class SceneManager {
 
     /**
      * pushes a new scene to the scene history stack.
+     * 
      * @param scene scene
      */
     public void pushScene(SceneEnum scene) {
-        if(this.sceneHistory.isEmpty() || this.sceneHistory.peek() != scene)
+        if (this.sceneHistory.isEmpty() || this.sceneHistory.peek() != scene)
             sceneHistory.push(scene);
     }
 
     /**
      * pops the current scene from the scene history stack.
+     * 
      * @return the popped scene.
      */
     public SceneEnum popScene() {
@@ -75,6 +83,7 @@ public class SceneManager {
     /**
      * pushes a new scene to the scene history stack
      * with an associated event.
+     * 
      * @param scene scene
      * @param event event associated with the scene.
      */
@@ -85,6 +94,7 @@ public class SceneManager {
 
     /**
      * shows the specified scene.
+     * 
      * @param scene scene
      * @param event event associated with the scene.
      */

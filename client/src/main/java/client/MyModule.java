@@ -15,31 +15,60 @@
  */
 package client;
 
+import java.net.URISyntaxException;
+
+import com.google.inject.Binder;
+import com.google.inject.Module;
+import com.google.inject.Provides;
+import com.google.inject.Scopes;
+import com.google.inject.Singleton;
+
+import client.scenes.AddEditTagsCtrl;
+import client.scenes.AppConfigurationCtrl;
+import client.scenes.ExpenseCtrl;
+import client.scenes.ExpenseTypeCtrl;
+import client.scenes.InviteScreenCtrl;
 import client.scenes.LoginCtrl;
 import client.scenes.MainCtrl;
-
-import client.utils.EmailManager;
-import com.google.inject.*;
-import com.google.inject.Module;
-
-import java.net.URISyntaxException;
+import client.scenes.ManagementCtrl;
+import client.scenes.OpenDebtsCtrl;
+import client.scenes.OverviewCtrl;
+import client.scenes.ParticipantsCtrl;
+import client.scenes.SettingsCtrl;
+import client.scenes.StartScreenCtrl;
+import client.scenes.StatisticsCtrl;
+import client.utils.SceneManager;
 
 public class MyModule implements Module {
 
     /**
      * It injects our view controllers
+     * 
      * @param binder used for injecting
      */
     @Override
     public void configure(Binder binder) {
-        binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(SceneManager.class).in(Scopes.SINGLETON);
+        binder.bind(AddEditTagsCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(AppConfigurationCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(ExpenseCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(ExpenseTypeCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(InviteScreenCtrl.class).in(Scopes.SINGLETON);
         binder.bind(LoginCtrl.class).in(Scopes.SINGLETON);
-        binder.bind(EmailManager.class).in(Scopes.SINGLETON);
+        binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(ManagementCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(OpenDebtsCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(OverviewCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(ParticipantsCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(SettingsCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(StartScreenCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(StatisticsCtrl.class).in(Scopes.SINGLETON);
     }
 
     /**
      * Instantiate the websocket dependency
-     * @param config the ConfigLoader instance which will be injected
+     * 
+     * @param config   the ConfigLoader instance which will be injected
      * @param mainCtrl the Main Controller
      * @return the instantiated websocket
      * @throws URISyntaxException if the server address is wrong
@@ -47,15 +76,13 @@ public class MyModule implements Module {
     @Provides
     @Singleton
     public MyWebSocketClient provideMyWebSocketClient(ConfigLoader config, MainCtrl mainCtrl)
-        throws URISyntaxException {
+            throws URISyntaxException {
         return new MyWebSocketClient(config, mainCtrl);
     }
 
-
-
-
     /**
      * Provides the configuration file for our client
+     * 
      * @return the instance referring to our configuration file
      */
     @Provides
