@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.testfx.framework.junit5.ApplicationExtension;
-import org.testfx.framework.junit5.JavaFXInterceptorUtils.JavaFxInterceptor;
 import org.testfx.framework.junit5.Start;
 
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import static com.google.inject.Guice.createInjector;
  * Look at {@link client.integration.StartupTest} for an example of how to use.
  */
 @ExtendWith(ApplicationExtension.class)
-@ExtendWith(JavaFxInterceptor.class)
 public class TestClient {
 
     protected Injector injector;
