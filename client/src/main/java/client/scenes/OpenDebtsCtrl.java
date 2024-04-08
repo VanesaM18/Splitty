@@ -180,20 +180,23 @@ public class OpenDebtsCtrl {
         String tooltipSetB;
         if(debt.getCreditor().getIban().isEmpty()){
             imageViewBank = imageViewBankG;
-            tooltipSetB = "IBAN not set";
+            tooltipSetB = "Set the IBAN of " + debt.getCreditor().getName()
+                    + ", to receive the amount owed";
         } else{
             imageViewBank = imageViewBankB;
-            tooltipSetB = "IBAN set";
+            tooltipSetB = "IBAN of " + debt.getCreditor().getName() + " is set";
         }
 
         if(debt.getDebtor().getEmail().isEmpty()){
             imageViewEnvelope = imageViewEnvelopeG;
-            tooltipSetE = "e-mail not set";
+            tooltipSetE = "Set the e-mail of " + debt.getDebtor().getName()
+                    + ", to be able to send a reminder";
 
         } else{
             imageViewEnvelope = imageViewEnvelopeB;
-            tooltipSetE = "e-mail set";
+            tooltipSetE = "e-mail of " + debt.getDebtor().getName() + " is set";
         }
+
         SetImages setImages = new SetImages(imageViewBank, imageViewEnvelope,
                 tooltipSetE, tooltipSetB);
         return setImages;
@@ -225,10 +228,12 @@ public class OpenDebtsCtrl {
 
     private static HBox getSubHBox(String tooltipSetE, ImageView imageViewEnvelope) {
         Tooltip tooltipE = new Tooltip(tooltipSetE);
-        HBox hboxE = new HBox();
-        hboxE.getChildren().addAll(imageViewEnvelope);
-        Tooltip.install(hboxE, tooltipE);
-        return hboxE;
+        tooltipE.setMaxWidth(200);
+        tooltipE.setWrapText(true);
+        HBox hbox = new HBox();
+        hbox.getChildren().addAll(imageViewEnvelope);
+        Tooltip.install(hbox, tooltipE);
+        return hbox;
     }
 
     private void openPopUp(Participant participant, HBox hbox, ImageView imageViewBankG) {
