@@ -3,7 +3,6 @@ package client.scenes;
 import client.utils.EmailManager;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
-import com.sun.javafx.menu.MenuItemBase;
 import commons.Event;
 import commons.Debt;
 import commons.Participant;
