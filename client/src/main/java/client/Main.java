@@ -50,7 +50,7 @@ public class Main extends Application {
      *
      * @param args to be passed to the client
      * @throws URISyntaxException if anything happens related to URI
-     * @throws IOException        if anything happens related to IO
+     * @throws IOException if anything happens related to IO
      */
     public static void main(String[] args) throws URISyntaxException, IOException {
         launch();
@@ -59,11 +59,9 @@ public class Main extends Application {
     /**
      * It starts the client
      * 
-     * @param primaryStage the primary stage for this application, onto which the
-     *                     application scene
-     *                     can be set. Applications may create other stages, if
-     *                     needed, but they will not be
-     *                     primary stages.
+     * @param primaryStage the primary stage for this application, onto which the application scene
+     *        can be set. Applications may create other stages, if needed, but they will not be
+     *        primary stages.
      * @throws IOException any IO related error
      */
     @Override
@@ -87,7 +85,6 @@ public class Main extends Application {
 
     /**
      * gets the scene manager
-     * 
      * @return SceneManager object
      */
     public SceneManager getSceneManager() {
@@ -108,6 +105,8 @@ public class Main extends Application {
         InitializationData data = INJECTOR.getInstance(InitializationData.class);
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
+        mainCtrl.setCurrentLocale(locale);
+        sceneManager.setMainCtrl(mainCtrl);
         sceneManager.pushScene(sceneEnum);
         mainCtrl.initialize(this.stage, data, sceneManager);
 

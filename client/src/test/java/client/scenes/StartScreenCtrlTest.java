@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+
+import client.utils.language.LanguageProcessor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +36,7 @@ class StartScreenCtrlTest {
     ServerUtils serverUtils;
     MainCtrl mainCtrl;
     ConfigLoader configLoader;
+    LanguageProcessor languageProcessor;
 
     @BeforeAll
     static void setup() {
@@ -68,7 +71,7 @@ class StartScreenCtrlTest {
         Locale locale = Locale.of("en", "EN");
         loader.setResources(ResourceBundle.getBundle("bundles.Splitty", locale));
         loader.setControllerFactory(
-                parameter -> new StartScreenCtrl(serverUtils, mainCtrl, configLoader));
+                parameter -> new StartScreenCtrl(serverUtils, mainCtrl, configLoader, languageProcessor));
 
         // Actually load the file, and also save the controller.
         pane = (Pane) loader.load();

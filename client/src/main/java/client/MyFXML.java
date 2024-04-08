@@ -25,6 +25,8 @@ import javafx.util.BuilderFactory;
 import javafx.util.Callback;
 import javafx.util.Pair;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -77,6 +79,33 @@ public class MyFXML {
     private ResourceBundle getBundle(Locale locale) {
         var bundle = ResourceBundle.getBundle("bundles.Splitty", locale);
         return bundle;
+    }
+
+    private String getResourceBundleFileContent(Locale locale) {
+        StringBuilder builder = new StringBuilder();
+        ResourceBundle bundle = this.getBundle(locale);
+        bundle.keySet().forEach(key -> {
+            builder.append(key).append("=").append(bundle.getString(key)).append("\n");
+        });
+        return builder.toString();
+    }
+
+    /**
+     * writes the content of the ResourceBundle for
+     * the specified locale to the given file.
+     * @param locale locale.
+     * @param file file to which the ResourceBundle
+     *             content will be written.
+     */
+    public void writeResourceBundleFile(Locale locale, File file) {
+        String fileContent = this.getResourceBundleFileContent(locale);
+        if(file != null) {
+            try (FileWriter writer = new FileWriter(file)) {
+                writer.write(fileContent);
+            } catch (IOException e) {
+                //TODO log error
+            }
+        }
     }
 
     /**

@@ -40,6 +40,7 @@ public class StatisticsCtrl {
      */
     public void setEvent(Event ev) {
         this.event = ev;
+        pie.getData().clear();
         initPieChart();
         initCost();
     }
@@ -91,5 +92,15 @@ public class StatisticsCtrl {
 //        pie = new PieChart();
 //        pie.setData(FXCollections.observableArrayList());
 
+    }
+
+    /**
+     * Refreshes the data
+     */
+    public void refresh() {
+        if (this.event != null) {
+            this.event = server.getEventById(this.event.getInviteCode());
+            setEvent(this.event);
+        }
     }
 }

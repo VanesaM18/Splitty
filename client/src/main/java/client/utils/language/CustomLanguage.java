@@ -23,16 +23,16 @@ public class CustomLanguage extends LanguageTemplate {
      */
     @Override
     public String getText() {
-        return null;
+        return this.text;
     }
 
     @Override
     protected String getLanguage() {
-        return null;
+        return this.language;
     }
 
     @Override
     protected String getCountry() {
-        return null;
+        return this.country;
     }
 }
