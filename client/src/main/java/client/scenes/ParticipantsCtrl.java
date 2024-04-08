@@ -1,6 +1,5 @@
 package client.scenes;
 
-import client.utils.SceneManager;
 import client.utils.ServerUtils;
 
 import com.google.inject.Inject;
@@ -24,7 +23,6 @@ public class ParticipantsCtrl {
     private boolean add;
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
-    private final SceneManager sceneManager;
     @FXML
     private Label warning;
 
@@ -50,13 +48,11 @@ public class ParticipantsCtrl {
      * @param server       An instance of ServerUtils for server-related operations.
      * @param mainCtrl     An instance of MainCtrl for coordinating with the main
      *                     controller.
-     * @param sceneManager An instance of MainCtrl for going back
      */
     @Inject
-    public ParticipantsCtrl(ServerUtils server, MainCtrl mainCtrl, SceneManager sceneManager) {
+    public ParticipantsCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
-        this.sceneManager = sceneManager;
     }
 
     /**
@@ -65,7 +61,6 @@ public class ParticipantsCtrl {
     public void abort() {
         clearFields();
         mainCtrl.showOverviewEvent(null);
-//        sceneManager.goBack();
     }
 
     /**
@@ -120,7 +115,6 @@ public class ParticipantsCtrl {
 
         clearFields();
         mainCtrl.showOverviewEvent(ev);
-//        sceneManager.goBack();
     }
 
     /**

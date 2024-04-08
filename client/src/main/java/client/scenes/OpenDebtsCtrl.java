@@ -12,6 +12,7 @@ import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.image.Image;
@@ -23,6 +24,8 @@ import java.util.Optional;
 import javafx.geometry.Insets;
 
 import javafx.scene.image.ImageView;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 
@@ -30,6 +33,7 @@ public class OpenDebtsCtrl {
     private final MainCtrl mainCtrl;
     private final ServerUtils server;
     private final EmailManager emailManager;
+    private Stage primaryStage;
     @FXML
     private HBox hboxContainer;
 
@@ -160,11 +164,20 @@ public class OpenDebtsCtrl {
         if(debt.getCreditor().getIban().isEmpty()){
             participantsB.add(debt.getCreditor());
         }
+        ArrayList<Participant> participantsE = new ArrayList<>();
+        if(debt.getDebtor().getEmail().isEmpty()){
+            participantsE.add(debt.getDebtor());
+        }
+        if(debt.getCreditor().getEmail().isEmpty()){
+            participantsE.add(debt.getCreditor());
+        }
 
         HBox hboxE = getSubHBox(tooltipSetE, imageViewEnvelope);
         HBox hboxB = getSubHBox(tooltipSetB, imageViewBank);
         hboxB.setPickOnBounds(true);
-        onClickHbox(hboxB, participantsB);
+        hboxE.setPickOnBounds(true);
+        onClickHbox(hboxB, participantsB, imageViewBankG);
+        onClickHbox(hboxE, participantsE, imageViewBankG);
         Region spacer = new Region();
         spacer.setPrefWidth(10);
         graphicContainer.getChildren().addAll(spacer, hboxE, hboxB);
@@ -188,18 +201,15 @@ public class OpenDebtsCtrl {
         return hboxE;
     }
 
-    private void onClickHbox(HBox hbox, ArrayList<Participant> participants){
+    private void onClickHbox(HBox hbox, ArrayList<Participant> participants, ImageView imageViewBankG){
         if(participants.isEmpty()){
             hbox.setOnMouseClicked(event -> {});
         } else {
             hbox.setOnMouseClicked(event -> {
-                // Create a dialog
                 Dialog<ButtonType> dialog = new Dialog<>();
                 dialog.setTitle("Select Participant");
-
-                // Create a ChoiceBox to display the list of participants
                 ChoiceBox<Participant> choiceBox = new ChoiceBox<>(FXCollections.observableArrayList(participants));
-                choiceBox.setConverter(new StringConverter<Participant>() {
+                choiceBox.setConverter(new StringConverter<>() {
                     @Override
                     public String toString(Participant participant) {
                         return participant.getName();
@@ -209,19 +219,15 @@ public class OpenDebtsCtrl {
                         return null;
                     }
                 });
+
                 choiceBox.getSelectionModel().selectFirst();
-
-                // Set the content of the dialog
                 dialog.getDialogPane().setContent(choiceBox);
-
-                // Add buttons to the dialog
                 dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-                // Show the dialog and wait for user interaction
                 Optional<ButtonType> result = dialog.showAndWait();
                 result.ifPresent(selectedButtonType -> {
                         if (selectedButtonType.equals(ButtonType.OK)) {
-                            mainCtrl.showParticipants(e, false, choiceBox.getValue());
+                            openPopUp(choiceBox.getValue(), hbox, imageViewBankG);
                         }else if(selectedButtonType.equals(ButtonType.CANCEL)){
                             dialog.close();
                         }
@@ -229,6 +235,64 @@ public class OpenDebtsCtrl {
             });
         }
 
+    }
+
+    private void openPopUp(Participant participant, HBox hbox, ImageView imageViewBankG) {
+        Stage popUpStage = new Stage();
+        popUpStage.initModality(Modality.APPLICATION_MODAL);
+        popUpStage.initOwner(primaryStage);
+        String title = "Set envelope";
+        TextField textField = new TextField();
+        Button okButton = buttonE(participant, textField, popUpStage);;
+        if(hbox.getChildren().contains(imageViewBankG)){
+           okButton = buttonB(participant, textField, popUpStage);
+           title = "Set IBAN";
+        }
+
+        VBox popUpLayout = new VBox(10);
+        popUpLayout.setPadding(new Insets(10));
+        popUpLayout.getChildren().addAll(textField, okButton);
+
+        Scene popUpScene = new Scene(popUpLayout, 250, 100);
+        popUpStage.setScene(popUpScene);
+        popUpStage.setTitle(title);
+        popUpStage.show();
+    }
+
+    private Button buttonB(Participant participant, TextField textField, Stage popUpStage) {
+        Button okButton = new Button("OK");
+        okButton.setOnAction(e -> {
+            String userInput = textField.getText();
+            participant.setIban(userInput);
+            if (textField.getText().isEmpty() || !ParticipantsCtrl.isIbanValid(participant.getIban())) {
+                textField.clear();
+                textField.setPromptText("Invalid IBAN");
+                textField.setStyle("-fx-prompt-text-fill: red;");
+                return;
+            }
+            server.addParticipant(participant);
+            mainCtrl.showOpenDebts(this.e);
+            popUpStage.close();
+        });
+        return okButton;
+    }
+
+    private Button buttonE(Participant participant, TextField textField, Stage popUpStage) {
+        Button okButton = new Button("OK");
+        okButton.setOnAction(e -> {
+            String userInput = textField.getText();
+            participant.setEmail(userInput);
+            if (textField.getText().isEmpty() || !ParticipantsCtrl.isEmailValid(participant.getEmail())) {
+                textField.clear();
+                textField.setPromptText("Invalid e-mail");
+                textField.setStyle("-fx-prompt-text-fill: red;");
+                return;
+            }
+            server.addParticipant(participant);
+            mainCtrl.showOpenDebts(this.e);
+            popUpStage.close();
+        });
+        return okButton;
     }
 
 
