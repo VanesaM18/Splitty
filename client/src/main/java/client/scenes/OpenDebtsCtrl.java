@@ -138,6 +138,10 @@ public class OpenDebtsCtrl {
         Image imageBankB = new Image("assets/bank-icon.png");
         ImageView imageViewBankG = settingImage(imageBankG);
         ImageView imageViewBankB = settingImage(imageBankB);
+        Image imageEnvelopeG = new Image("assets/envelope-icon-grey.png");
+        Image imageEnvelopeB = new Image("assets/envelope-icon.png");
+        ImageView imageViewEnvelopeG = settingImage(imageEnvelopeG);
+        ImageView imageViewEnvelopeB = settingImage(imageEnvelopeB);
         if(debt.getCreditor().getIban().isEmpty() || debt.getDebtor().getIban().isEmpty()){
             imageViewBank = imageViewBankG;
             tooltipSetB = "IBAN not set";
@@ -145,10 +149,6 @@ public class OpenDebtsCtrl {
             imageViewBank = imageViewBankB;
             tooltipSetB = "IBAN set";
         }
-        Image imageEnvelopeG = new Image("assets/envelope-icon-grey.png");
-        Image imageEnvelopeB = new Image("assets/envelope-icon.png");
-        ImageView imageViewEnvelopeG = settingImage(imageEnvelopeG);
-        ImageView imageViewEnvelopeB = settingImage(imageEnvelopeB);
         if(debt.getCreditor().getEmail().isEmpty() || debt.getDebtor().getEmail().isEmpty()){
             imageViewEnvelope = imageViewEnvelopeG;
             tooltipSetE = "e-mail not set";
@@ -158,30 +158,36 @@ public class OpenDebtsCtrl {
             tooltipSetE = "e-mail set";
         }
         ArrayList<Participant> participantsB = new ArrayList<>();
+        ArrayList<Participant> participantsE = new ArrayList<>();
+
+        setArrayLists(debt, participantsB, participantsE);
+
+        HBox hboxE = getSubHBox(tooltipSetE, imageViewEnvelope);
+        HBox hboxB = getSubHBox(tooltipSetB, imageViewBank);
+        hboxB.setPickOnBounds(true);
+        hboxE.setPickOnBounds(true);
+        onClickHbox(hboxB, participantsB, imageViewBank);
+        onClickHbox(hboxE, participantsE, imageViewBank);
+        Region spacer = new Region();
+        spacer.setPrefWidth(10);
+        graphicContainer.getChildren().addAll(spacer, hboxE, hboxB);
+        return graphicContainer;
+    }
+
+    private static void setArrayLists(Debt debt, ArrayList<Participant> participantsB,
+                                      ArrayList<Participant> participantsE) {
         if(debt.getDebtor().getIban().isEmpty()){
             participantsB.add(debt.getDebtor());
         }
         if(debt.getCreditor().getIban().isEmpty()){
             participantsB.add(debt.getCreditor());
         }
-        ArrayList<Participant> participantsE = new ArrayList<>();
         if(debt.getDebtor().getEmail().isEmpty()){
             participantsE.add(debt.getDebtor());
         }
         if(debt.getCreditor().getEmail().isEmpty()){
             participantsE.add(debt.getCreditor());
         }
-
-        HBox hboxE = getSubHBox(tooltipSetE, imageViewEnvelope);
-        HBox hboxB = getSubHBox(tooltipSetB, imageViewBank);
-        hboxB.setPickOnBounds(true);
-        hboxE.setPickOnBounds(true);
-        onClickHbox(hboxB, participantsB, imageViewBankG);
-        onClickHbox(hboxE, participantsE, imageViewBankG);
-        Region spacer = new Region();
-        spacer.setPrefWidth(10);
-        graphicContainer.getChildren().addAll(spacer, hboxE, hboxB);
-        return graphicContainer;
     }
 
     private static ImageView settingImage(Image imageEnvelopeG) {
@@ -201,14 +207,16 @@ public class OpenDebtsCtrl {
         return hboxE;
     }
 
-    private void onClickHbox(HBox hbox, ArrayList<Participant> participants, ImageView imageViewBankG){
+    private void onClickHbox(HBox hbox, ArrayList<Participant> participants,
+                             ImageView imageViewBankG){
         if(participants.isEmpty()){
             hbox.setOnMouseClicked(event -> {});
         } else {
             hbox.setOnMouseClicked(event -> {
                 Dialog<ButtonType> dialog = new Dialog<>();
                 dialog.setTitle("Select Participant");
-                ChoiceBox<Participant> choiceBox = new ChoiceBox<>(FXCollections.observableArrayList(participants));
+                ChoiceBox<Participant> choiceBox = new ChoiceBox<>(
+                        FXCollections.observableArrayList(participants));
                 choiceBox.setConverter(new StringConverter<>() {
                     @Override
                     public String toString(Participant participant) {
@@ -226,11 +234,11 @@ public class OpenDebtsCtrl {
 
                 Optional<ButtonType> result = dialog.showAndWait();
                 result.ifPresent(selectedButtonType -> {
-                        if (selectedButtonType.equals(ButtonType.OK)) {
-                            openPopUp(choiceBox.getValue(), hbox, imageViewBankG);
-                        }else if(selectedButtonType.equals(ButtonType.CANCEL)){
-                            dialog.close();
-                        }
+                    if (selectedButtonType.equals(ButtonType.OK)) {
+                        openPopUp(choiceBox.getValue(), hbox, imageViewBankG);
+                    }else if(selectedButtonType.equals(ButtonType.CANCEL)){
+                        dialog.close();
+                    }
                 });
             });
         }
@@ -243,10 +251,10 @@ public class OpenDebtsCtrl {
         popUpStage.initOwner(primaryStage);
         String title = "Set envelope";
         TextField textField = new TextField();
-        Button okButton = buttonE(participant, textField, popUpStage);;
+        Button okButton = buttonE(participant, textField, popUpStage);
         if(hbox.getChildren().contains(imageViewBankG)){
-           okButton = buttonB(participant, textField, popUpStage);
-           title = "Set IBAN";
+            okButton = buttonB(participant, textField, popUpStage);
+            title = "Set IBAN";
         }
 
         VBox popUpLayout = new VBox(10);
@@ -264,7 +272,8 @@ public class OpenDebtsCtrl {
         okButton.setOnAction(e -> {
             String userInput = textField.getText();
             participant.setIban(userInput);
-            if (textField.getText().isEmpty() || !ParticipantsCtrl.isIbanValid(participant.getIban())) {
+            if (textField.getText().isEmpty() ||
+                    !ParticipantsCtrl.isIbanValid(participant.getIban())) {
                 textField.clear();
                 textField.setPromptText("Invalid IBAN");
                 textField.setStyle("-fx-prompt-text-fill: red;");
@@ -282,7 +291,8 @@ public class OpenDebtsCtrl {
         okButton.setOnAction(e -> {
             String userInput = textField.getText();
             participant.setEmail(userInput);
-            if (textField.getText().isEmpty() || !ParticipantsCtrl.isEmailValid(participant.getEmail())) {
+            if (textField.getText().isEmpty() ||
+                    !ParticipantsCtrl.isEmailValid(participant.getEmail())) {
                 textField.clear();
                 textField.setPromptText("Invalid e-mail");
                 textField.setStyle("-fx-prompt-text-fill: red;");
