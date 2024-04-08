@@ -76,6 +76,11 @@ public class Main extends Application {
         this.start(configLoader.getLanguage(), configLoader.getStartScene());
     }
 
+    @Override
+    public void stop() throws InterruptedException {
+        INJECTOR.getInstance(MyWebSocketClient.class).closeBlocking();
+    }
+
     /**
      * Returns an instance of our main
      *
