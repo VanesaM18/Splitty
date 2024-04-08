@@ -14,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.layout.*;
 import javafx.scene.image.Image;
 
@@ -134,22 +135,28 @@ public class OpenDebtsCtrl {
         ImageView imageViewEnvelope;
         String tooltipSetE;
         String tooltipSetB;
+
         Image imageBankG = new Image("assets/bank-icon-grey.png");
         Image imageBankB = new Image("assets/bank-icon.png");
         ImageView imageViewBankG = settingImage(imageBankG);
         ImageView imageViewBankB = settingImage(imageBankB);
         Image imageEnvelopeG = new Image("assets/envelope-icon-grey.png");
         Image imageEnvelopeB = new Image("assets/envelope-icon.png");
+
         ImageView imageViewEnvelopeG = settingImage(imageEnvelopeG);
         ImageView imageViewEnvelopeB = settingImage(imageEnvelopeB);
-        if(debt.getCreditor().getIban().isEmpty() || debt.getDebtor().getIban().isEmpty()){
+        hoverOverImage(imageViewBankG);
+        hoverOverImage(imageViewEnvelopeG);
+
+        if(debt.getCreditor().getIban().isEmpty()){
             imageViewBank = imageViewBankG;
             tooltipSetB = "IBAN not set";
         } else{
             imageViewBank = imageViewBankB;
             tooltipSetB = "IBAN set";
         }
-        if(debt.getCreditor().getEmail().isEmpty() || debt.getDebtor().getEmail().isEmpty()){
+
+        if(debt.getDebtor().getEmail().isEmpty()){
             imageViewEnvelope = imageViewEnvelopeG;
             tooltipSetE = "e-mail not set";
 
@@ -157,37 +164,43 @@ public class OpenDebtsCtrl {
             imageViewEnvelope = imageViewEnvelopeB;
             tooltipSetE = "e-mail set";
         }
-        ArrayList<Participant> participantsB = new ArrayList<>();
-        ArrayList<Participant> participantsE = new ArrayList<>();
-
-        setArrayLists(debt, participantsB, participantsE);
 
         HBox hboxE = getSubHBox(tooltipSetE, imageViewEnvelope);
         HBox hboxB = getSubHBox(tooltipSetB, imageViewBank);
         hboxB.setPickOnBounds(true);
         hboxE.setPickOnBounds(true);
-        onClickHbox(hboxB, participantsB, imageViewBank);
-        onClickHbox(hboxE, participantsE, imageViewBank);
+        if(debt.getCreditor().getIban().isEmpty()){
+            hboxB.setOnMouseClicked(event -> {
+                openPopUp(debt.getCreditor(), hboxB, imageViewBankG);
+            });
+        } else {
+            hboxB.setOnMouseClicked(event -> {});
+        }
+
+
+        if(debt.getDebtor().getEmail().isEmpty()){
+            hboxE.setOnMouseClicked(event -> {
+                openPopUp(debt.getDebtor(), hboxE, imageViewBankG);
+            });
+        } else {
+            hboxE.setOnMouseClicked(event -> {});
+        }
+
         Region spacer = new Region();
         spacer.setPrefWidth(10);
         graphicContainer.getChildren().addAll(spacer, hboxE, hboxB);
         return graphicContainer;
     }
 
-    private static void setArrayLists(Debt debt, ArrayList<Participant> participantsB,
-                                      ArrayList<Participant> participantsE) {
-        if(debt.getDebtor().getIban().isEmpty()){
-            participantsB.add(debt.getDebtor());
-        }
-        if(debt.getCreditor().getIban().isEmpty()){
-            participantsB.add(debt.getCreditor());
-        }
-        if(debt.getDebtor().getEmail().isEmpty()){
-            participantsE.add(debt.getDebtor());
-        }
-        if(debt.getCreditor().getEmail().isEmpty()){
-            participantsE.add(debt.getCreditor());
-        }
+    private static void hoverOverImage(ImageView imageView) {
+        ColorAdjust colorAdjust = new ColorAdjust();
+        imageView.setEffect(colorAdjust);
+        imageView.setOnMouseEntered(e -> {
+            colorAdjust.setBrightness(0.4);
+        });
+        imageView.setOnMouseExited(e -> {
+            colorAdjust.setBrightness(0);
+        });
     }
 
     private static ImageView settingImage(Image imageEnvelopeG) {
@@ -205,44 +218,6 @@ public class OpenDebtsCtrl {
         hboxE.getChildren().addAll(imageViewEnvelope);
         Tooltip.install(hboxE, tooltipE);
         return hboxE;
-    }
-
-    private void onClickHbox(HBox hbox, ArrayList<Participant> participants,
-                             ImageView imageViewBankG){
-        if(participants.isEmpty()){
-            hbox.setOnMouseClicked(event -> {});
-        } else {
-            hbox.setOnMouseClicked(event -> {
-                Dialog<ButtonType> dialog = new Dialog<>();
-                dialog.setTitle("Select Participant");
-                ChoiceBox<Participant> choiceBox = new ChoiceBox<>(
-                        FXCollections.observableArrayList(participants));
-                choiceBox.setConverter(new StringConverter<>() {
-                    @Override
-                    public String toString(Participant participant) {
-                        return participant.getName();
-                    }
-                    @Override
-                    public Participant fromString(String string) {
-                        return null;
-                    }
-                });
-
-                choiceBox.getSelectionModel().selectFirst();
-                dialog.getDialogPane().setContent(choiceBox);
-                dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-
-                Optional<ButtonType> result = dialog.showAndWait();
-                result.ifPresent(selectedButtonType -> {
-                    if (selectedButtonType.equals(ButtonType.OK)) {
-                        openPopUp(choiceBox.getValue(), hbox, imageViewBankG);
-                    }else if(selectedButtonType.equals(ButtonType.CANCEL)){
-                        dialog.close();
-                    }
-                });
-            });
-        }
-
     }
 
     private void openPopUp(Participant participant, HBox hbox, ImageView imageViewBankG) {
