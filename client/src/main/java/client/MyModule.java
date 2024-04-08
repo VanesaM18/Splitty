@@ -17,6 +17,7 @@ package client;
 
 import java.net.URISyntaxException;
 
+import client.utils.EmailManager;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Provides;
@@ -89,5 +90,16 @@ public class MyModule implements Module {
     @Singleton
     public ConfigLoader provideConfigLoader() {
         return new ConfigLoader();
+    }
+
+    /**
+     * Provides the email manager for our client
+     *
+     * @return the instance referring to our email manager
+     */
+    @Provides
+    @Singleton
+    public EmailManager provideEmailManager(ConfigLoader config) {
+        return new EmailManager(config);
     }
 }

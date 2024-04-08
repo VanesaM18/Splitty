@@ -111,12 +111,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
         if (endPoint.contains("/expenses")) {
             handleExpensesApi(session, request);
         }
-        if (endPoint.contains("/expenses") || endPoint.contains("/events")
-            || endPoint.contains("/participants")) {
-            updateClients(session, request);
-        }
         if(endPoint.contains("/expense_type")) {
             handleExpenseTypes(session, request, request.getMethod());
+        }
+        if (endPoint.contains("/expenses") || endPoint.contains("/events")
+            || endPoint.contains("/participants") ||  endPoint.contains("/expense_type")) {
+            updateClients(session, request);
         }
     }
 
