@@ -233,13 +233,19 @@ public class OpenDebtsCtrl {
         Stage popUpStage = new Stage();
         popUpStage.initModality(Modality.APPLICATION_MODAL);
         popUpStage.initOwner(primaryStage);
-        String title = "Set e-mail";
+        String title = "Set e-mail " + participant.getName();
         TextField textField = new TextField();
+
+        Label label = new Label("Enter e-mail:");
+        label.setAlignment(Pos.CENTER_LEFT);
+
         Button okButton = buttonE(participant, textField, popUpStage);
         if(hbox.getChildren().contains(imageViewBankG)){
             okButton = buttonB(participant, textField, popUpStage);
-            title = "Set IBAN";
+            title = "Set IBAN " + participant.getName();
+            label.setText("Enter IBAN: ");
         }
+
         Button cancelButton = new Button("Cancel");
         cancelButton.setOnAction(event -> popUpStage.close());
 
@@ -248,9 +254,9 @@ public class OpenDebtsCtrl {
         HBox buttonContainer = new HBox(okButton, cancelButton);
         buttonContainer.setAlignment(Pos.CENTER_RIGHT);
         buttonContainer.setSpacing(10);
-        popUpLayout.getChildren().addAll(textField, buttonContainer);
+        popUpLayout.getChildren().addAll(label, textField, buttonContainer);
 
-        Scene popUpScene = new Scene(popUpLayout, 250, 100);
+        Scene popUpScene = new Scene(popUpLayout, 250, 125);
         popUpStage.setScene(popUpScene);
         popUpStage.setTitle(title);
         popUpStage.show();
