@@ -5,8 +5,10 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Debt;
+import commons.Participant;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -14,11 +16,14 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.image.Image;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javafx.geometry.Insets;
 
 import javafx.scene.image.ImageView;
+import javafx.util.StringConverter;
 
 
 public class OpenDebtsCtrl {
@@ -119,7 +124,7 @@ public class OpenDebtsCtrl {
         return titledPane;
     }
 
-    private static HBox sideImagesDebt(Debt debt) {
+    private HBox sideImagesDebt(Debt debt) {
         HBox graphicContainer = new HBox();
         ImageView imageViewBank;
         ImageView imageViewEnvelope;
@@ -148,8 +153,18 @@ public class OpenDebtsCtrl {
             imageViewEnvelope = imageViewEnvelopeB;
             tooltipSetE = "e-mail set";
         }
+        ArrayList<Participant> participantsB = new ArrayList<>();
+        if(debt.getDebtor().getIban().isEmpty()){
+            participantsB.add(debt.getDebtor());
+        }
+        if(debt.getCreditor().getIban().isEmpty()){
+            participantsB.add(debt.getCreditor());
+        }
+
         HBox hboxE = getSubHBox(tooltipSetE, imageViewEnvelope);
         HBox hboxB = getSubHBox(tooltipSetB, imageViewBank);
+        hboxB.setPickOnBounds(true);
+        onClickHbox(hboxB, participantsB);
         Region spacer = new Region();
         spacer.setPrefWidth(10);
         graphicContainer.getChildren().addAll(spacer, hboxE, hboxB);
@@ -171,6 +186,49 @@ public class OpenDebtsCtrl {
         hboxE.getChildren().addAll(imageViewEnvelope);
         Tooltip.install(hboxE, tooltipE);
         return hboxE;
+    }
+
+    private void onClickHbox(HBox hbox, ArrayList<Participant> participants){
+        if(participants.isEmpty()){
+            hbox.setOnMouseClicked(event -> {});
+        } else {
+            hbox.setOnMouseClicked(event -> {
+                // Create a dialog
+                Dialog<ButtonType> dialog = new Dialog<>();
+                dialog.setTitle("Select Participant");
+
+                // Create a ChoiceBox to display the list of participants
+                ChoiceBox<Participant> choiceBox = new ChoiceBox<>(FXCollections.observableArrayList(participants));
+                choiceBox.setConverter(new StringConverter<Participant>() {
+                    @Override
+                    public String toString(Participant participant) {
+                        return participant.getName();
+                    }
+                    @Override
+                    public Participant fromString(String string) {
+                        return null;
+                    }
+                });
+                choiceBox.getSelectionModel().selectFirst();
+
+                // Set the content of the dialog
+                dialog.getDialogPane().setContent(choiceBox);
+
+                // Add buttons to the dialog
+                dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+                // Show the dialog and wait for user interaction
+                Optional<ButtonType> result = dialog.showAndWait();
+                result.ifPresent(selectedButtonType -> {
+                        if (selectedButtonType.equals(ButtonType.OK)) {
+                            mainCtrl.showParticipants(e, false, choiceBox.getValue());
+                        }else if(selectedButtonType.equals(ButtonType.CANCEL)){
+                            dialog.close();
+                        }
+                });
+            });
+        }
+
     }
 
 

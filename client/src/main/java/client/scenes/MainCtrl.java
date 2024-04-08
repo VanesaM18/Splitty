@@ -148,6 +148,7 @@ public class MainCtrl {
         primaryStage.setTitle("Management Overview");
         primaryStage.setScene(management);
         managementCtrl.refresh();
+
     }
 
     /**
