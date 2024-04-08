@@ -164,8 +164,10 @@ public class OpenDebtsCtrl {
         }
 
         Region spacer = new Region();
-        spacer.setPrefWidth(10);
-        graphicContainer.getChildren().addAll(spacer, hboxE, hboxB);
+        spacer.setPrefWidth(12);
+        Region spacer2 = new Region();
+        spacer2.setPrefWidth(7);
+        graphicContainer.getChildren().addAll(spacer, hboxE, spacer2, hboxB);
         return graphicContainer;
     }
 
