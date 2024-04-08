@@ -3,6 +3,7 @@ package client.scenes;
 import client.utils.EmailManager;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import com.sun.javafx.menu.MenuItemBase;
 import commons.Event;
 import commons.Debt;
 import commons.Participant;
@@ -249,17 +250,22 @@ public class OpenDebtsCtrl {
         Stage popUpStage = new Stage();
         popUpStage.initModality(Modality.APPLICATION_MODAL);
         popUpStage.initOwner(primaryStage);
-        String title = "Set envelope";
+        String title = "Set e-mail";
         TextField textField = new TextField();
         Button okButton = buttonE(participant, textField, popUpStage);
         if(hbox.getChildren().contains(imageViewBankG)){
             okButton = buttonB(participant, textField, popUpStage);
             title = "Set IBAN";
         }
+        Button cancelButton = new Button("Cancel");
+        cancelButton.setOnAction(event -> popUpStage.close());
 
         VBox popUpLayout = new VBox(10);
         popUpLayout.setPadding(new Insets(10));
-        popUpLayout.getChildren().addAll(textField, okButton);
+        HBox buttonContainer = new HBox(okButton, cancelButton);
+        buttonContainer.setAlignment(Pos.CENTER_RIGHT);
+        buttonContainer.setSpacing(10);
+        popUpLayout.getChildren().addAll(textField, buttonContainer);
 
         Scene popUpScene = new Scene(popUpLayout, 250, 100);
         popUpStage.setScene(popUpScene);
