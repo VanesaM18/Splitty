@@ -6,6 +6,7 @@ import client.utils.SceneEnum;
 import client.utils.SceneManager;
 import client.utils.TestClient;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -44,7 +45,7 @@ public class StartupTest extends TestClient {
                 injector.getInstance(SceneManager.class)));
 
         @SuppressWarnings("unchecked")
-        ChoiceBox<String> selection = robot.lookup("#choiceBox").queryAs(ChoiceBox.class);
+        ComboBox<String> selection = robot.lookup("#comboBox").queryAs(ComboBox.class);
         TextField urlTextField = robot.lookup("#urlTextField").queryAs(TextField.class);
 
         Assertions.assertEquals("English", selection.getSelectionModel().getSelectedItem());

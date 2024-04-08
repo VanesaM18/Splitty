@@ -2,23 +2,24 @@ package client.utils.language.implementations;
 
 import client.utils.language.LanguageTemplate;
 
-public class English extends LanguageTemplate {
+public class Afrikaans extends LanguageTemplate {
 
     /**
-     * gets the text content for English.
-     * @return text content for English.
+     * gets the text content for Afrikaans.
+     * @return text content for Afrikaans.
      */
     @Override
     public String getText() {
-        return "English";
+        return "Afrikaans";
     }
 
     @Override
     protected String getLanguage() {
-        return "en";
+        return "af";
     }
+
     @Override
     protected String getCountry() {
-        return "EN";
+        return "ZA";
     }
 }

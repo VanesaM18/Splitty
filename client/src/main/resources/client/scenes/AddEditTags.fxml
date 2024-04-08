@@ -11,24 +11,24 @@
 
 <AnchorPane prefHeight="220.0" prefWidth="263.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddEditTagsCtrl">
    <children>
-      <Label fx:id="title" layoutX="14.0" layoutY="14.0" text="Add/Edit expense type">
+      <Label fx:id="title" layoutX="14.0" layoutY="14.0" text="%expensetype_label">
          <font>
             <Font name="System Bold" size="22.0" />
          </font>
       </Label>
-      <Label layoutX="12.0" layoutY="64.0" text="Name">
+      <Label layoutX="12.0" layoutY="64.0" text="%name_label">
          <font>
             <Font size="20.0" />
          </font>
       </Label>
-      <Label layoutX="15.0" layoutY="113.0" text="Color">
+      <Label layoutX="15.0" layoutY="113.0" text="%color_label">
          <font>
             <Font size="20.0" />
          </font>
       </Label>
       <TextField fx:id="name" layoutX="77.0" layoutY="67.0" prefHeight="25.0" prefWidth="174.0" />
       <ColorPicker fx:id="color" layoutX="77.0" layoutY="112.0" prefHeight="32.0" prefWidth="174.0" />
-      <Button layoutX="188.0" layoutY="173.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="61.0" text="Ok" onAction="#ok"/>
-      <Button layoutX="12.0" layoutY="173.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" text="Abort" onAction="#abort"/>
+      <Button layoutX="188.0" layoutY="173.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="61.0" text="%ok_button" onAction="#ok"/>
+      <Button layoutX="12.0" layoutY="173.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" text="%abort_button" onAction="#abort"/>
    </children>
 </AnchorPane>

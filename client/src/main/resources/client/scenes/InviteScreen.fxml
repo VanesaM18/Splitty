@@ -21,14 +21,14 @@
                </font>
             </Label>
             <Label fx:id="inviteCodeLabel" text="Give people the following invite code: EXAMPLE" wrapText="true" />
-            <Label text="Invite the following people by email (one address per line):" wrapText="true" />
+            <Label text="%invite_label" wrapText="true" />
             <TextArea fx:id="emailTextArea" prefHeight="117.0" prefWidth="600.0" promptText="john.doe@example.com" wrapText="true" />
             <HBox prefHeight="27.0" prefWidth="500.0">
                <children>
-                  <Button fx:id="backButton" cancelButton="true" mnemonicParsing="false" onAction="#goBack" text="Back" />
+                  <Button fx:id="backButton" cancelButton="true" mnemonicParsing="false" onAction="#goBack" text="%back" />
                   <Region minWidth="0.0" prefHeight="200.0" HBox.hgrow="ALWAYS" />
                   <StackPane fx:id="sendInvitesButtonWrapper" alignment="TOP_LEFT">
-                     <Button fx:id="sendInvitesButton" defaultButton="true" mnemonicParsing="false" onAction="#sendInvites" text="Send invites"/>
+                     <Button fx:id="sendInvitesButton" defaultButton="true" mnemonicParsing="false" onAction="#sendInvites" text="%send_invites"/>
                   </StackPane>
                </children>
             </HBox>

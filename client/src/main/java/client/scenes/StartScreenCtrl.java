@@ -3,6 +3,7 @@ package client.scenes;
 import client.ConfigLoader;
 import client.utils.ServerUtils;
 
+import client.utils.language.LanguageProcessor;
 import com.google.inject.Inject;
 
 import commons.Event;
@@ -12,11 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.Button;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
@@ -29,15 +26,13 @@ import javafx.util.Callback;
 
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class StartScreenCtrl implements Initializable {
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
     private final ConfigLoader config;
+    private final LanguageProcessor languageProcessor;
 
     @FXML
     private TextField createEventField;
@@ -45,6 +40,10 @@ public class StartScreenCtrl implements Initializable {
     private TextField joinEventField;
     @FXML
     private ListView<String> recentEvents;
+    @FXML
+    private HBox mainHBox;
+    @FXML
+    private TitledPane languageNavigator;
     private String lastEvent;
     /**
      * Controller responsible for handling event creation and joining.
@@ -52,12 +51,15 @@ public class StartScreenCtrl implements Initializable {
      * @param server   An instance of ServerUtils for server-related operations.
      * @param mainCtrl An instance of MainCtrl for coordinating with the main controller.
      * @param config An instance of ConfigLoader used to update/read the config file
+     * @param languageProcessor instance of LanguageProcessor.
      */
     @Inject
-    public StartScreenCtrl(ServerUtils server, MainCtrl mainCtrl, ConfigLoader config) {
+    public StartScreenCtrl(ServerUtils server, MainCtrl mainCtrl,
+                           ConfigLoader config, LanguageProcessor languageProcessor) {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.config = config;
+        this.languageProcessor = languageProcessor;
     }
 
     /**
@@ -93,9 +95,7 @@ public class StartScreenCtrl implements Initializable {
                             deleteButton.setOnAction(event -> listView.getItems().remove(item));
                             deleteButton.setAlignment(Pos.CENTER);
                             Button joinButton = new Button();
-                            joinButton.setOnAction(event -> {
-                                joinEventField.setText(item);
-                            });
+                            joinButton.setOnAction(event -> joinEventField.setText(item));
                             HBox.setHgrow(joinButton, Priority.ALWAYS);
                             Region region = new Region();
                             HBox.setHgrow(region, Priority.ALWAYS);
@@ -120,7 +120,9 @@ public class StartScreenCtrl implements Initializable {
                 };
             }
         });
+        languageNavigator.setExpanded(false);
     }
+
     /**
      * Handles creating a new event based on the input from the createEventField.
      */
@@ -242,6 +244,8 @@ public class StartScreenCtrl implements Initializable {
             .filter(code -> server.getEventById(code) != null)
             .toList();
         recentEvents.getItems().setAll(inviteCodes);
+        languageProcessor.populateTitledPane(languageNavigator, mainCtrl
+                .getCurrentLocale().orElse(Locale.of("en","EN")));
     }
 
     /**

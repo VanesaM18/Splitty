@@ -1,21 +1,24 @@
 package client.utils.language;
 
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TitledPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class LanguageProcessor {
 
     private final List<Language> languages;
-    private final Map<String, Language> actions = new HashMap<>();;
+    private final Map<String, Language> actions = new HashMap<>();
 
     /**
      * constructs a LanguageProcessor instance.
@@ -25,6 +28,7 @@ public class LanguageProcessor {
      */
     public LanguageProcessor() {
         this.languages = findInterfaceImplementations();
+        languages.sort(Language::compareTo);
         createActions();
     }
     /**
@@ -74,7 +78,10 @@ public class LanguageProcessor {
     }
 
     private void createActions() {
-        this.languages.forEach(language ->
+        Collections.sort(languages);
+        var actionLanguages = new ArrayList<>(languages);
+        actionLanguages.removeLast();
+        actionLanguages.forEach(language ->
                 actions.put(language.getText(), language));
     }
 
@@ -116,6 +123,58 @@ public class LanguageProcessor {
             i += 1;
         }
         return array;
+    }
+
+    /**
+     * scroll pane with all the language buttons.
+     * @return ScrollPane containing language buttons.
+     */
+    public ScrollPane getLanguageSelector() {
+        ScrollPane scrollPane = new ScrollPane();
+        VBox languageButtons = new VBox(20);
+        languageButtons.getChildren().addAll(toArray(languages));
+        scrollPane.setContent(languageButtons);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        return scrollPane;
+    }
+
+
+    /**
+     * populates a titled pane with all the language buttons.
+     * @param titledPane titled pane to populate.
+     * @param currentLocale current locale of the application.
+     */
+    public void populateTitledPane(TitledPane titledPane, Locale currentLocale) {
+        titledPane.setPadding(new Insets(0,10,0,10));
+        Language currentLanguage = this.languages
+                .stream()
+                .filter(language
+                        -> language.getLocale().equals(currentLocale))
+                .toList().get(0);
+        Image img = currentLanguage.getFlag();
+        ImageView imageView = new ImageView(img);
+        imageView.setFitHeight(23);
+        imageView.setPreserveRatio(true);
+        titledPane.setGraphic(imageView);
+        VBox languageButtons = new VBox(20);
+        Button[] languageArray = toArray(languages);
+        for (Button button : languageArray) {
+            if(button.getText().contains(currentLanguage.getText())) {
+                button.setText(button.getText() + "\n (active)");
+            }
+        }
+        languageButtons.getChildren().addAll(languageArray);
+        titledPane.setContent(languageButtons);
+        titledPane.expandedProperty().addListener((observable, oldValue, newValue) -> {
+            if(!oldValue && newValue && observable.getValue()) {
+                titledPane.setPrefWidth(250);
+                titledPane.setPrefHeight(300);
+            } else if (oldValue && !newValue && !observable.getValue()) {
+                titledPane.setPrefWidth(0);
+                titledPane.setPrefHeight(0);
+            }
+        });
     }
 
 }

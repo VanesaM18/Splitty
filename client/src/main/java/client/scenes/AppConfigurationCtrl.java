@@ -7,11 +7,9 @@ import client.utils.ServerUtils;
 import client.utils.language.LanguageProcessor;
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -22,10 +20,12 @@ public class AppConfigurationCtrl {
     private final MainCtrl mainCtrl;
     private final LanguageProcessor languageProcessor;
     private final ConfigLoader configLoader;
-    @FXML
-    private ChoiceBox<String> choiceBox;
+//    @FXML
+//    private ChoiceBox<String> choiceBox;
     @FXML
     private TextField urlTextField;
+    @FXML
+    private ComboBox<String> comboBox;
 
     /**
      * controller for handling the application configuration functionality.
@@ -49,8 +49,19 @@ public class AppConfigurationCtrl {
      */
     public void make() {
         Map<String, Runnable> actions = languageProcessor.getActions();
-        choiceBox.getItems().addAll(actions.keySet());
-        choiceBox.setValue("English");
+        //choiceBox.getItems().addAll(actions.keySet());
+        //choiceBox.setValue("English");
+        comboBox.getItems().addAll(actions.keySet());
+        var local = mainCtrl.getCurrentLocale().orElse(Locale.of("en","EN"));
+
+        var currentLanguage = languageProcessor
+                .getLanguages().stream()
+                .filter(language -> language.getLocale().equals(local))
+                .toList().get(0);
+
+        comboBox.setValue(currentLanguage.getText());
+        comboBox.getItems().add(currentLanguage.getText());
+
     }
 
     /**
@@ -69,7 +80,7 @@ public class AppConfigurationCtrl {
 
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                String selectedLanguage = choiceBox.getValue();
+                String selectedLanguage = comboBox.getValue();//choiceBox.getValue();
                 server.setServerUrl(url);
                 configLoader.updateProperty("address", url);
                 var sceneManager = mainCtrl.getSceneManager();
