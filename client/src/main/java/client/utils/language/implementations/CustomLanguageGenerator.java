@@ -24,7 +24,7 @@ public class CustomLanguageGenerator extends LanguageTemplate {
      */
     @Override
     protected String getLanguage() {
-        return "?";
+        return "";
     }
 
     /**
@@ -33,7 +33,7 @@ public class CustomLanguageGenerator extends LanguageTemplate {
      */
     @Override
     protected String getCountry() {
-        return "?";
+        return "";
     }
 
     /**
