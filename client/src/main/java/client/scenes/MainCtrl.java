@@ -252,6 +252,8 @@ public class MainCtrl {
         } else {
             overviewEventCtrl.refresh();
             inviteScreenCtrl.refresh();
+            statisticsCtrl.refresh();
+            expenseTypeCtrl.refresh();
         }
     }
 
