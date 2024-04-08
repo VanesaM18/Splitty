@@ -8,7 +8,6 @@ import commons.Debt;
 import commons.Participant;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -18,16 +17,13 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.layout.*;
 import javafx.scene.image.Image;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javafx.geometry.Insets;
 
 import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
 
 
 public class OpenDebtsCtrl {
@@ -131,10 +127,6 @@ public class OpenDebtsCtrl {
 
     private HBox sideImagesDebt(Debt debt) {
         HBox graphicContainer = new HBox();
-        ImageView imageViewBank;
-        ImageView imageViewEnvelope;
-        String tooltipSetE;
-        String tooltipSetB;
 
         Image imageBankG = new Image("assets/bank-icon-grey.png");
         Image imageBankB = new Image("assets/bank-icon.png");
@@ -148,25 +140,10 @@ public class OpenDebtsCtrl {
         hoverOverImage(imageViewBankG);
         hoverOverImage(imageViewEnvelopeG);
 
-        if(debt.getCreditor().getIban().isEmpty()){
-            imageViewBank = imageViewBankG;
-            tooltipSetB = "IBAN not set";
-        } else{
-            imageViewBank = imageViewBankB;
-            tooltipSetB = "IBAN set";
-        }
-
-        if(debt.getDebtor().getEmail().isEmpty()){
-            imageViewEnvelope = imageViewEnvelopeG;
-            tooltipSetE = "e-mail not set";
-
-        } else{
-            imageViewEnvelope = imageViewEnvelopeB;
-            tooltipSetE = "e-mail set";
-        }
-
-        HBox hboxE = getSubHBox(tooltipSetE, imageViewEnvelope);
-        HBox hboxB = getSubHBox(tooltipSetB, imageViewBank);
+        SetImages setImages = getSetImages(debt, imageViewBankG, imageViewBankB,
+                imageViewEnvelopeG, imageViewEnvelopeB);
+        HBox hboxE = getSubHBox(setImages.tooltipSetE(), setImages.imageViewEnvelope());
+        HBox hboxB = getSubHBox(setImages.tooltipSetB(), setImages.imageViewBank());
         hboxB.setPickOnBounds(true);
         hboxE.setPickOnBounds(true);
         if(debt.getCreditor().getIban().isEmpty()){
@@ -190,6 +167,38 @@ public class OpenDebtsCtrl {
         spacer.setPrefWidth(10);
         graphicContainer.getChildren().addAll(spacer, hboxE, hboxB);
         return graphicContainer;
+    }
+
+    private static SetImages getSetImages(Debt debt, ImageView imageViewBankG,
+                                          ImageView imageViewBankB, ImageView imageViewEnvelopeG,
+                                          ImageView imageViewEnvelopeB) {
+        String tooltipSetE;
+        ImageView imageViewBank;
+        ImageView imageViewEnvelope;
+        String tooltipSetB;
+        if(debt.getCreditor().getIban().isEmpty()){
+            imageViewBank = imageViewBankG;
+            tooltipSetB = "IBAN not set";
+        } else{
+            imageViewBank = imageViewBankB;
+            tooltipSetB = "IBAN set";
+        }
+
+        if(debt.getDebtor().getEmail().isEmpty()){
+            imageViewEnvelope = imageViewEnvelopeG;
+            tooltipSetE = "e-mail not set";
+
+        } else{
+            imageViewEnvelope = imageViewEnvelopeB;
+            tooltipSetE = "e-mail set";
+        }
+        SetImages setImages = new SetImages(imageViewBank, imageViewEnvelope,
+                tooltipSetE, tooltipSetB);
+        return setImages;
+    }
+
+    private record SetImages(ImageView imageViewBank, ImageView imageViewEnvelope,
+                             String tooltipSetE, String tooltipSetB) {
     }
 
     private static void hoverOverImage(ImageView imageView) {
