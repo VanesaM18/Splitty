@@ -94,7 +94,7 @@ public class MyModule implements Module {
 
     /**
      * Provides the email manager for our client
-     *
+     * @param config the config loader instance
      * @return the instance referring to our email manager
      */
     @Provides
