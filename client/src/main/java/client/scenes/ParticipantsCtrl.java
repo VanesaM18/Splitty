@@ -44,10 +44,10 @@ public class ParticipantsCtrl {
     /**
      * Controller responsible for handling the addition of participants
      * functionality.
-     * 
-     * @param server   An instance of ServerUtils for server-related operations.
-     * @param mainCtrl An instance of MainCtrl for coordinating with the main
-     *                 controller.
+     *
+     * @param server       An instance of ServerUtils for server-related operations.
+     * @param mainCtrl     An instance of MainCtrl for coordinating with the main
+     *                     controller.
      */
     @Inject
     public ParticipantsCtrl(ServerUtils server, MainCtrl mainCtrl) {

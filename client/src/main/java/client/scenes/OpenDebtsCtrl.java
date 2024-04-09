@@ -5,25 +5,34 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Debt;
+import commons.Participant;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.Tooltip;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.layout.*;
+import javafx.scene.image.Image;
 
 import java.util.List;
 
 import javafx.geometry.Insets;
+
+import javafx.scene.image.ImageView;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 
 public class OpenDebtsCtrl {
     private final MainCtrl mainCtrl;
     private final ServerUtils server;
     private final EmailManager emailManager;
+    private Stage primaryStage;
+    @FXML
+    private HBox hboxContainer;
 
     @FXML
     private VBox debtContainer;
@@ -66,15 +75,17 @@ public class OpenDebtsCtrl {
                 HBox hbox = new HBox();
                 hbox.setId("hbox_" + debt.getId());
                 TitledPane titledPane = createDebtTitledPane(debt);
-                hbox.getChildren().add(titledPane);
+                HBox.setHgrow(titledPane, Priority.ALWAYS);
 
                 Region region = new Region();
                 HBox.setHgrow(region, Priority.ALWAYS);
 
                 Button markReceivedButton = createMarkReceivedButton(debt);
-                HBox.setMargin(markReceivedButton, new Insets(0, 0, 0, 15));
-                hbox.getChildren().addAll(region, markReceivedButton);
 
+                HBox.setMargin(markReceivedButton, new Insets(0, 0, 0, 30));
+                hbox.getChildren().addAll(titledPane, region, markReceivedButton);
+                hbox.prefWidthProperty().bind(hboxContainer.widthProperty());
+                HBox.setHgrow(hbox, Priority.ALWAYS);
                 debtContainer.getChildren().add(hbox);
             }
         }
@@ -86,6 +97,11 @@ public class OpenDebtsCtrl {
         titledPane.setMaxWidth(Double.MAX_VALUE);
         titledPane.setText(debt.getDebtor().getName() + " gives "
             + debt.getAmount() + " to " + debt.getCreditor().getName());
+        HBox graphicContainer = sideImagesDebt(debt);
+
+        graphicContainer.setAlignment(Pos.CENTER_RIGHT);
+        titledPane.setGraphic(graphicContainer);
+        titledPane.setContentDisplay(ContentDisplay.RIGHT);
 
         VBox content = new VBox();
         Label debtLabel = new Label(debt.getCreditor().getIban().isEmpty()
@@ -108,6 +124,189 @@ public class OpenDebtsCtrl {
 
         return titledPane;
     }
+
+    private HBox sideImagesDebt(Debt debt) {
+        HBox graphicContainer = new HBox();
+
+        Image imageBankG = new Image("assets/bank-icon-grey.png");
+        Image imageBankB = new Image("assets/bank-icon.png");
+        ImageView imageViewBankG = settingImage(imageBankG);
+        ImageView imageViewBankB = settingImage(imageBankB);
+        Image imageEnvelopeG = new Image("assets/envelope-icon-grey.png");
+        Image imageEnvelopeB = new Image("assets/envelope-icon.png");
+
+        ImageView imageViewEnvelopeG = settingImage(imageEnvelopeG);
+        ImageView imageViewEnvelopeB = settingImage(imageEnvelopeB);
+        hoverOverImage(imageViewBankG);
+        hoverOverImage(imageViewEnvelopeG);
+
+        SetImages setImages = getSetImages(debt, imageViewBankG, imageViewBankB,
+                imageViewEnvelopeG, imageViewEnvelopeB);
+        HBox hboxE = getSubHBox(setImages.tooltipSetE(), setImages.imageViewEnvelope());
+        HBox hboxB = getSubHBox(setImages.tooltipSetB(), setImages.imageViewBank());
+        hboxB.setPickOnBounds(true);
+        hboxE.setPickOnBounds(true);
+        if(debt.getCreditor().getIban().isEmpty()){
+            hboxB.setOnMouseClicked(event -> {
+                openPopUp(debt.getCreditor(), hboxB, imageViewBankG);
+            });
+        } else {
+            hboxB.setOnMouseClicked(event -> {});
+        }
+
+
+        if(debt.getDebtor().getEmail().isEmpty()){
+            hboxE.setOnMouseClicked(event -> {
+                openPopUp(debt.getDebtor(), hboxE, imageViewBankG);
+            });
+        } else {
+            hboxE.setOnMouseClicked(event -> {});
+        }
+
+        Region spacer = new Region();
+        spacer.setPrefWidth(12);
+        Region spacer2 = new Region();
+        spacer2.setPrefWidth(7);
+        graphicContainer.getChildren().addAll(spacer, hboxE, spacer2, hboxB);
+        return graphicContainer;
+    }
+
+    private static SetImages getSetImages(Debt debt, ImageView imageViewBankG,
+                                          ImageView imageViewBankB, ImageView imageViewEnvelopeG,
+                                          ImageView imageViewEnvelopeB) {
+        String tooltipSetE;
+        ImageView imageViewBank;
+        ImageView imageViewEnvelope;
+        String tooltipSetB;
+        if(debt.getCreditor().getIban().isEmpty()){
+            imageViewBank = imageViewBankG;
+            tooltipSetB = "Set the IBAN of " + debt.getCreditor().getName()
+                    + ", to receive the amount owed";
+        } else{
+            imageViewBank = imageViewBankB;
+            tooltipSetB = "IBAN of " + debt.getCreditor().getName() + " is set";
+        }
+
+        if(debt.getDebtor().getEmail().isEmpty()){
+            imageViewEnvelope = imageViewEnvelopeG;
+            tooltipSetE = "Set the e-mail of " + debt.getDebtor().getName()
+                    + ", to be able to send a reminder";
+
+        } else{
+            imageViewEnvelope = imageViewEnvelopeB;
+            tooltipSetE = "e-mail of " + debt.getDebtor().getName() + " is set";
+        }
+
+        SetImages setImages = new SetImages(imageViewBank, imageViewEnvelope,
+                tooltipSetE, tooltipSetB);
+        return setImages;
+    }
+
+    private record SetImages(ImageView imageViewBank, ImageView imageViewEnvelope,
+                             String tooltipSetE, String tooltipSetB) {
+    }
+
+    private static void hoverOverImage(ImageView imageView) {
+        ColorAdjust colorAdjust = new ColorAdjust();
+        imageView.setEffect(colorAdjust);
+        imageView.setOnMouseEntered(e -> {
+            colorAdjust.setBrightness(0.4);
+        });
+        imageView.setOnMouseExited(e -> {
+            colorAdjust.setBrightness(0);
+        });
+    }
+
+    private static ImageView settingImage(Image imageEnvelopeG) {
+        double desiredWidth = 25;
+        double desiredHeight = 25;
+        ImageView imageViewEnvelopeG = new ImageView(imageEnvelopeG);
+        imageViewEnvelopeG.setFitWidth(desiredWidth);
+        imageViewEnvelopeG.setFitHeight(desiredHeight);
+        return imageViewEnvelopeG;
+    }
+
+    private static HBox getSubHBox(String tooltipSetE, ImageView imageViewEnvelope) {
+        Tooltip tooltipE = new Tooltip(tooltipSetE);
+        tooltipE.setMaxWidth(200);
+        tooltipE.setWrapText(true);
+        HBox hbox = new HBox();
+        hbox.getChildren().addAll(imageViewEnvelope);
+        Tooltip.install(hbox, tooltipE);
+        return hbox;
+    }
+
+    private void openPopUp(Participant participant, HBox hbox, ImageView imageViewBankG) {
+        Stage popUpStage = new Stage();
+        popUpStage.initModality(Modality.APPLICATION_MODAL);
+        popUpStage.initOwner(primaryStage);
+        String title = "Set e-mail " + participant.getName();
+        TextField textField = new TextField();
+
+        Label label = new Label("Enter e-mail:");
+        label.setAlignment(Pos.CENTER_LEFT);
+
+        Button okButton = buttonE(participant, textField, popUpStage);
+        if(hbox.getChildren().contains(imageViewBankG)){
+            okButton = buttonB(participant, textField, popUpStage);
+            title = "Set IBAN " + participant.getName();
+            label.setText("Enter IBAN: ");
+        }
+
+        Button cancelButton = new Button("Cancel");
+        cancelButton.setOnAction(event -> popUpStage.close());
+
+        VBox popUpLayout = new VBox(10);
+        popUpLayout.setPadding(new Insets(10));
+        HBox buttonContainer = new HBox(okButton, cancelButton);
+        buttonContainer.setAlignment(Pos.CENTER_RIGHT);
+        buttonContainer.setSpacing(10);
+        popUpLayout.getChildren().addAll(label, textField, buttonContainer);
+
+        Scene popUpScene = new Scene(popUpLayout, 250, 125);
+        popUpStage.setScene(popUpScene);
+        popUpStage.setTitle(title);
+        popUpStage.show();
+    }
+
+    private Button buttonB(Participant participant, TextField textField, Stage popUpStage) {
+        Button okButton = new Button("OK");
+        okButton.setOnAction(e -> {
+            String userInput = textField.getText();
+            participant.setIban(userInput);
+            if (textField.getText().isEmpty() ||
+                    !ParticipantsCtrl.isIbanValid(participant.getIban())) {
+                textField.clear();
+                textField.setPromptText("Invalid IBAN");
+                textField.setStyle("-fx-prompt-text-fill: red;");
+                return;
+            }
+            server.addParticipant(participant);
+            mainCtrl.showOpenDebts(this.e);
+            popUpStage.close();
+        });
+        return okButton;
+    }
+
+    private Button buttonE(Participant participant, TextField textField, Stage popUpStage) {
+        Button okButton = new Button("OK");
+        okButton.setOnAction(e -> {
+            String userInput = textField.getText();
+            participant.setEmail(userInput);
+            if (textField.getText().isEmpty() ||
+                    !ParticipantsCtrl.isEmailValid(participant.getEmail())) {
+                textField.clear();
+                textField.setPromptText("Invalid e-mail");
+                textField.setStyle("-fx-prompt-text-fill: red;");
+                return;
+            }
+            server.addParticipant(participant);
+            mainCtrl.showOpenDebts(this.e);
+            popUpStage.close();
+        });
+        return okButton;
+    }
+
 
     private Button createMarkReceivedButton(Debt debt) {
         Button button = new Button("Mark Received");
