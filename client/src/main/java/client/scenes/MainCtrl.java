@@ -221,9 +221,9 @@ public class MainCtrl {
         } else {
             primaryStage.setTitle("Event: Overview");
             overviewEventCtrl.setEvent(e);
-            primaryStage.setScene(overviewEvent);
             overviewEventCtrl.refresh();
             overviewEvent.setOnKeyPressed(key -> overviewEventCtrl.keyPressed(key));
+            primaryStage.setScene(overviewEvent);
         }
     }
 
