@@ -327,4 +327,75 @@ public class WebSocketHandlerTest {
 
         }
     }
+
+    @Test
+    void handleRequest_withExpensesTypeDELETE() throws Exception {
+        try {
+            WebSocketSession session = mock(WebSocketSession.class);
+            WebSocketMessage wb = new WebSocketMessage();
+            wb.setEndpoint("api/expense_type");
+            wb.setMethod("DELETE");
+            ExpenseType ext = new ExpenseType("boss", "orange", new Event("123456", "Weekend Trip", LocalDate.now().atStartOfDay(), new HashSet<>(),
+                new HashSet<>()));
+            wb.setData(ext);
+            String txt = objectMapper.writeValueAsString(wb);
+            webSocketHandler.handleTextMessage(session, new TextMessage(txt));
+        } catch (NullPointerException e) {
+
+        }
+    }
+
+    @Test
+    void handleRequest_withExpensesTypePost() throws Exception {
+        try {
+            WebSocketSession session = mock(WebSocketSession.class);
+            WebSocketMessage wb = new WebSocketMessage();
+            wb.setEndpoint("api/expense_type");
+            wb.setMethod("POST");
+            ExpenseType ext = new ExpenseType("boss", "orange", new Event("123456", "Weekend Trip", LocalDate.now().atStartOfDay(), new HashSet<>(),
+                new HashSet<>()));
+            wb.setData(ext);
+            String txt = objectMapper.writeValueAsString(wb);
+            webSocketHandler.handleTextMessage(session, new TextMessage(txt));
+        } catch (NullPointerException e) {
+
+        }
+    }
+
+    @Test
+    void handleRequest_withExpensesTypePUT() throws Exception {
+        try {
+            WebSocketSession session = mock(WebSocketSession.class);
+            WebSocketMessage wb = new WebSocketMessage();
+            wb.setEndpoint("api/expense_type");
+            wb.setMethod("PUT");
+            ExpenseType ext = new ExpenseType("boss", "orange", new Event("123456", "Weekend Trip", LocalDate.now().atStartOfDay(), new HashSet<>(),
+                new HashSet<>()));
+            wb.setData(ext);
+            String txt = objectMapper.writeValueAsString(wb);
+            webSocketHandler.handleTextMessage(session, new TextMessage(txt));
+        } catch (NullPointerException e) {
+
+        }
+    }
+
+    @Test
+    void handleRequest_UpdateClients() throws Exception {
+        try {
+            WebSocketSession session = mock(WebSocketSession.class);
+            WebSocketMessage wb = new WebSocketMessage();
+            wb.setEndpoint("api/expense_type");
+            wb.setMethod("PUT");
+            ExpenseType ext = new ExpenseType("boss", "orange", new Event("123456", "Weekend Trip", LocalDate.now().atStartOfDay(), new HashSet<>(),
+                new HashSet<>()));
+            wb.setData(ext);
+            String txt = objectMapper.writeValueAsString(wb);
+            List<WebSocketSession> lst = new ArrayList<>();
+            lst.add(session);
+            webSocketHandler.setSession(lst);
+            webSocketHandler.handleTextMessage(session, new TextMessage(txt));
+        } catch (NullPointerException e) {
+
+        }
+    }
 }
