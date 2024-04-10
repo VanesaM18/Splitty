@@ -23,13 +23,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -413,6 +407,7 @@ public class ExpenseCtrl {
                     attachImage(deleteButton, "/assets/circle-xmark-solid.png", 15, 15);
                     deleteButton.setStyle("-fx-background-color: transparent; " +
                             "-fx-padding: 0; -fx-border: none;");
+                    deleteButton.setTooltip(new Tooltip("Remove tag"));
                     deleteButton.setOnMouseEntered(event -> {
                         deleteButton.setCursor(Cursor.HAND);
                     });

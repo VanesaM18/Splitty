@@ -5,6 +5,7 @@ import client.utils.language.LanguageProcessor;
 import com.google.inject.Inject;
 import commons.*;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -151,7 +152,6 @@ public class OverviewCtrl {
                 smallText.setFill(Color.GRAY.darker().darker());
                 tags.setFont(Font.font("System", FontWeight.NORMAL, 10));
                 tags.setFill(Color.GRAY.darker().darker());
-
                 VBox vbox = new VBox(mainTextFlow, smallText, tags);
                 vbox.setSpacing(5);
                 Text dateText = new Text(item.getDate().toString());
@@ -163,8 +163,8 @@ public class OverviewCtrl {
                 editButton.setOnAction(e -> mainCtrl.showExpense(item.getEvent(),
                         participantComboBox.getSelectionModel().getSelectedItem(), item));
                 deleteButton.setOnAction(e -> deleteExpense(item));
-                attachImage(deleteButton, "/assets/bin.png");
-                attachImage(editButton, "/assets/pen-solid.png");
+                styleButton(deleteButton, "Delete expense", "/assets/bin.png");
+                styleButton(editButton, "Edit expense", "/assets/pen-solid.png");
                 HBox element = new HBox(dateText, vbox, region, deleteButton, editButton);
                 element.setSpacing(15);
                 setGraphic(element);
@@ -176,6 +176,12 @@ public class OverviewCtrl {
         expensesAll.setItems(expensesAllObs);
         expensesFrom.setItems(expensesFromObs);
         expensesIncluding.setItems(expensesIncludingObs);
+    }
+
+    private void styleButton(Button button, String tooltip, String image) {
+        attachImage(button, image);
+        button.setCursor(Cursor.cursor("HAND"));
+        button.setTooltip(new Tooltip(tooltip));
     }
 
     private static Text getTags(Expense item) {

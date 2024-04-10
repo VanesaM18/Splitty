@@ -106,16 +106,17 @@ public class StartScreenCtrl implements Initializable {
                             deleteButton.setStyle("-fx-background-color: transparent; " +
                                 "-fx-padding: 0; -fx-border: none;");
                             joinButton.setOnMouseEntered(event ->
-                                joinButton.setCursor(Cursor.HAND));
+                                    joinButton.setCursor(Cursor.HAND));
                             joinButton.setOnMouseExited(event ->
                                 joinButton.setCursor(Cursor.DEFAULT));
                             deleteButton.setOnMouseEntered(event ->
                                 deleteButton.setCursor(Cursor.HAND));
                             deleteButton.setOnMouseExited(event ->
                                 deleteButton.setCursor(Cursor.DEFAULT));
+                            deleteButton.setTooltip(new Tooltip("Remove event"));
+                            joinButton.setTooltip(new Tooltip("Show invite code"));
                             hBox.getChildren().addAll(text, joinButton, region, deleteButton);
-                            setGraphic(hBox);
-                        }
+                            setGraphic(hBox);}
                     }
                 };
             }

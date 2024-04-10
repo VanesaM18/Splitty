@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ManagementCtrl">
+<AnchorPane prefHeight="407.0" prefWidth="622.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ManagementCtrl">
 
     <children>
-      <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox prefHeight="400.0" prefWidth="623.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%management_title" wrappingWidth="575.5726623535156">
                <font>
@@ -17,12 +23,12 @@
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%rightclick_for_options" />
               <TableView fx:id="eventsTable" prefHeight="263.0" prefWidth="554.0" VBox.vgrow="ALWAYS">
                   <columns>
-                      <TableColumn fx:id="titleColumn" prefWidth="138.5" text="%title_column" />
-                      <TableColumn fx:id="inviteCodeColumn" prefWidth="124.0" text="%invitecode_column">
+                      <TableColumn fx:id="titleColumn" prefWidth="151.5714111328125" text="%title_column" />
+                      <TableColumn fx:id="inviteCodeColumn" prefWidth="127.4285888671875" text="%invitecode_column">
 
                 </TableColumn>
                       <TableColumn fx:id="creationDateColumn" minWidth="138.5" prefWidth="165.0" text="%creationdate_column" />
-                      <TableColumn fx:id="lastActivityColumn" prefWidth="151.0" text="%lastactivity_column" />
+                      <TableColumn fx:id="lastActivityColumn" prefWidth="157.5714111328125" text="%lastactivity_column" />
                   </columns>
               </TableView>
             <HBox>

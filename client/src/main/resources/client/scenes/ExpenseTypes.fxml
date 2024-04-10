@@ -5,6 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
+<?import javafx.scene.Cursor?>
 <AnchorPane prefHeight="428.0" prefWidth="364.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ExpenseTypeCtrl">
    <children>
       <ListView fx:id="tags" layoutX="32.0" layoutY="71.0" prefHeight="313.0" prefWidth="300.0" />
@@ -14,6 +15,12 @@
          </font>
       </Label>
       <Button fx:id="addTag" layoutX="292.0" layoutY="35.0" mnemonicParsing="false" onAction="#addTags" prefHeight="32.0" prefWidth="40.0">
+         <tooltip>
+            <Tooltip text="Add expense type"/>
+         </tooltip>
+         <cursor>
+            <Cursor fx:constant="HAND"/>
+         </cursor>
          <graphic>
             <ImageView fitHeight="22.0" fitWidth="22.0" pickOnBounds="true" preserveRatio="true">
                <image>
