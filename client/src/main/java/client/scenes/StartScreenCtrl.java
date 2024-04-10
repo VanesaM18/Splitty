@@ -129,7 +129,7 @@ public class StartScreenCtrl implements Initializable {
     public void createEvent() {
         String eventName = createEventField.getText();
         if(eventName.equals("")) {
-            createEventField.setPromptText("Chose a name...");
+            alert("You have to chose a name first.");
             return;
         }
 
@@ -163,14 +163,14 @@ public class StartScreenCtrl implements Initializable {
     public void joinEvent() {
         String eventCode = joinEventField.getText();
         if(eventCode.equals("")) {
-            joinEventField.setPromptText("Enter the event code...");
+            alert("Enter an event code first.");
             return;
         }
         Event ev = server.getEventById(eventCode);
         if (ev == null) {
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText("The event does not exist");
+            alert.setContentText("This event does not exist");
             alert.showAndWait();
             clearFields();
             return;
@@ -283,5 +283,11 @@ public class StartScreenCtrl implements Initializable {
             default:
                 break;
         }
+    }
+    private void alert(String content) {
+        var alert = new Alert(Alert.AlertType.ERROR);
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

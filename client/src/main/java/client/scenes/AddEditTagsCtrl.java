@@ -17,8 +17,6 @@ public class AddEditTagsCtrl {
     private Event event;
     private ExpenseType expenseType;
     @FXML
-    private Label title;
-    @FXML
     private TextField name;
     @FXML
     private ColorPicker color;
@@ -60,6 +58,7 @@ public class AddEditTagsCtrl {
         clearFields();
         mainCtrl.showExpenseTypes(event);
     }
+
     private void update() {
         if(!validInput()) return;
         expenseType.setName(name.getText());
@@ -115,13 +114,6 @@ public class AddEditTagsCtrl {
         color.setValue(javafx.scene.paint.Color.WHITE);
     }
 
-    /**
-     * Sets the title label of the screen.
-     * @param title new title to the screen.
-     */
-    public void setTitle(String title) {
-        this.title.setText(title);
-    }
     private void alert(String content) {
         var alert = new Alert(Alert.AlertType.ERROR);
         alert.initModality(Modality.APPLICATION_MODAL);

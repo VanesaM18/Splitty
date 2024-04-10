@@ -78,7 +78,6 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Label fx:id="warning" textFill="RED" />
                </children>
             </HBox>
             <ListView fx:id="participantNames" minHeight="-Infinity" orientation="HORIZONTAL" prefHeight="50.0" prefWidth="421.0" />

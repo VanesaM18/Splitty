@@ -11,7 +11,6 @@ import jakarta.ws.rs.WebApplicationException;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
@@ -23,8 +22,6 @@ public class ParticipantsCtrl {
     private boolean add;
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
-    @FXML
-    private Label warning;
 
     @FXML
     private TextField name;
@@ -82,34 +79,30 @@ public class ParticipantsCtrl {
         try {
             p = getParticipant();
             if (!uniqueName(ev, p)) {
-                warning.setText("Not a unique name!");
+                alert("Not a unique name!");
                 return;
             }
             if (p.getName().equals("")) {
-                warning.setText("Name cannot be empty!");
+                alert("Name cannot be empty!");
                 return;
             }
             if (!p.getEmail().equals("") && !isEmailValid(p.getEmail())) {
-                warning.setText("Invalid email!");
+                alert("Invalid email!");
                 return;
             }
             if (!p.getIban().equals("") && !isIbanValid(p.getIban())) {
-                warning.setText("Invalid IBAN!");
+                alert("Invalid IBAN!");
                 return;
             }
             if (!p.getBic().equals("") && !isIBicValid(p.getBic())) {
-                warning.setText("Invalid BIC!");
+                alert("Invalid BIC!");
                 return;
             }
             p = server.addParticipant(p);
             ev.addParticipant(p);
             server.updateEvent(ev);
         } catch (WebApplicationException e) {
-
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            alert(e.getMessage());
             return;
         }
 
@@ -236,7 +229,6 @@ public class ParticipantsCtrl {
      * @param ev the event
      */
     public void setEvent(Event ev) {
-        warning.setText("");
         this.ev = ev;
     }
 
@@ -279,5 +271,11 @@ public class ParticipantsCtrl {
      */
     public void setParticipantToChange(Participant participantToChange) {
         this.participantToChange = participantToChange;
+    }
+    private void alert(String content) {
+        var alert = new Alert(Alert.AlertType.ERROR);
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }
