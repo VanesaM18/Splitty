@@ -219,6 +219,7 @@ public class ParticipantsCtrlTest {
             event.addParticipant(p);
             controller.setEvent(event);
             controller.setAdd(true);
+            controller.setParticipantToChange(p);
         });
 
         TextField name = robot.lookup("#name").queryAs(TextField.class);
