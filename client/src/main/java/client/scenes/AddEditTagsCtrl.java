@@ -7,6 +7,7 @@ import commons.ExpenseType;
 import javafx.fxml.FXML;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 
@@ -16,8 +17,6 @@ public class AddEditTagsCtrl {
     private final ServerUtils server;
     private Event event;
     private ExpenseType expenseType;
-    @FXML
-    private Label title;
     @FXML
     private TextField name;
     @FXML
@@ -60,6 +59,7 @@ public class AddEditTagsCtrl {
         clearFields();
         mainCtrl.showExpenseTypes(event);
     }
+
     private void update() {
         if(!validInput()) return;
         expenseType.setName(name.getText());
@@ -115,13 +115,6 @@ public class AddEditTagsCtrl {
         color.setValue(javafx.scene.paint.Color.WHITE);
     }
 
-    /**
-     * Sets the title label of the screen.
-     * @param title new title to the screen.
-     */
-    public void setTitle(String title) {
-        this.title.setText(title);
-    }
     private void alert(String content) {
         var alert = new Alert(Alert.AlertType.ERROR);
         alert.initModality(Modality.APPLICATION_MODAL);
@@ -137,5 +130,22 @@ public class AddEditTagsCtrl {
         this.expenseType = expenseType;
         name.setText(expenseType.getName());
         color.setValue(Color.web(expenseType.getColor()));
+    }
+    /**
+     * Event handler for pressing a key.
+     *
+     * @param e the key that is pressed
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ENTER:
+                ok();
+                break;
+            case ESCAPE:
+                abort();
+                break;
+            default:
+                break;
+        }
     }
 }

@@ -14,6 +14,7 @@ import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -221,5 +222,23 @@ public class ExpenseTypeCtrl {
      */
     private void updateTag(ExpenseType item) {
         mainCtrl.showUpdateTags(event, item);
+    }
+
+    /**
+     * Event handler for pressing a key.
+     *
+     * @param e the key that is pressed
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ENTER:
+                addTags();
+                break;
+            case ESCAPE:
+                back();
+                break;
+            default:
+                break;
+        }
     }
 }

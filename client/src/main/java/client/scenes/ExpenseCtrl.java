@@ -160,9 +160,6 @@ public class ExpenseCtrl {
      */
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
-            case ENTER:
-                ok();
-                break;
             case ESCAPE:
                 abort();
                 break;
@@ -211,14 +208,9 @@ public class ExpenseCtrl {
                 server.addExpense(expense);
             } else {
                 server.updateExpense(expense);
-                // do nothing for now
             }
         } catch (Exception err) {
-
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(err.getMessage());
-            alert.showAndWait();
+            alert(err.getMessage());
             return;
         }
 

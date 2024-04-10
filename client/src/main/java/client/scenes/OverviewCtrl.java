@@ -160,8 +160,7 @@ public class OverviewCtrl {
                 HBox.setHgrow(region, Priority.ALWAYS);
                 Button editButton = new Button();
                 Button deleteButton = new Button();
-                editButton.setOnAction(e -> mainCtrl.showExpense(item.getEvent(),
-                        participantComboBox.getSelectionModel().getSelectedItem(), item));
+                editButton.setOnAction(e -> mainCtrl.showExpense(item.getEvent(), item));
                 deleteButton.setOnAction(e -> deleteExpense(item));
                 styleButton(deleteButton, "Delete expense", "/assets/bin.png");
                 styleButton(editButton, "Edit expense", "/assets/pen-solid.png");
@@ -323,8 +322,7 @@ public class OverviewCtrl {
             alert("At least two participants are required for an expense.");
             return;
         }
-        mainCtrl.showExpense(this.ev, participantComboBox.getSelectionModel().getSelectedItem(),
-                null);
+        mainCtrl.showExpense(this.ev, null);
         refresh();
     }
 
