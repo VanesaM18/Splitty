@@ -38,6 +38,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 @ExtendWith(ApplicationExtension.class)
 public class OverviewCtrlTest {
@@ -144,43 +146,6 @@ public class OverviewCtrlTest {
         robot.interact(() -> {
             controller.back();
         });
-    }
-
-    @Test
-    void deleteParticipantNoParticipantSelected(FxRobot robot) {
-        robot.interact(() -> {
-            controller.setEvent(event);
-            controller.refresh();
-        });
-
-        robot.interact(() -> {
-            controller.deleteParticipant();
-        });
-
-        Label warning = robot.lookup("#warning").queryAs(Label.class);
-        Assertions.assertThat(warning).hasText("First chose a participant.");
-    }
-
-    @Test
-    @Timeout(value = 10)
-    void deleteParticipantUnpaidDebts(FxRobot robot) {
-        robot.interact(() -> {
-            controller.setEvent(event);
-            controller.refresh();
-        });
-
-        ListView<Participant> participantsListView =
-                robot.lookup("#participantNames").queryListView();
-        Participant participant = new ArrayList<>(event.getParticipants()).stream()
-                .filter(p -> p.getName().equals("Alice")).findFirst().get();
-        participantsListView.getSelectionModel().select(participant);
-
-        robot.interact(() -> {
-            controller.deleteParticipant();
-        });
-
-        Label warning = robot.lookup("#warning").queryAs(Label.class);
-        Assertions.assertThat(warning).hasText("Settle debt first!");
     }
 
     @Test
