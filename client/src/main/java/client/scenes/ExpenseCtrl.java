@@ -27,7 +27,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -56,9 +55,6 @@ public class ExpenseCtrl {
 
     @FXML
     private DatePicker date;
-
-    @FXML
-    private Label warning;
 
     @FXML
     private ComboBox<Participant> receiver;
@@ -160,7 +156,6 @@ public class ExpenseCtrl {
      */
     public void abort() {
         clearFields();
-        warning.setText("");
         mainCtrl.showOverviewEvent(null);
     }
 
@@ -214,11 +209,9 @@ public class ExpenseCtrl {
             Set<ExpenseType> tags = validTags(new HashSet<>(selectedTypesObs));
             expense.setTags(tags);
         } catch (Exception ex) {
-            warning.setText(ex.getMessage());
+            alert(ex.getMessage());
             return;
         }
-
-        warning.setText("");
         try {
             if (newExpense) {
                 server.addExpense(expense);
@@ -459,5 +452,11 @@ public class ExpenseCtrl {
         } else {
             System.out.println("Image URL is null. Check the path to the image file.");
         }
+    }
+    private void alert(String content) {
+        var alert = new Alert(Alert.AlertType.ERROR);
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }
