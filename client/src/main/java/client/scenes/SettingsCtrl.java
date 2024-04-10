@@ -89,7 +89,8 @@ public class SettingsCtrl {
 
                 Alert alertSecond = new Alert(Alert.AlertType.WARNING);
                 alertSecond.setTitle("Restart");
-                alertSecond.setHeaderText("You should restart the client for changes to take place!");
+                alertSecond.setHeaderText("You should restart " +
+                    "the client for changes to take place!");
                 alertSecond.showAndWait();
 
                 goBack();
