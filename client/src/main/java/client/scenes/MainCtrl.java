@@ -357,7 +357,6 @@ public class MainCtrl {
      */
     public void showAddTags(Event event) {
         addEditTagsCtrl.setEvent(event);
-        addEditTagsCtrl.setTitle("Add expense type");
         primaryStage.setTitle("Add expense type");
         primaryStage.setScene(addEditTags);
     }
@@ -370,7 +369,6 @@ public class MainCtrl {
      */
     public void showUpdateTags(Event event, ExpenseType type) {
         addEditTagsCtrl.setEvent(event);
-        addEditTagsCtrl.setTitle("Update expense type");
         addEditTagsCtrl.setExpenseType(type);
         primaryStage.setTitle("Update expense type");
         primaryStage.setScene(addEditTags);
