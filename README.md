@@ -8,7 +8,7 @@ To run Splitty, the following things are required:
 - JavaFX 22 (note: 22, NOT 21!)
   - This should be downloaded automatically by gradle when running using the instructions provided below.
 ## :runner: Run instructions
-> [!TIP]
+> **TIP**:
 > Before trying to run Splitty please make sure you have all the requirements installed.
 > If you are having trouble running the project using these instructions, please checkout the [troubleshooting](#troubleshooting) section. Also make sure you fulfill all the [requirements](#requirements).
 
