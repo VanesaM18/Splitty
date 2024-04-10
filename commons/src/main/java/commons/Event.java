@@ -373,55 +373,14 @@ public class Event {
      * @param debtors an empty map of debtors
      * @param creditors an empty map of creditors
      */
-    private static void populateDebts(List<Map.Entry<Participant, Long>> sortedEntries,
-                                      Map<Participant, Long> debtors,
-                                      Map<Participant, Long> creditors) {
+    static void populateDebts(List<Map.Entry<Participant, Long>> sortedEntries,
+                              Map<Participant, Long> debtors,
+                              Map<Participant, Long> creditors) {
         for (Map.Entry<Participant, Long> entry : sortedEntries) {
             if (entry.getValue() < 0) {
                 debtors.put(entry.getKey(), entry.getValue());
             } else if (entry.getValue() > 0) {
                 creditors.put(entry.getKey(), entry.getValue());
-            }
-        }
-    }
-
-    /**
-     * populates debtor and creditor maps based on sorted balances.
-     * This is similar to populate debts a helper method for final calculations.
-     * @param debtors the populated list of debtors
-     * @param creditors the populated list of creditors
-     * @param totalDebts2 an empty arraylist of debts
-     */
-    private static void mappingDebts(Map<Participant, Long> debtors, Map<Participant,
-            Long> creditors, List<Debt> totalDebts2) {
-        // Iterate over debtors and creditors to settle debts
-        for (Map.Entry<Participant, Long> debtorEntry : debtors.entrySet()) {
-            Participant debtor = debtorEntry.getKey();
-            long debtorBalance = debtorEntry.getValue();
-
-            Iterator<Map.Entry<Participant, Long>> iteratorCreditors
-                    = creditors.entrySet().iterator();
-
-            while (iteratorCreditors.hasNext() && debtorBalance < 0) {
-                Map.Entry<Participant, Long> creditorEntry = iteratorCreditors.next();
-                Participant creditor = creditorEntry.getKey();
-                long creditorBalance = creditorEntry.getValue();
-
-                long amountToPay = Math.min(-debtorBalance, creditorBalance);
-                totalDebts2.add(new Debt(debtor, new Monetary(amountToPay), creditor));
-
-                // Update debtor and creditor balances
-                debtorBalance += amountToPay;
-                creditorBalance -= amountToPay;
-
-                // Update balances in the respective maps
-                debtorEntry.setValue(debtorBalance);
-                creditors.put(creditor, creditorBalance);
-
-                // Remove creditor if they no longer need to receive any payments
-                if (creditorBalance <= 0) {
-                    iteratorCreditors.remove(); // Remove creditor from the iterator
-                }
             }
         }
     }
