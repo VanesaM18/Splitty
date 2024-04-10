@@ -14,10 +14,7 @@ import jakarta.websocket.server.ServerEndpoint;
 import server.api.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Component
 @ServerEndpoint(value = "/ws", configurator = ContextConfigurator.class)
@@ -41,6 +38,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
      */
     public WebSocketHandler() {
         this.objectMapper.registerModule(new JavaTimeModule());
+    }
+
+    /**
+     * Returns all session, for testing purposes
+     * @return the session array
+     */
+    public static Collection<Object> getSessions() {
+        return Collections.singleton(sessions);
     }
 
 
@@ -444,7 +449,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private void handleParticipantsApiByID(WebSocketSession session,
             WebSocketMessage request) throws Exception {
         if ("DELETE".equals(request.getMethod())) {
-            long participantId = (Long) request.getData();
+            long participantId = objectMapper.convertValue(request.getData(), Long.class);
             ResponseEntity<String> response = participantController.delete(participantId);
             this.returnResult(session, request, response.getBody());
         } else if ("PUT".equals(request.getMethod())) {
@@ -456,7 +461,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     oldParticipant.getId(), newParticipant);
             this.returnResult(session, request, response.getBody());
         } else if ("GET".equals(request.getMethod())) {
-            long id = (long) request.getData();
+            long id = objectMapper.convertValue(request.getData(), Long.class);
             ResponseEntity<Participant> response = participantController.getById(id);
             this.returnResult(session, request, response.getBody());
         }
