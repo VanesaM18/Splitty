@@ -6,6 +6,7 @@ import java.util.Currency;
 import java.util.HashSet;
 import java.util.Set;
 
+import client.utils.AlertBuilder;
 import com.google.inject.Inject;
 
 import client.utils.ServerUtils;
@@ -209,7 +210,11 @@ public class ExpenseCtrl {
             Set<ExpenseType> tags = validTags(new HashSet<>(selectedTypesObs));
             expense.setTags(tags);
         } catch (Exception ex) {
-            alert(ex.getMessage());
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey(ex.getMessage())
+                    .show();
             return;
         }
         try {
@@ -220,11 +225,11 @@ public class ExpenseCtrl {
                 // do nothing for now
             }
         } catch (Exception err) {
-
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(err.getMessage());
-            alert.showAndWait();
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey(err.getMessage())
+                    .show();
             return;
         }
 

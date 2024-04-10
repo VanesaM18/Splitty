@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.ConfigLoader;
+import client.utils.AlertBuilder;
 import client.utils.DomainValidator;
 import client.utils.SceneEnum;
 import client.utils.ServerUtils;
@@ -73,12 +74,13 @@ public class AppConfigurationCtrl {
         String url = urlTextField.getText();
 
         Supplier<Boolean> onSuccessSupplier = () -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirmation");
-            alert.setHeaderText("Are you sure you want to proceed?");
-            alert.setContentText("Do you want to save these settings and proceed?");
+            Optional<ButtonType> result = new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.CONFIRMATION)
+                    .setTitleKey("confirmation_title")
+                    .setHeaderKey("confirmation_header")
+                    .setContentKey("content_save_settings")
+                    .show();
 
-            Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 String selectedLanguage = comboBox.getValue();//choiceBox.getValue();
                 server.setServerUrl(url);

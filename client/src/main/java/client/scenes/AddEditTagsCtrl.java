@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.AlertBuilder;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
@@ -77,21 +78,37 @@ public class AddEditTagsCtrl {
 
     private boolean validInput() {
         if(name.getText().equals("")) {
-            alert("Name cannot be empty.");
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey("content_tag_name")
+                    .show();
             return false;
         }
         if (color.getValue().equals(javafx.scene.paint.Color.WHITE)) {
-            alert("Background color cannot be white.");
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey("content_tag_color")
+                    .show();
             return false;
         }
         String tagName = name.getText();
         for (ExpenseType tag : event.getTags()) {
             if(tag.getName().equals(tagName) && !tag.equals(expenseType)) {
-                alert("Expense with the same name already exists.");
+                new AlertBuilder(mainCtrl)
+                        .setAlertType(Alert.AlertType.ERROR)
+                        .setModality(Modality.APPLICATION_MODAL)
+                        .setContentKey("content_tag_expense_name")
+                        .show();
                 return false;
             }
             if(tag.getColor().equals(color.getValue().toString()) && !tag.equals(expenseType)) {
-                alert("Expense with the same background color already exists.");
+                new AlertBuilder(mainCtrl)
+                        .setAlertType(Alert.AlertType.ERROR)
+                        .setModality(Modality.APPLICATION_MODAL)
+                        .setContentKey("content_tag_expense_color")
+                        .show();
                 return false;
             }
         }
