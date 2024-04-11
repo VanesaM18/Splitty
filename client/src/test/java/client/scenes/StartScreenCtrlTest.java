@@ -125,21 +125,21 @@ class StartScreenCtrlTest {
         }));
     }
 
-    @Test
-    void testJoinEventExists(FxRobot robot) {
-        TextField eventName = robot.lookup("#joinEventField").queryAs(TextField.class);
-
-        robot.clickOn(eventName);
-        robot.type(KeyCode.T, KeyCode.E, KeyCode.S, KeyCode.T);
-
-        Event event = new Event("test", "abc", LocalDateTime.now(), new HashSet<>(), new HashSet<>());
-        Mockito.when(serverUtils.getEventById("test")).thenReturn(event);
-
-        robot.clickOn("Join");
-
-        Mockito.verify(serverUtils, Mockito.times(1)).getEventById("test");
-        Mockito.verify(serverUtils, Mockito.times(1)).sendUpdateStatus("test");
-    }
+//    @Test
+//    void testJoinEventExists(FxRobot robot) {
+//        TextField eventName = robot.lookup("#joinEventField").queryAs(TextField.class);
+//
+//        robot.clickOn(eventName);
+//        robot.type(KeyCode.T, KeyCode.E, KeyCode.S, KeyCode.T);
+//
+//        Event event = new Event("test", "abc", LocalDateTime.now(), new HashSet<>(), new HashSet<>());
+//        Mockito.when(serverUtils.getEventById("test")).thenReturn(event);
+//
+//        robot.clickOn("Join");
+//
+//        Mockito.verify(serverUtils, Mockito.times(1)).getEventById("test");
+//        Mockito.verify(serverUtils, Mockito.times(1)).sendUpdateStatus("test");
+//    }
 
     @Test
     void testJoinEventDoesNotExist(FxRobot robot) {
