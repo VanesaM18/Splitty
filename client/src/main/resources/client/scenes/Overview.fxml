@@ -16,15 +16,16 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OverviewCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OverviewCtrl">
    <children>
-      <VBox spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+      <VBox layoutY="26.0" prefHeight="573.0" prefWidth="442.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
          <children>
+            <HBox alignment="TOP_RIGHT" />
             <HBox alignment="CENTER_LEFT" prefHeight="46.0" prefWidth="422.0" spacing="10.0">
                <children>
-                  <Label fx:id="title" prefHeight="27.0" prefWidth="220.0" text="%event_name">
+                  <Label fx:id="title" prefHeight="46.0" text="%event_name">
                      <font>
-                        <Font name="System Bold" size="16.0" />
+                        <Font name="System Bold" size="31.0" />
                      </font>
                   </Label>
                   <Button fx:id="editTitleButton" mnemonicParsing="false" onAction="#editTitle">
@@ -44,7 +45,7 @@
                <children>
                   <Label prefHeight="25.0" prefWidth="128.0" text="%participants">
                      <font>
-                        <Font name="System Bold" size="15.0" />
+                        <Font name="System Bold" size="20.0" />
                      </font>
                   </Label>
                   <Region prefHeight="200.0" prefWidth="10.0" />
@@ -83,7 +84,7 @@
             <Region prefHeight="5.0" />
             <Label prefHeight="27.0" prefWidth="101.0" text="%expenses">
                <font>
-                  <Font name="System Bold" size="15.0" />
+                  <Font name="System Bold" size="20.0" />
                </font>
             </Label>
             <HBox>
@@ -140,10 +141,7 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
       </VBox>
-      <TitledPane fx:id="languageNavigator" blendMode="SRC_ATOP" expanded="false" layoutX="2.0" layoutY="-1.0" maxHeight="400.0" maxWidth="200.0" minHeight="29.0" prefHeight="29.0" prefWidth="116.0">
-         <padding>
-            <Insets left="5" right="5" />
-         </padding>
+      <TitledPane fx:id="languageNavigator" alignment="CENTER" blendMode="SRC_ATOP" expanded="false" layoutX="341.0" layoutY="2.0" maxHeight="400.0" maxWidth="200.0" minHeight="15.0" prefHeight="15.0" prefWidth="20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       </TitledPane>
    </children>
 </AnchorPane>

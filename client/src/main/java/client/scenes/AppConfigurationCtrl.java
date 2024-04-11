@@ -80,7 +80,7 @@ public class AppConfigurationCtrl {
 
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                String selectedLanguage = comboBox.getValue();//choiceBox.getValue();
+                String selectedLanguage = comboBox.getValue();
                 server.setServerUrl(url);
                 configLoader.updateProperty("address", url);
                 var sceneManager = mainCtrl.getSceneManager();

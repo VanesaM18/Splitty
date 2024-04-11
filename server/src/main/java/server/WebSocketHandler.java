@@ -14,16 +14,13 @@ import jakarta.websocket.server.ServerEndpoint;
 import server.api.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Component
 @ServerEndpoint(value = "/ws", configurator = ContextConfigurator.class)
 public class WebSocketHandler extends TextWebSocketHandler {
     private static final HashMap<WebSocketSession, String> connectionToEvent = new HashMap<>();
-    private static final List<WebSocketSession> sessions = new ArrayList<>();
+    private static List<WebSocketSession> sessions = new ArrayList<>();
     private final ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private AdminController adminController;
@@ -41,6 +38,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
      */
     public WebSocketHandler() {
         this.objectMapper.registerModule(new JavaTimeModule());
+    }
+
+    /**
+     * Returns all session, for testing purposes
+     * @return the session array
+     */
+    public static Collection<Object> getSessions() {
+        return Collections.singleton(sessions);
     }
 
 
@@ -260,42 +265,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    /**
-     * Handles the event specific to /api/event
-     * 
-     * @param session the channel used to communicate
-     * @param request the parsed request
-     * @throws Exception if the message can't be parsed
-     */
-    // private void handleEventsApi(WebSocketSession session,
-    // WebSocketMessage request) throws Exception {
-    // switch (request.getEndpoint()) {
-    // case "api/events" -> {
-    // if ("POST".equals(request.getMethod())) {
-    // Event event = objectMapper.convertValue(request.getData(), Event.class);
-    // ResponseEntity<Event> savedEvent = eventController.add(event);
-    // this.returnResult(session, request, savedEvent.getBody());
-    // } else if ("PUT".equals(request.getMethod())) {
-    // Event event = objectMapper.convertValue(request.getData(), Event.class);
-    // ResponseEntity<Event> savedEvent =
-    // eventController.update(event.getInviteCode(), event);
-    // this.returnResult(session, request, savedEvent.getBody());
-    // }
-    // }
-    // case "api/events/id" -> {
-    // if ("GET".equals(request.getMethod())) {
-    // List<Object> parameters = request.getParameters();
-    // String id = (String) parameters.get(0);
-    // ResponseEntity<Event> event = eventController.getById(id);
-    // this.returnResult(session, request, event.getBody());
-    // }
-    // }
-    // case "api/events/jsonDump" -> {
-    // handleJsonDumpApi(session, request);
-    // }
-    // }
-    // }
-
     private void handleEventsApi(WebSocketSession session,
             WebSocketMessage request) throws Exception {
         String endpoint = request.getEndpoint();
@@ -444,7 +413,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private void handleParticipantsApiByID(WebSocketSession session,
             WebSocketMessage request) throws Exception {
         if ("DELETE".equals(request.getMethod())) {
-            long participantId = (Long) request.getData();
+            long participantId = objectMapper.convertValue(request.getData(), Long.class);
             ResponseEntity<String> response = participantController.delete(participantId);
             this.returnResult(session, request, response.getBody());
         } else if ("PUT".equals(request.getMethod())) {
@@ -456,7 +425,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     oldParticipant.getId(), newParticipant);
             this.returnResult(session, request, response.getBody());
         } else if ("GET".equals(request.getMethod())) {
-            long id = (long) request.getData();
+            long id = objectMapper.convertValue(request.getData(), Long.class);
             ResponseEntity<Participant> response = participantController.getById(id);
             this.returnResult(session, request, response.getBody());
         }
@@ -477,5 +446,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
         messageBack.setId(request.getId());
         messageBack.setData(obj);
         session.sendMessage(new TextMessage(objectMapper.writeValueAsString(messageBack)));
+    }
+
+    /**
+     * Sets a new value for session
+     * @param ses session
+     */
+    public void setSession(List<WebSocketSession> ses) {
+        sessions = ses;
     }
 }
