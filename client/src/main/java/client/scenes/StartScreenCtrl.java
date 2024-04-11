@@ -106,7 +106,7 @@ public class StartScreenCtrl implements Initializable {
                             deleteButton.setStyle("-fx-background-color: transparent; " +
                                 "-fx-padding: 0; -fx-border: none;");
                             joinButton.setOnMouseEntered(event ->
-                                    joinButton.setCursor(Cursor.HAND));
+                                joinButton.setCursor(Cursor.HAND));
                             joinButton.setOnMouseExited(event ->
                                 joinButton.setCursor(Cursor.DEFAULT));
                             deleteButton.setOnMouseEntered(event ->

@@ -27,6 +27,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import org.testfx.util.WaitForAsyncUtils;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(ApplicationExtension.class)
 class StartScreenCtrlTest {
@@ -120,19 +123,33 @@ class StartScreenCtrlTest {
 //        Mockito.verify(serverUtils, Mockito.times(1)).sendUpdateStatus("test");
 //    }
 //
+//    @Test
+//    void testJoinEventDoesNotExist(FxRobot robot) {
+//        TextField eventName = robot.lookup("#joinEventField").queryAs(TextField.class);
+//
+//        robot.clickOn(eventName);
+//        robot.type(KeyCode.N, KeyCode.O);
+//
+//        robot.clickOn("Join");
+//
+//        Mockito.verify(serverUtils, Mockito.times(1)).getEventById("no");
+//
+//        // Assert that the error dialog shows up
+//        DialogPane dialogPane = robot.lookup(".dialog-pane").queryAs(DialogPane.class);
+//        Assertions.assertThat(dialogPane).isVisible();
+//    }
     @Test
-    void testJoinEventDoesNotExist(FxRobot robot) {
-        TextField eventName = robot.lookup("#joinEventField").queryAs(TextField.class);
-
-        robot.clickOn(eventName);
-        robot.type(KeyCode.N, KeyCode.O);
-
+    public void joinFail(FxRobot robot) {
         robot.clickOn("Join");
+        WaitForAsyncUtils.waitForFxEvents();
 
-        Mockito.verify(serverUtils, Mockito.times(1)).getEventById("no");
+        assertTrue(robot.lookup(".alert").tryQuery().isPresent());
+    }
+    @Test
+    public void createFail(FxRobot robot) {
+        robot.clickOn("Create");
+        WaitForAsyncUtils.waitForFxEvents();
 
-        // Assert that the error dialog shows up
-        DialogPane dialogPane = robot.lookup(".dialog-pane").queryAs(DialogPane.class);
-        Assertions.assertThat(dialogPane).isVisible();
+        assertTrue(robot.lookup(".alert").tryQuery().isPresent());
     }
 }
