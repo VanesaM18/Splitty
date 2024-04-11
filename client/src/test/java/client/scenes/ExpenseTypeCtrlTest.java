@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
+
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -90,6 +93,16 @@ class ExpenseTypeCtrlTest {
     @Test
     void backButtonGoesBack(FxRobot robot) {
         robot.clickOn("Save changes");
+
+        Mockito.verify(mainCtrl, Mockito.times(1)).showOverviewEvent(Mockito.any());
+    }
+
+    @Test
+    void backButtonGoesBackEscape(FxRobot robot) {
+        robot.interact(() -> {
+            KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ESCAPE, false, false, false, false);
+            controller.keyPressed(event);
+        });
 
         Mockito.verify(mainCtrl, Mockito.times(1)).showOverviewEvent(Mockito.any());
     }

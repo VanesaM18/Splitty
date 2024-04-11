@@ -157,7 +157,7 @@ public class LanguageProcessor {
         imageView.setFitHeight(23);
         imageView.setPreserveRatio(true);
         titledPane.setGraphic(imageView);
-        VBox languageButtons = new VBox(20);
+        VBox languageButtons = new VBox(10);
         Button[] languageArray = toArray(languages);
         for (Button button : languageArray) {
             if(button.getText().contains(currentLanguage.getText())) {

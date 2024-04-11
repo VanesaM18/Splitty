@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import client.utils.language.LanguageProcessor;
+import javafx.scene.input.KeyEvent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -98,6 +99,26 @@ class StartScreenCtrlTest {
 
         robot.clickOn("Create");
 
+        // We only want to verify the name, so use argThat.
+        Mockito.verify(serverUtils, Mockito.times(1)).addEvent(Mockito.argThat((ev) -> {
+            return ev.getName().equals(event.getName());
+        }));
+    }
+
+    @Test
+    void testCreateEventEnter(FxRobot robot) {
+        TextField eventName = robot.lookup("#createEventField").queryAs(TextField.class);
+
+        robot.clickOn(eventName);
+        robot.type(KeyCode.A, KeyCode.B, KeyCode.C);
+
+        Event event = new Event("testCode", "abc", LocalDateTime.now(), new HashSet<>(), new HashSet<>());
+        Mockito.when(serverUtils.addEvent(Mockito.any())).thenReturn(event);
+
+        robot.interact(() -> {
+            KeyEvent e = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ENTER, false, false, false, false);
+            controller.keyPressed(e);
+        });
         // We only want to verify the name, so use argThat.
         Mockito.verify(serverUtils, Mockito.times(1)).addEvent(Mockito.argThat((ev) -> {
             return ev.getName().equals(event.getName());

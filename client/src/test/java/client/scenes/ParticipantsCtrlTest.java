@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.BeforeAll;
@@ -133,6 +134,19 @@ public class ParticipantsCtrlTest {
     }
 
     @Test
+    void abortEsc(FxRobot robot) {
+        // We cannot directly intereact with the controller from here, as we must be in a JavaFX
+        // theda to do so. Thus, we use the FxRobot.interact method.
+        // See more: https://github.com/TestFX/TestFX/issues/222
+        robot.interact(() -> {
+            KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ESCAPE, false, false, false, false);
+            controller.keyPressed(event);
+        });
+
+        Mockito.verify(mainCtrl, Mockito.times(1)).showOverviewEvent(null);
+    }
+
+    @Test
     void abort(FxRobot robot) {
         // We cannot directly intereact with the controller from here, as we must be in a JavaFX
         // theda to do so. Thus, we use the FxRobot.interact method.
@@ -185,7 +199,7 @@ public class ParticipantsCtrlTest {
         robot.clickOn(name);
         robot.type(KeyCode.N, KeyCode.A, KeyCode.M, KeyCode.E);
 
-        robot.clickOn("Ok");
+        robot.type(KeyCode.ENTER);
         Participant expectedParticipant = new Participant("name", "", "", "");
 
         Mockito.verify(serverUtils, Mockito.times(1)).addParticipant(expectedParticipant);

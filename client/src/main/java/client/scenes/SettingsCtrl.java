@@ -88,6 +88,12 @@ public class SettingsCtrl {
                 server.setServerUrl(url);
                 configLoader.updateProperty("address", url);
 
+                Alert alertSecond = new Alert(Alert.AlertType.WARNING);
+                alertSecond.setTitle("Restart");
+                alertSecond.setHeaderText("You should restart " +
+                    "the client for changes to take place!");
+                alertSecond.showAndWait();
+
                 goBack();
                 return true;
             }
