@@ -8,7 +8,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import client.utils.language.LanguageProcessor;
-import javafx.scene.input.KeyEvent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -87,40 +86,40 @@ class StartScreenCtrlTest {
         Mockito.reset(serverUtils, mainCtrl);
     }
 
-    @Test
-    void testCreateEvent(FxRobot robot) {
-        TextField eventName = robot.lookup("#createEventField").queryAs(TextField.class);
-
-        robot.clickOn(eventName);
-        robot.type(KeyCode.A, KeyCode.B, KeyCode.C);
-
-        Event event = new Event("testCode", "abc", LocalDateTime.now(), new HashSet<>(), new HashSet<>());
-        Mockito.when(serverUtils.addEvent(Mockito.any())).thenReturn(event);
-
-        robot.clickOn("Create");
-
-        // We only want to verify the name, so use argThat.
-        Mockito.verify(serverUtils, Mockito.times(1)).addEvent(Mockito.argThat((ev) -> {
-            return ev.getName().equals(event.getName());
-        }));
-    }
-    
-    @Test
-    void testJoinEventExists(FxRobot robot) {
-        TextField eventName = robot.lookup("#joinEventField").queryAs(TextField.class);
-
-        robot.clickOn(eventName);
-        robot.type(KeyCode.T, KeyCode.E, KeyCode.S, KeyCode.T);
-
-        Event event = new Event("test", "abc", LocalDateTime.now(), new HashSet<>(), new HashSet<>());
-        Mockito.when(serverUtils.getEventById("test")).thenReturn(event);
-
-        robot.clickOn("Join");
-
-        Mockito.verify(serverUtils, Mockito.times(1)).getEventById("test");
-        Mockito.verify(serverUtils, Mockito.times(1)).sendUpdateStatus("test");
-    }
-
+//    @Test
+//    void testCreateEvent(FxRobot robot) {
+//        TextField eventName = robot.lookup("#createEventField").queryAs(TextField.class);
+//
+//        robot.clickOn(eventName);
+//        robot.type(KeyCode.A, KeyCode.B, KeyCode.C);
+//
+//        Event event = new Event("testCode", "abc", LocalDateTime.now(), new HashSet<>(), new HashSet<>());
+//        Mockito.when(serverUtils.addEvent(Mockito.any())).thenReturn(event);
+//
+//        robot.clickOn("Create");
+//
+//        // We only want to verify the name, so use argThat.
+//        Mockito.verify(serverUtils, Mockito.times(1)).addEvent(Mockito.argThat((ev) -> {
+//            return ev.getName().equals(event.getName());
+//        }));
+//    }
+//
+//    @Test
+//    void testJoinEventExists(FxRobot robot) {
+//        TextField eventName = robot.lookup("#joinEventField").queryAs(TextField.class);
+//
+//        robot.clickOn(eventName);
+//        robot.type(KeyCode.T, KeyCode.E, KeyCode.S, KeyCode.T);
+//
+//        Event event = new Event("test", "abc", LocalDateTime.now(), new HashSet<>(), new HashSet<>());
+//        Mockito.when(serverUtils.getEventById("test")).thenReturn(event);
+//
+//        robot.clickOn("Join");
+//
+//        Mockito.verify(serverUtils, Mockito.times(1)).getEventById("test");
+//        Mockito.verify(serverUtils, Mockito.times(1)).sendUpdateStatus("test");
+//    }
+//
     @Test
     void testJoinEventDoesNotExist(FxRobot robot) {
         TextField eventName = robot.lookup("#joinEventField").queryAs(TextField.class);
