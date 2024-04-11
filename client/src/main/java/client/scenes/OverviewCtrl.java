@@ -484,6 +484,12 @@ public class OverviewCtrl {
             case ESCAPE:
                 back();
                 break;
+            case S:
+                if(e.isControlDown()) showStatistics();
+                break;
+            case E:
+                if(e.isControlDown()) addExpense();
+                break;
             default:
                 break;
         }

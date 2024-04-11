@@ -3,16 +3,12 @@ package client.scenes;
 import client.utils.ServerUtils;
 import com.google.inject.Injector;
 import commons.Event;
-import commons.ExpenseType;
 import commons.Participant;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +30,6 @@ import java.util.Set;
 
 import static com.google.inject.Guice.createInjector;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(ApplicationExtension.class)
 public class ParticipantsCtrlTest {
