@@ -104,42 +104,22 @@ class StartScreenCtrlTest {
             return ev.getName().equals(event.getName());
         }));
     }
-
+    
     @Test
-    void testCreateEventEnter(FxRobot robot) {
-        TextField eventName = robot.lookup("#createEventField").queryAs(TextField.class);
+    void testJoinEventExists(FxRobot robot) {
+        TextField eventName = robot.lookup("#joinEventField").queryAs(TextField.class);
 
         robot.clickOn(eventName);
-        robot.type(KeyCode.A, KeyCode.B, KeyCode.C);
+        robot.type(KeyCode.T, KeyCode.E, KeyCode.S, KeyCode.T);
 
-        Event event = new Event("testCode", "abc", LocalDateTime.now(), new HashSet<>(), new HashSet<>());
-        Mockito.when(serverUtils.addEvent(Mockito.any())).thenReturn(event);
+        Event event = new Event("test", "abc", LocalDateTime.now(), new HashSet<>(), new HashSet<>());
+        Mockito.when(serverUtils.getEventById("test")).thenReturn(event);
 
-        robot.interact(() -> {
-            KeyEvent e = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ENTER, false, false, false, false);
-            controller.keyPressed(e);
-        });
-        // We only want to verify the name, so use argThat.
-        Mockito.verify(serverUtils, Mockito.times(1)).addEvent(Mockito.argThat((ev) -> {
-            return ev.getName().equals(event.getName());
-        }));
+        robot.clickOn("Join");
+
+        Mockito.verify(serverUtils, Mockito.times(1)).getEventById("test");
+        Mockito.verify(serverUtils, Mockito.times(1)).sendUpdateStatus("test");
     }
-
-//    @Test
-//    void testJoinEventExists(FxRobot robot) {
-//        TextField eventName = robot.lookup("#joinEventField").queryAs(TextField.class);
-//
-//        robot.clickOn(eventName);
-//        robot.type(KeyCode.T, KeyCode.E, KeyCode.S, KeyCode.T);
-//
-//        Event event = new Event("test", "abc", LocalDateTime.now(), new HashSet<>(), new HashSet<>());
-//        Mockito.when(serverUtils.getEventById("test")).thenReturn(event);
-//
-//        robot.clickOn("Join");
-//
-//        Mockito.verify(serverUtils, Mockito.times(1)).getEventById("test");
-//        Mockito.verify(serverUtils, Mockito.times(1)).sendUpdateStatus("test");
-//    }
 
     @Test
     void testJoinEventDoesNotExist(FxRobot robot) {
