@@ -45,14 +45,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(ApplicationExtension.class)
 public class OverviewCtrlTest {
-    // private final Event event =
-    // new Event("testCode", "name", LocalDateTime.now(), Set.of(), new HashSet<>());
-    // private final List<Participant> participants = List.of(new Participant("Alice", "", "", ""),
-    // new Participant("Bob", "", "", ""), new Participant("Charlie", "", "", ""),
-    // new Participant("David", "", "", ""), new Participant("Eve", "", "", ""));
-    // private final Set<Expense> expenses =
-    // Set.of(new Expense(event, "McDonald's", participants.get(0), new Monetary(23),
-    // LocalDate.now(), Set.of(participants.get(0), participants.get(1))));
 
     private Event event;
 

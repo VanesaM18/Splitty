@@ -279,7 +279,11 @@ public class StartScreenCtrl implements Initializable {
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
             case ENTER:
-                createEvent();
+                if (joinEventField.isFocused()) {
+                    joinEvent();
+                } else if (createEventField.isFocused()) {
+                    createEvent();
+                }
                 break;
             default:
                 break;
