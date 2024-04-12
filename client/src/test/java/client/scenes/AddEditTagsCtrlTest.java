@@ -8,6 +8,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -106,6 +107,16 @@ public class AddEditTagsCtrlTest {
     }
 
     @Test
+    void abortButtonGoesBackEscape(FxRobot robot) {
+        robot.interact(() -> {
+            KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ESCAPE, false, false, false, false);
+            controller.keyPressed(event);
+        });
+
+        Mockito.verify(mainCtrl, Mockito.times(1)).showExpenseTypes(event);
+    }
+
+    @Test
     void ok(FxRobot robot) {
         TextField name = robot.lookup("#name").queryAs(TextField.class);
         ColorPicker color = robot.lookup("#color").queryAs(ColorPicker.class);
@@ -120,6 +131,30 @@ public class AddEditTagsCtrlTest {
 
 
         robot.clickOn("Ok");
+        ExpenseType expectedTag = new ExpenseType("name", "#FF0000", event);
+
+        Mockito.verify(serverUtils, Mockito.times(1)).addExpenseType(expectedTag);
+    }
+
+    @Test
+    void okEnter(FxRobot robot) {
+        TextField name = robot.lookup("#name").queryAs(TextField.class);
+        ColorPicker color = robot.lookup("#color").queryAs(ColorPicker.class);
+
+        robot.clickOn(name);
+        robot.type(KeyCode.N, KeyCode.A, KeyCode.M, KeyCode.E);
+
+        robot.interact(() -> {
+            // Set the value of the ColorPicker to the desired color
+            color.setValue(Color.RED); // Set your desired color here
+        });
+
+
+        robot.interact(() -> {
+            KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ENTER, false, false, false, false);
+            controller.keyPressed(event);
+        });
+
         ExpenseType expectedTag = new ExpenseType("name", "#FF0000", event);
 
         Mockito.verify(serverUtils, Mockito.times(1)).addExpenseType(expectedTag);

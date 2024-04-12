@@ -7,6 +7,7 @@ import commons.ExpenseType;
 import javafx.fxml.FXML;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 
@@ -129,5 +130,22 @@ public class AddEditTagsCtrl {
         this.expenseType = expenseType;
         name.setText(expenseType.getName());
         color.setValue(Color.web(expenseType.getColor()));
+    }
+    /**
+     * Event handler for pressing a key.
+     *
+     * @param e the key that is pressed
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ENTER:
+                ok();
+                break;
+            case ESCAPE:
+                abort();
+                break;
+            default:
+                break;
+        }
     }
 }

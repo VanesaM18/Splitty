@@ -9,6 +9,7 @@ import commons.Admin;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 
 import java.util.Objects;
@@ -76,5 +77,23 @@ public class LoginCtrl {
      */
     public void back() {
         mainCtrl.getSceneManager().goBack();
+    }
+
+    /**
+     * Event handler for pressing a key.
+     *
+     * @param e the key that is pressed
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ENTER:
+                logIn();
+                break;
+            case ESCAPE:
+                back();
+                break;
+            default:
+                break;
+        }
     }
 }

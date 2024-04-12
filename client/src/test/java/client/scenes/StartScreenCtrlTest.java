@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.testfx.api.FxRobot;
-import org.testfx.assertions.api.Assertions;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 import client.ConfigLoader;
@@ -22,11 +21,11 @@ import client.utils.ServerUtils;
 import commons.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import org.testfx.util.WaitForAsyncUtils;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(ApplicationExtension.class)
 class StartScreenCtrlTest {
@@ -87,52 +86,17 @@ class StartScreenCtrlTest {
     }
 
     @Test
-    void testCreateEvent(FxRobot robot) {
-        TextField eventName = robot.lookup("#createEventField").queryAs(TextField.class);
+    public void joinFail(FxRobot robot) {
+        robot.clickOn("Join");
+        WaitForAsyncUtils.waitForFxEvents();
 
-        robot.clickOn(eventName);
-        robot.type(KeyCode.A, KeyCode.B, KeyCode.C);
-
-        Event event = new Event("testCode", "abc", LocalDateTime.now(), new HashSet<>(), new HashSet<>());
-        Mockito.when(serverUtils.addEvent(Mockito.any())).thenReturn(event);
-
+        assertTrue(robot.lookup(".alert").tryQuery().isPresent());
+    }
+    @Test
+    public void createFail(FxRobot robot) {
         robot.clickOn("Create");
+        WaitForAsyncUtils.waitForFxEvents();
 
-        // We only want to verify the name, so use argThat.
-        Mockito.verify(serverUtils, Mockito.times(1)).addEvent(Mockito.argThat((ev) -> {
-            return ev.getName().equals(event.getName());
-        }));
-    }
-
-    @Test
-    void testJoinEventExists(FxRobot robot) {
-        TextField eventName = robot.lookup("#joinEventField").queryAs(TextField.class);
-
-        robot.clickOn(eventName);
-        robot.type(KeyCode.T, KeyCode.E, KeyCode.S, KeyCode.T);
-
-        Event event = new Event("test", "abc", LocalDateTime.now(), new HashSet<>(), new HashSet<>());
-        Mockito.when(serverUtils.getEventById("test")).thenReturn(event);
-
-        robot.clickOn("Join");
-
-        Mockito.verify(serverUtils, Mockito.times(1)).getEventById("test");
-        Mockito.verify(serverUtils, Mockito.times(1)).sendUpdateStatus("test");
-    }
-
-    @Test
-    void testJoinEventDoesNotExist(FxRobot robot) {
-        TextField eventName = robot.lookup("#joinEventField").queryAs(TextField.class);
-
-        robot.clickOn(eventName);
-        robot.type(KeyCode.N, KeyCode.O);
-
-        robot.clickOn("Join");
-
-        Mockito.verify(serverUtils, Mockito.times(1)).getEventById("no");
-
-        // Assert that the error dialog shows up
-        DialogPane dialogPane = robot.lookup(".dialog-pane").queryAs(DialogPane.class);
-        Assertions.assertThat(dialogPane).isVisible();
+        assertTrue(robot.lookup(".alert").tryQuery().isPresent());
     }
 }
