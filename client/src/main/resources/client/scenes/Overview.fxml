@@ -18,7 +18,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OverviewCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OverviewCtrl">
    <children>
       <VBox layoutY="26.0" prefHeight="573.0" prefWidth="442.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
          <children>
@@ -45,7 +45,7 @@
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="39.0" prefWidth="422.0">
                <children>
-                  <Label prefHeight="25.0" prefWidth="128.0" text="%participants">
+                  <Label prefHeight="25.0" text="%participants">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>
@@ -84,7 +84,7 @@
             </HBox>
             <ListView fx:id="participantNames" minHeight="-Infinity" orientation="HORIZONTAL" prefHeight="50.0" prefWidth="421.0" />
             <Region prefHeight="5.0" />
-            <Label prefHeight="27.0" prefWidth="101.0" text="%expenses">
+            <Label prefHeight="27.0" text="%expenses">
                <font>
                   <Font name="System Bold" size="20.0" />
                </font>
@@ -127,12 +127,10 @@
                   </Tab>
                </tabs>
             </TabPane>
-            <HBox>
+            <HBox spacing="5.0">
                <children>
                   <Button mnemonicParsing="false" onAction="#back" prefHeight="30.0" text="%back" />
-                  <Region prefHeight="31.0" prefWidth="18.0" />
                   <Region HBox.hgrow="ALWAYS" />
-                  <Region prefHeight="30.0" prefWidth="15.0" />
                   <Button mnemonicParsing="false" onAction="#showStatistics" prefHeight="31.0" text="%statistics" />
                   <Button mnemonicParsing="false" onAction="#showTags" prefHeight="31.0" text="%see_tags" />
                   <Button mnemonicParsing="false" onAction="#settleDebt" prefHeight="30.0" text="%settle_debts" />
