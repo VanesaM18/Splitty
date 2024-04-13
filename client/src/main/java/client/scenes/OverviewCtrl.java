@@ -100,6 +100,7 @@ public class OverviewCtrl {
      * Method to refresh the current view.
      */
     public void refresh() {
+        this.resourceManager = new ResourceManager(mainCtrl);
         if (ev == null) {
             return;
         }
@@ -266,8 +267,8 @@ public class OverviewCtrl {
             var name = selectedItem.getName();
             String from = resourceManager.getStringForKey("content_from");
             String including = resourceManager.getStringForKey("content_including");
-            tabFrom.setText(from + " ".concat(name));
-            tabIncluding.setText(including + " ".concat(name));
+            tabFrom.setText(from + " " + name);
+            tabIncluding.setText(including + " " + name);
         } else {
             String from = resourceManager.getStringForKey("tab_from");
             String including = resourceManager.getStringForKey("tab_including");
@@ -371,10 +372,13 @@ public class OverviewCtrl {
      * entered is made to be new event name. If the user cancels the dialog, no
      * action is performed.
      */
+    @FXML
     public void editTitle() {
         ResourceManager resourceManager = new ResourceManager(mainCtrl);
         String changeText = resourceManager.getStringForKey("content_change_event_name");
         TextInputDialog dialog = new TextInputDialog(ev.getName());
+        String confirmation = resourceManager.getStringForKey("confirmation_title");
+        dialog.setHeaderText(confirmation);
         dialog.setTitle(changeText);
 
         Optional<String> newNameOpt = dialog.showAndWait();

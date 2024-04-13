@@ -329,7 +329,7 @@ public class OpenDebtsCtrl {
 
     private Button createMarkReceivedButton(Debt debt) {
         String markrecieved = resourceManager.getStringForKey("content_mark_recieved");
-        Button button = new Button("Mark Received");
+        Button button = new Button(markrecieved);
         button.setOnAction(event -> {
             server.removeExpensesDebts(e, debt);
             server.markDebtAsReceived(e.getInviteCode());
