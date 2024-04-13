@@ -265,8 +265,9 @@ class ServerUtilsTest {
     }
 
     /**
-     * Test many different permutations, and make sure the sum always adds up to
-     * zero. Use a parameterized test to get a lot of samples
+     * Test many different permutations, and make sure the sums of the money
+     * that creditors pay and get back always adds up to zero.
+     * Use a parameterized test to get a lot of samples
      *
      * @param Event event from the random provideExpenses source
      */
@@ -276,9 +277,21 @@ class ServerUtilsTest {
         MyWebSocketClient wsc = mock(MyWebSocketClient.class);
         ConfigLoader cnf = mock(ConfigLoader.class);
         ServerUtils server = new ServerUtils(wsc, cnf);
-        List<Debt> debts = server.calculateDebts(event);
 
         HashMap<Participant, Long> participantsGet = new HashMap<>();
+        for (Expense exp : event.getExpenses()) {
+            long creditorGets = participantsGet.getOrDefault(exp.getCreator(), 0L);
+            participantsGet.put(exp.getCreator(), creditorGets - exp.getAmount().getInternalValue());
+
+            for (Participant debtor : exp.getSplitBetween()) {
+                long debtorGets = participantsGet.getOrDefault(debtor, 0L);
+                participantsGet.put(debtor,
+                        debtorGets + exp.getAmount().getInternalValue() / exp.getSplitBetween().size());
+
+            }
+        }
+
+        List<Debt> debts = server.calculateDebts(event);
 
         for (Debt debt : debts) {
             long creditorGets = participantsGet.getOrDefault(debt.getCreditor(), 0L);
@@ -288,9 +301,12 @@ class ServerUtilsTest {
             participantsGet.put(debt.getDebtor(), debtorGets - debt.getAmount().getInternalValue());
         }
 
-        long sum = participantsGet.values().stream().mapToLong(x -> x /* unbox */).sum();
+        LongStream sums = participantsGet.values().stream().mapToLong(x -> x /* unbox */);
 
-        assertEquals(0, sum, "Net sum must always be zero");
+        assertAll("All creditors should get their money back", sums.mapToObj(sum -> () -> {
+            // FIXME: Minor rounding errors
+            assertTrue(sum >= -10 && sum <= 10, "should be within 10 cents of expectation");
+        }));
 
     }
 
