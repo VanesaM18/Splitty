@@ -20,6 +20,13 @@ public class ResourceManager {
         this.findResourceBundle();
     }
 
+    /**
+     * constructs a ResourceManager object.
+     */
+    public ResourceManager () {
+        this.mainCtrl = null;
+    }
+
     private ResourceBundle findResourceBundle() {
         Optional<Locale> currentLocale = mainCtrl.getCurrentLocale();
         Locale locale = currentLocale.orElse(Locale.of("en","EN"));
@@ -29,6 +36,25 @@ public class ResourceManager {
             this.resourceBundle = null;
         }
         return this.resourceBundle;
+    }
+
+    /**
+     * Statically initialize a Resource Manager
+     * from a specified locale. All strings
+     * returned for some given key will be
+     * correspondent to the specified locale.
+     * @param locale locale to be specified
+     * @return initialized Resource Manager
+     */
+    public static ResourceManager fromLocale(Locale locale) {
+        ResourceManager resourceManager = new ResourceManager();
+
+        try {
+            resourceManager.resourceBundle = ResourceBundle.getBundle("bundles.Splitty", locale);
+        } catch (Exception e) {
+            resourceManager.resourceBundle = null;
+        }
+        return resourceManager;
     }
 
     /**

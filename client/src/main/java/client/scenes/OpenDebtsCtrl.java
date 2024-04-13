@@ -151,6 +151,7 @@ public class OpenDebtsCtrl {
         hoverOverImage(imageViewBankG);
         hoverOverImage(imageViewEnvelopeG);
 
+        resourceManager = new ResourceManager(mainCtrl);
         SetImages setImages = getSetImages(debt, imageViewBankG, imageViewBankB,
                 imageViewEnvelopeG, imageViewEnvelopeB);
         HBox hboxE = getSubHBox(setImages.tooltipSetE(), setImages.imageViewEnvelope());
