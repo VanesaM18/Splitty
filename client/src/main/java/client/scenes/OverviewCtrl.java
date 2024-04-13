@@ -1,5 +1,7 @@
 package client.scenes;
 
+import client.utils.AlertBuilder;
+import client.utils.ResourceManager;
 import client.utils.ServerUtils;
 import client.utils.language.LanguageProcessor;
 import com.google.inject.Inject;
@@ -319,7 +321,11 @@ public class OverviewCtrl {
      */
     public void addExpense() {
         if (ev.getParticipants().size() < 2) {
-            alert("At least two participants are required for an expense.");
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey("content_expense_participants")
+                    .show();
             return;
         }
         mainCtrl.showExpense(this.ev, null);
@@ -333,7 +339,11 @@ public class OverviewCtrl {
      */
     public void editParticipant() {
         if (participantNames.getSelectionModel().getSelectedItem() == null) {
-            alert("You have to first chose a participant.");
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey("content_edit_participant")
+                    .show();
             return;
         }
         mainCtrl.showParticipants(this.ev, false,
@@ -354,8 +364,10 @@ public class OverviewCtrl {
      * action is performed.
      */
     public void editTitle() {
+        ResourceManager resourceManager = new ResourceManager(mainCtrl);
+        String changeText = resourceManager.getStringForKey("content_change_event_name");
         TextInputDialog dialog = new TextInputDialog(ev.getName());
-        dialog.setTitle("Change event name");
+        dialog.setTitle(changeText);
 
         Optional<String> newNameOpt = dialog.showAndWait();
         if (!newNameOpt.isPresent()) {
@@ -379,33 +391,46 @@ public class OverviewCtrl {
      */
     public void deleteParticipant() {
         if (participantNames.getSelectionModel().getSelectedItem() == null) {
-            alert("You have to first chose a participant.");
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey("content_delete_participant")
+                    .show();
             return;
         }
         if (partOfExpense(participantNames.getSelectionModel().getSelectedItem())) {
-            alert("Settle all debts with this person first.");
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey("content_delete_participant_settle_debts")
+                    .show();
             return;
         }
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation required");
-        alert.setHeaderText("Deleting a participant");
-        alert.setContentText(participantNames.getSelectionModel().getSelectedItem().getName()
-                + " will de deleted.");
+        ResourceManager resourceManager = new ResourceManager(this.mainCtrl);
+        String confirmText = resourceManager.getStringForKey("confirm_button_text");
+        String cancelText = resourceManager.getStringForKey("cancel_button_text");
+        ButtonType confirm = new ButtonType(confirmText);
+        ButtonType cancel = new ButtonType(cancelText, ButtonBar.ButtonData.CANCEL_CLOSE);
 
-        ButtonType confirm = new ButtonType("Confirm");
-        ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        AlertBuilder alertBuilder = new AlertBuilder(mainCtrl);
+        Optional<ButtonType> result = alertBuilder
+                .setAlertType(Alert.AlertType.CONFIRMATION)
+                .setTitleKey("confirmation_title")
+                .setHeaderKey("content_deleting_participant")
+                .setContentKey("content_delete_tag_item")
+                .alterContentText(participantNames.getSelectionModel()
+                        .getSelectedItem().getName() + " %s")
+                .setCustomButtons(confirm, cancel)
+                .show();
 
-        alert.getButtonTypes().setAll(confirm, cancel);
-
-        Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == confirm) {
             ev.removeParticipant(participantNames.getSelectionModel().getSelectedItem());
             server.updateEvent(ev);
             mainCtrl.showOverviewEvent(ev);
             refresh();
         } else {
-            alert.close();
+            alertBuilder.closeAlert();
         }
         // server.deleteParticipant(participant);
     }
@@ -416,18 +441,23 @@ public class OverviewCtrl {
      * @param e The expense to delete
      */
     public void deleteExpense(Expense e) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation");
-        alert.setHeaderText("Are you sure you want to proceed?");
-        alert.setContentText("Do you want to delete this expense?");
-        Optional<ButtonType> result = alert.showAndWait();
+        Optional<ButtonType> result = new AlertBuilder(mainCtrl)
+                .setAlertType(Alert.AlertType.CONFIRMATION)
+                .setTitleKey("confirmation_title")
+                .setHeaderKey("confirmation_header")
+                .setContentKey("content_delete_expense")
+                .show();
+
         if (!result.map(x -> x == ButtonType.OK).orElse(false)) {
             return;
         }
         try {
             server.deleteExpense(e);
         } catch (Exception err) {
-            alert(err.getMessage());
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setContentKey(err.getMessage())
+                    .show();
             return;
         }
         refresh();
@@ -457,15 +487,16 @@ public class OverviewCtrl {
     public void settleDebt() {
         List<Debt> list = server.calculateDebts(ev);
         if (list.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText(null);
-            alert.setContentText("No debts to settle.");
-
             ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-            alert.getButtonTypes().setAll(okButton);
 
-            Optional<ButtonType> result = alert.showAndWait();
+            AlertBuilder alertBuilder = new AlertBuilder(mainCtrl);
+            Optional<ButtonType> result = alertBuilder
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setTitleKey("error_title")
+                    .setContentKey("content_settle_debt")
+                    .setCustomButtons(okButton)
+                    .show();
+
             if (result.isPresent() && result.get() == okButton) {
                 mainCtrl.showOverviewEvent(ev);
             }
@@ -507,7 +538,11 @@ public class OverviewCtrl {
      */
     public void showStatistics() {
         if (ev.getExpenses() == null || ev.getExpenses().size() == 0) {
-            alert("There are no statistics since there are no expenses.");
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey("content_show_statistics")
+                    .show();
             return;
         }
         mainCtrl.showStatistics(ev);

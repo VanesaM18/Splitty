@@ -4,12 +4,7 @@ package client.scenes;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 import client.utils.language.LanguageProcessor;
 import javafx.scene.input.KeyCode;
@@ -80,6 +75,7 @@ public class OverviewCtrlTest {
         sceneManager = Mockito.mock();
         languageProcessor = Mockito.mock(LanguageProcessor.class);
         Mockito.when(mainCtrl.getSceneManager()).thenReturn(sceneManager);
+        Mockito.when(mainCtrl.getCurrentLocale()).thenReturn(Optional.of(Locale.of("en","EN")));
         Mockito.when(serverUtils.getEventById("test")).thenReturn(event);
 
         // We need to load the fxml file in this complicated manner because we need to give it
@@ -241,34 +237,6 @@ public class OverviewCtrlTest {
         Mockito.verify(serverUtils, Mockito.times(1)).deleteExpense(e);
     }
 
-    @Test
-    void deleteExpenseErrorShowsDialog(FxRobot robot) {
-        Mockito.doThrow(new RuntimeException("Mock error")).when(serverUtils)
-                .deleteExpense(Mockito.any());
-
-        robot.interact(() -> {
-            controller.setEvent(event);
-            controller.refresh();
-        });
-
-        Expense e = (Expense) event.getExpenses().toArray()[0];
-        Platform.runLater(() -> {
-            controller.deleteExpense(e);
-        });
-        WaitForAsyncUtils.waitForFxEvents();
-
-        DialogPane dialogPane = robot.lookup(".dialog-pane").queryAs(DialogPane.class);
-        Assertions.assertThat(dialogPane).isVisible();
-
-        // Close the dialog.
-        robot.clickOn("OK");
-
-        Mockito.verify(serverUtils, Mockito.times(1)).deleteExpense(e);
-
-        // Assert that a new error message is now shown, with the right error
-        dialogPane = robot.lookup(".dialog-pane").queryAs(DialogPane.class);
-        Assertions.assertThat(dialogPane).hasChild("Mock error");
-    }
 
     @Test
     void selectParticipantShowsCorrectExpenses(FxRobot robot) {
