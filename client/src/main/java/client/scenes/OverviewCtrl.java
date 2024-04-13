@@ -69,6 +69,7 @@ public class OverviewCtrl {
     private final ObservableList<Participant> participantsObs = FXCollections.observableArrayList();
     @FXML
     private ComboBox<Participant> participantComboBox;
+    private ResourceManager resourceManager;
 
     /**
      * Controller responsible for handling the quote overview functionality.
@@ -83,6 +84,7 @@ public class OverviewCtrl {
         this.server = server;
         this.mainCtrl = mainCtrl;
         this.languageProcessor = languageProcessor;
+        this.resourceManager = new ResourceManager(mainCtrl);
     }
 
     /**
@@ -136,8 +138,7 @@ public class OverviewCtrl {
             protected void updateItem(Expense item, boolean empty) {
                 super.updateItem(item, empty);
                 if (item == null || empty) {
-                    setGraphic(null);
-                    return;
+                    setGraphic(null); return;
                 }
                 Text textBoldP1 = new Text(item.getCreator().getName());
                 Text textBoldP2 = new Text("" + item.getAmount().toString()
@@ -146,8 +147,10 @@ public class OverviewCtrl {
                 textBoldP1.setFont(Font.font("System", FontWeight.BOLD, 12));
                 textBoldP2.setFont(Font.font("System", FontWeight.BOLD, 12));
                 textBoldP3.setFont(Font.font("System", FontWeight.BOLD, 12));
-                TextFlow mainTextFlow = new TextFlow(textBoldP1, new Text(" paid "),
-                        textBoldP2, new Text(" for "), textBoldP3);
+                String paid = resourceManager.getStringForKey("content_paid");
+                String forString = resourceManager.getStringForKey("content_for");
+                TextFlow mainTextFlow = new TextFlow(textBoldP1, new Text(" " + paid + " "),
+                        textBoldP2, new Text(" " + forString + " "), textBoldP3);
                 Text smallText = OverviewCtrl.getText(item);
                 Text tags = OverviewCtrl.getTags(item);
                 smallText.setFont(Font.font("System", FontWeight.NORMAL, 10));
@@ -164,11 +167,12 @@ public class OverviewCtrl {
                 Button deleteButton = new Button();
                 editButton.setOnAction(e -> mainCtrl.showExpense(item.getEvent(), item));
                 deleteButton.setOnAction(e -> deleteExpense(item));
-                styleButton(deleteButton, "Delete expense", "/assets/bin.png");
-                styleButton(editButton, "Edit expense", "/assets/pen-solid.png");
+                String delete = resourceManager.getStringForKey("content_delete_expense_tooltip");
+                String edit = resourceManager.getStringForKey("content_edit_expense_tooltip");
+                styleButton(deleteButton, delete, "/assets/bin.png");
+                styleButton(editButton, edit, "/assets/pen-solid.png");
                 HBox element = new HBox(dateText, vbox, region, deleteButton, editButton);
-                element.setSpacing(15);
-                setGraphic(element);
+                element.setSpacing(15); setGraphic(element);
             }
         };
         expensesAll.setCellFactory(cb);
@@ -260,11 +264,15 @@ public class OverviewCtrl {
         var selectedItem = participantComboBox.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
             var name = selectedItem.getName();
-            tabFrom.setText("From ".concat(name));
-            tabIncluding.setText("Including ".concat(name));
+            String from = resourceManager.getStringForKey("content_from");
+            String including = resourceManager.getStringForKey("content_including");
+            tabFrom.setText(from + " ".concat(name));
+            tabIncluding.setText(including + " ".concat(name));
         } else {
-            tabFrom.setText("From ...");
-            tabIncluding.setText("Including ...");
+            String from = resourceManager.getStringForKey("tab_from");
+            String including = resourceManager.getStringForKey("tab_including");
+            tabFrom.setText(from);
+            tabIncluding.setText(including);
         }
         expensesAllObs.clear();
         expensesFromObs.clear();

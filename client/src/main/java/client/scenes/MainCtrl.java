@@ -112,9 +112,8 @@ public class MainCtrl {
         this.statisticsCtrl = data.getStatistics().getKey();
         this.statistics = new Scene(data.getStatistics().getValue());
 
-        primaryStage.setOnCloseRequest(event -> {
-            startPageCtrl.updateConfig();
-        });
+        this.resourceManager = new ResourceManager(this);
+        primaryStage.setOnCloseRequest(event -> startPageCtrl.updateConfig());
         settingsCtrl.make();
         sceneManager.showCurrentScene();
         primaryStage.show();

@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import client.utils.AlertBuilder;
+import client.utils.ResourceManager;
 import com.google.inject.Inject;
 
 import client.utils.ServerUtils;
@@ -394,7 +395,6 @@ public class ExpenseCtrl {
                     double brightness = (c.getRed() + c.getGreen() + c.getBlue()) / 3.0;
                     String closestColor = (brightness <= 0.5) ? "#ffffff" : "#000000";
                     text.setFill(Color.web(closestColor));
-
                     Button deleteButton = new Button();
                     deleteButton.setOnAction(event -> {
                         listView.getItems().remove(item);
@@ -408,10 +408,10 @@ public class ExpenseCtrl {
                     attachImage(deleteButton, "/assets/circle-xmark-solid.png", 15, 15);
                     deleteButton.setStyle("-fx-background-color: transparent; " +
                             "-fx-padding: 0; -fx-border: none;");
+                    ResourceManager resourceManager = new ResourceManager(mainCtrl);
+                    String removeTag = resourceManager.getStringForKey("content_remove_tag");
                     deleteButton.setTooltip(new Tooltip("Remove tag"));
-                    deleteButton.setOnMouseEntered(event -> {
-                        deleteButton.setCursor(Cursor.HAND);
-                    });
+                    deleteButton.setOnMouseEntered(event -> deleteButton.setCursor(Cursor.HAND));
                     deleteButton.setOnMouseExited(event -> {
                         deleteButton.setCursor(Cursor.DEFAULT);
                     });
