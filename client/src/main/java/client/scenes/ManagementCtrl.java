@@ -127,6 +127,7 @@ public class ManagementCtrl {
 
 
     private ContextMenu createContextMenu() {
+        this.resourceManager = new ResourceManager(mainCtrl);
         ContextMenu cm = new ContextMenu();
         String copy = this.resourceManager.getStringForKey("content_copy_invite_code");
         MenuItem copyInviteCodeMenuItem = new MenuItem(copy);
@@ -139,7 +140,6 @@ public class ManagementCtrl {
             content.putString(event.getInviteCode());
             clipboard.setContent(content);
         });
-
         String download = this.resourceManager.getStringForKey("content_download_json");
         MenuItem downloadJsonMenuItem = new MenuItem(download);
         downloadJsonMenuItem.setOnAction(ignored -> {

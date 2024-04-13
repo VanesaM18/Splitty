@@ -105,6 +105,7 @@ public class ExpenseTypeCtrl {
                 return new ListCell<ExpenseType>() {
                     @Override
                     protected void updateItem(ExpenseType item, boolean empty) {
+                        resourceManager = new ResourceManager(mainCtrl);
                         super.updateItem(item, empty);
                         if (item == null || empty) {
                             setGraphic(null);
@@ -128,9 +129,7 @@ public class ExpenseTypeCtrl {
                                 resourceManager.getStringForKey("content_delete_expense_type"),
                                 "/assets/circle-xmark-solid.png");
                         Button editButton = new Button();
-                        editButton.setOnAction(event -> {
-                            updateTag(item);
-                        });
+                        editButton.setOnAction(event -> updateTag(item));
                         editButton.setAlignment(Pos.CENTER);
                         HBox.setHgrow(editButton, Priority.ALWAYS);
                         buttonStyle(editButton,
