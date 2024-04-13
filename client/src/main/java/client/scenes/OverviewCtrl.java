@@ -126,8 +126,8 @@ public class OverviewCtrl {
      */
     @FXML
     public void initialize() {
-        Image image = new Image(getClass().getResourceAsStream(
-                "/assets/splitty-splitty.png"));
+        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(
+                "/assets/splitty-splitty.png")));
         imageView.setImage(image);
         initExpenses();
         initParticipants();
