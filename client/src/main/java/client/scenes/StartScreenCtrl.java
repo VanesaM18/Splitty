@@ -1,6 +1,8 @@
 package client.scenes;
 
 import client.ConfigLoader;
+import client.utils.AlertBuilder;
+import client.utils.ResourceManager;
 import client.utils.ServerUtils;
 
 import client.utils.language.LanguageProcessor;
@@ -87,41 +89,49 @@ public class StartScreenCtrl implements Initializable {
                             setText(null);
                             setGraphic(null);
                         } else {
-                            Event e = server.getEventById(item);
-                            HBox hBox = new HBox(10);
-                            hBox.setAlignment(Pos.CENTER_LEFT);
-                            Text text = new Text(e.getName());
-                            Button deleteButton = new Button();
-                            deleteButton.setOnAction(event -> listView.getItems().remove(item));
-                            deleteButton.setAlignment(Pos.CENTER);
-                            Button joinButton = new Button();
-                            joinButton.setOnAction(event -> joinEventField.setText(item));
-                            HBox.setHgrow(joinButton, Priority.ALWAYS);
-                            Region region = new Region();
-                            HBox.setHgrow(region, Priority.ALWAYS);
-                            attachImage(joinButton, "/assets/up-right-arrow.png", 15, 15);
-                            attachImage(deleteButton, "/assets/circle-xmark-solid.png", 15, 15);
-                            joinButton.setStyle("-fx-background-color: transparent; " +
-                                "-fx-padding: 0; -fx-border: none;");
-                            deleteButton.setStyle("-fx-background-color: transparent; " +
-                                "-fx-padding: 0; -fx-border: none;");
-                            joinButton.setOnMouseEntered(event ->
-                                joinButton.setCursor(Cursor.HAND));
-                            joinButton.setOnMouseExited(event ->
-                                joinButton.setCursor(Cursor.DEFAULT));
-                            deleteButton.setOnMouseEntered(event ->
-                                deleteButton.setCursor(Cursor.HAND));
-                            deleteButton.setOnMouseExited(event ->
-                                deleteButton.setCursor(Cursor.DEFAULT));
-                            deleteButton.setTooltip(new Tooltip("Remove event"));
-                            joinButton.setTooltip(new Tooltip("Show invite code"));
-                            hBox.getChildren().addAll(text, joinButton, region, deleteButton);
-                            setGraphic(hBox);}
+                            setGraphic(makeGraphics(item, listView));
+                        }
                     }
                 };
             }
         });
         languageNavigator.setExpanded(false);
+    }
+
+    private HBox makeGraphics(String item, ListView<?> listView) {
+        Event e = server.getEventById(item);
+        HBox hBox = new HBox(10);
+        hBox.setAlignment(Pos.CENTER_LEFT);
+        Text text = new Text(e.getName());
+        Button deleteButton = new Button();
+        deleteButton.setOnAction(event -> listView.getItems().remove(item));
+        deleteButton.setAlignment(Pos.CENTER);
+        Button joinButton = new Button();
+        joinButton.setOnAction(event -> joinEventField.setText(item));
+        HBox.setHgrow(joinButton, Priority.ALWAYS);
+        Region region = new Region();
+        HBox.setHgrow(region, Priority.ALWAYS);
+        attachImage(joinButton, "/assets/up-right-arrow.png", 15, 15);
+        attachImage(deleteButton, "/assets/circle-xmark-solid.png", 15, 15);
+        joinButton.setStyle("-fx-background-color: transparent; " +
+            "-fx-padding: 0; -fx-border: none;");
+        deleteButton.setStyle("-fx-background-color: transparent; " +
+            "-fx-padding: 0; -fx-border: none;");
+        joinButton.setOnMouseEntered(event ->
+            joinButton.setCursor(Cursor.HAND));
+        joinButton.setOnMouseExited(event ->
+            joinButton.setCursor(Cursor.DEFAULT));
+        deleteButton.setOnMouseEntered(event ->
+            deleteButton.setCursor(Cursor.HAND));
+        deleteButton.setOnMouseExited(event ->
+            deleteButton.setCursor(Cursor.DEFAULT));
+        ResourceManager resourceManager = new ResourceManager(mainCtrl);
+        deleteButton.setTooltip(new Tooltip(resourceManager
+                .getStringForKey("tooltip_remove_event")));
+        joinButton.setTooltip(new Tooltip(resourceManager
+                .getStringForKey("tooltip_show_invite_code")));
+        hBox.getChildren().addAll(text, joinButton, region, deleteButton);
+        return hBox;
     }
 
     /**
@@ -130,7 +140,11 @@ public class StartScreenCtrl implements Initializable {
     public void createEvent() {
         String eventName = createEventField.getText();
         if(eventName.equals("")) {
-            alert("You have to chose a name first.");
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey("content_event_name")
+                    .show();
             return;
         }
 
@@ -164,15 +178,20 @@ public class StartScreenCtrl implements Initializable {
     public void joinEvent() {
         String eventCode = joinEventField.getText();
         if(eventCode.equals("")) {
-            alert("Enter an event code first.");
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey("content_event_code")
+                    .show();
             return;
         }
         Event ev = server.getEventById(eventCode);
         if (ev == null) {
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText("This event does not exist");
-            alert.showAndWait();
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey("content_event")
+                    .show();
             clearFields();
             return;
         }

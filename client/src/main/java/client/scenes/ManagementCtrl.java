@@ -1,5 +1,7 @@
 package client.scenes;
 
+import client.utils.AlertBuilder;
+import client.utils.ResourceManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import commons.Event;
@@ -45,6 +47,7 @@ public class ManagementCtrl {
     private TableColumn<Event, String> lastActivityColumn;
     @FXML
     private TableColumn<Event, String> inviteCodeColumn;
+    private ResourceManager resourceManager;
 
 
     /**
@@ -56,6 +59,7 @@ public class ManagementCtrl {
     public ManagementCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
+        this.resourceManager = new ResourceManager(mainCtrl);
     }
 
     /**
@@ -70,7 +74,9 @@ public class ManagementCtrl {
             this.events = optional.get();
             initializeTable();
         } else {
-            showAlert(AlertType.ERROR, "Fetch Events Error", "Failed to fetch events");
+            String fetch = this.resourceManager.getStringForKey("content_fetch_events");
+            String fetchFailed = this.resourceManager.getStringForKey("content_fetch_failed");
+            showAlert(AlertType.ERROR, fetch, fetchFailed);
         }
     }
 
@@ -109,8 +115,10 @@ public class ManagementCtrl {
         try {
             jsonDump = objectMapper.writeValueAsString(event);
         } catch (JsonProcessingException e) {
-            showAlert(AlertType.ERROR, "JSON Serialization Error",
-                    "Failed to serialize event to JSON: " + e.getMessage());
+            String json = this.resourceManager.getStringForKey("content_json");
+            String jsonFailed = this.resourceManager.getStringForKey("content_json_failed");
+            showAlert(AlertType.ERROR, json,
+                    jsonFailed + " " + e.getMessage());
             return;
         }
         var defaultTitle = "event_" + event.getInviteCode() + "_dump.json";
@@ -119,9 +127,10 @@ public class ManagementCtrl {
 
 
     private ContextMenu createContextMenu() {
+        this.resourceManager = new ResourceManager(mainCtrl);
         ContextMenu cm = new ContextMenu();
-
-        MenuItem copyInviteCodeMenuItem = new MenuItem("Copy invite code");
+        String copy = this.resourceManager.getStringForKey("content_copy_invite_code");
+        MenuItem copyInviteCodeMenuItem = new MenuItem(copy);
         copyInviteCodeMenuItem.setOnAction(ignored -> {
             Event event = (Event) eventsTable.getSelectionModel().getSelectedItem();
             if (event == null) return;
@@ -131,8 +140,8 @@ public class ManagementCtrl {
             content.putString(event.getInviteCode());
             clipboard.setContent(content);
         });
-
-        MenuItem downloadJsonMenuItem = new MenuItem("Download JSON");
+        String download = this.resourceManager.getStringForKey("content_download_json");
+        MenuItem downloadJsonMenuItem = new MenuItem(download);
         downloadJsonMenuItem.setOnAction(ignored -> {
             Event event = (Event) eventsTable.getSelectionModel().getSelectedItem();
             if (event == null) return;
@@ -140,18 +149,21 @@ public class ManagementCtrl {
             downloadJsonDumpForEvent(event);
         });
 
-        MenuItem deleteMenuItem = new MenuItem("Delete");
+        String delete = this.resourceManager.getStringForKey("content_delete");
+        MenuItem deleteMenuItem = new MenuItem(delete);
         deleteMenuItem.setOnAction(ignored -> {
             Event event = (Event) eventsTable.getSelectionModel().getSelectedItem();
             if (event == null) return;
 
             // Ask for confirmation.
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirmation required");
-            alert.setHeaderText("Deleting an event");
-            alert.setContentText(event.getName() + " will de deleted.");
+            Optional<ButtonType> result = new AlertBuilder(mainCtrl)
+                    .setAlertType(AlertType.CONFIRMATION)
+                    .setTitleKey("confirmation_title")
+                    .setHeaderKey("content_deleting_event")
+                    .setContentKey("content_delete_tag_item")
+                    .alterContentText(event.getName() + " %s")
+                    .show();
 
-            Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 // Tell server we are viewing this event, so that we are sent a message on its
                 // deletion.
@@ -173,17 +185,20 @@ public class ManagementCtrl {
      */
     @FXML
     public void handleJsonDumpButton() {
+        String jsonDump = this.resourceManager.getStringForKey("content_json_dump");
+        String jsonDumpFailed = this.resourceManager.getStringForKey("content_json_dump_failed");
         var optional = server.handleJsonDump();
         optional.ifPresentOrElse(dump ->
                 this.showFileChooser(dump, "splitty_jsonDump_"+ UUID.randomUUID() +".json"), () ->
-                showAlert(AlertType.ERROR, "JSON Dump Error", "Failed to retrieve JSON dump"));
+                showAlert(AlertType.ERROR, jsonDump, jsonDumpFailed));
     }
 
     private void showFileChooser(String fileContent, String defaultTitle) {
         var fileContentOptional = Optional.ofNullable(fileContent);
         var defaultTitleOptional = Optional.ofNullable(defaultTitle);
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save JSON Dump");
+        String save = this.resourceManager.getStringForKey("content_save_json");
+        fileChooser.setTitle(save);
         fileChooser.getExtensionFilters().
                 add(new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json"));
         defaultTitleOptional.ifPresent(fileChooser::setInitialFileName);
@@ -202,9 +217,14 @@ public class ManagementCtrl {
     private void saveJsonToFile(String json, File file) {
         try (PrintWriter writer = new PrintWriter(file)) {
             writer.write(json);
-            showAlert(AlertType.INFORMATION, "JSON Dump Saved", "JSON dump saved successfully");
+            String jsonSaved = this.resourceManager.getStringForKey("content_json_saved");
+            String jsonDumpSaved = this.resourceManager.getStringForKey("content_json_dump_saved");
+            showAlert(AlertType.INFORMATION, jsonSaved, jsonDumpSaved);
         } catch (IOException e) {
-            showAlert(AlertType.ERROR, "Save Error", "Failed to save JSON dump: " + e.getMessage());
+            String jsonSaved = this.resourceManager.getStringForKey("content_json_saved_error");
+            String jsonDumpSaved = this.resourceManager
+                    .getStringForKey("content_json_dump_saved_error");
+            showAlert(AlertType.ERROR, jsonSaved, jsonDumpSaved + " " + e.getMessage());
         }
     }
 
@@ -217,7 +237,8 @@ public class ManagementCtrl {
     @FXML
     public void handleImportJsonDumpButton() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Import JSON Dump");
+        String importJson = this.resourceManager.getStringForKey("content_import_json");
+        fileChooser.setTitle(importJson);
         fileChooser.getExtensionFilters()
                 .add(new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json"));
         File file = fileChooser.showOpenDialog(null);
@@ -227,7 +248,11 @@ public class ManagementCtrl {
             if (jsonContent != null) {
                 importEventsFromJsonString(jsonContent);
             } else {
-                showAlert(AlertType.ERROR, "Import Error", "Failed to read JSON file");
+                String importJsonError = this.resourceManager
+                        .getStringForKey("content_import_json_error");
+                String importJsonFailed = this.resourceManager
+                        .getStringForKey("content_import_json_failed");
+                showAlert(AlertType.ERROR, importJsonError, importJsonFailed);
             }
         }
     }
@@ -259,8 +284,12 @@ public class ManagementCtrl {
                 importedEvents[0] = importedEvent;
                 importEventArray(importedEvents);
             } catch (IOException error) {
-                showAlert(AlertType.ERROR, "Import Error",
-                        "Failed to import events from JSON string: " + e.getMessage());
+                String importJsonError = this.resourceManager
+                        .getStringForKey("content_import_json_error");
+                String importJsonFailed = this.resourceManager
+                        .getStringForKey("content_import_failed");
+                showAlert(AlertType.ERROR, importJsonError,
+                        importJsonFailed + " " + e.getMessage());
             }
         }
     }
@@ -270,18 +299,19 @@ public class ManagementCtrl {
         this.events.addAll(importedEventsList);
         displayEventsInTableView(importedEventsList);
         String importMessage = formatImportMessage(importedEventsList);
-        showAlert(AlertType.INFORMATION, "Import Success", importMessage);
+        String importSuccess = this.resourceManager.getStringForKey("content_import_success");
+        showAlert(AlertType.INFORMATION, importSuccess, importMessage);
     }
 
     private String formatImportMessage(List<Event> importedEvents) {
         int n = importedEvents.size();
         return switch (n) {
             case 0:
-                yield "No events have been imported !!!";
+                yield this.resourceManager.getStringForKey("yield_zero");
             case 1:
-                yield "One event imported successfully !!!";
+                yield this.resourceManager.getStringForKey("yield_one");
             default:
-                yield n + " events imported successfully !!!";
+                yield n + " " + this.resourceManager.getStringForKey("yield_more");
         };
     }
 

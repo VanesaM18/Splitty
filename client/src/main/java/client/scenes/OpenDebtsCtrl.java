@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.EmailManager;
+import client.utils.ResourceManager;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
@@ -39,6 +40,7 @@ public class OpenDebtsCtrl {
     private VBox debtContainer;
     private Event e;
     private Thread longPollingThread;
+    private static ResourceManager resourceManager;
 
     /**
      * constructs open debts
@@ -52,6 +54,7 @@ public class OpenDebtsCtrl {
         this.mainCtrl = mainCtrl;
         this.server = server;
         this.emailManager = emailManager;
+        resourceManager = new ResourceManager(mainCtrl);
     }
 
     /**
@@ -90,14 +93,18 @@ public class OpenDebtsCtrl {
                 debtContainer.getChildren().add(hbox);
             }
         }
+        resourceManager = new ResourceManager(mainCtrl);
     }
 
     private TitledPane createDebtTitledPane(Debt debt) {
+        ResourceManager resourceManager = new ResourceManager(mainCtrl);
         TitledPane titledPane = new TitledPane();
         titledPane.setExpanded(false);
         titledPane.setMaxWidth(Double.MAX_VALUE);
-        titledPane.setText(debt.getDebtor().getName() + " gives "
-            + debt.getAmount() + " to " + debt.getCreditor().getName());
+        titledPane.setText(debt.getDebtor().getName()
+                + " " + resourceManager.getStringForKey("content_gives")+ " "
+                + debt.getAmount() + " " + resourceManager.getStringForKey("content_to")
+                + " " + debt.getCreditor().getName());
         HBox graphicContainer = sideImagesDebt(debt);
 
         graphicContainer.setAlignment(Pos.CENTER_RIGHT);
@@ -105,9 +112,12 @@ public class OpenDebtsCtrl {
         titledPane.setContentDisplay(ContentDisplay.RIGHT);
 
         VBox content = new VBox();
+        String bankInfo = resourceManager.getStringForKey("content_bank_info");
+        String bankInfoOk = resourceManager.getStringForKey("content_bank_info_ok");
+        String accountHolder = resourceManager.getStringForKey("content_account_holder");
         Label debtLabel = new Label(debt.getCreditor().getIban().isEmpty()
-            ? "Bank information not available" :
-            "Bank information available, transfer to:\nAccount holder: "
+            ? bankInfo :
+            bankInfoOk + "\n" + accountHolder
                 + debt.getCreditor().getName() +
                 "\nIBAN: " + debt.getCreditor().getIban() +
                 "\nBIC: " + debt.getCreditor().getBic());
@@ -141,6 +151,7 @@ public class OpenDebtsCtrl {
         hoverOverImage(imageViewBankG);
         hoverOverImage(imageViewEnvelopeG);
 
+        resourceManager = new ResourceManager(mainCtrl);
         SetImages setImages = getSetImages(debt, imageViewBankG, imageViewBankB,
                 imageViewEnvelopeG, imageViewEnvelopeB);
         HBox hboxE = getSubHBox(setImages.tooltipSetE(), setImages.imageViewEnvelope());
@@ -181,21 +192,27 @@ public class OpenDebtsCtrl {
         String tooltipSetB;
         if(debt.getCreditor().getIban().isEmpty()){
             imageViewBank = imageViewBankG;
-            tooltipSetB = "Set the IBAN of " + debt.getCreditor().getName()
-                    + ", to receive the amount owed";
+            tooltipSetB = resourceManager.getStringForKey("content_set_iban_of") + " "
+                    + debt.getCreditor().getName()
+                    + ", " + resourceManager.getStringForKey("content_to_receive");
         } else{
             imageViewBank = imageViewBankB;
-            tooltipSetB = "IBAN of " + debt.getCreditor().getName() + " is set";
+            tooltipSetB = resourceManager.getStringForKey("content_iban_of") + " "
+                    + debt.getCreditor().getName()
+                    + " " + resourceManager.getStringForKey("content_is_set");
         }
 
         if(debt.getDebtor().getEmail().isEmpty()){
             imageViewEnvelope = imageViewEnvelopeG;
-            tooltipSetE = "Set the e-mail of " + debt.getDebtor().getName()
-                    + ", to be able to send a reminder";
+            tooltipSetE = resourceManager.getStringForKey("content_set_email_of") + " "
+                    + debt.getDebtor().getName()
+                    + ", " + resourceManager.getStringForKey("content_to_send_reminder");
 
         } else{
             imageViewEnvelope = imageViewEnvelopeB;
-            tooltipSetE = "e-mail of " + debt.getDebtor().getName() + " is set";
+            tooltipSetE = resourceManager.getStringForKey("content_email_of") + " "
+                    + debt.getDebtor().getName()
+                    + " " + resourceManager.getStringForKey("content_is_set");
         }
 
         SetImages setImages = new SetImages(imageViewBank, imageViewEnvelope,
@@ -238,23 +255,26 @@ public class OpenDebtsCtrl {
     }
 
     private void openPopUp(Participant participant, HBox hbox, ImageView imageViewBankG) {
+        ResourceManager resourceManager = new ResourceManager(mainCtrl);
         Stage popUpStage = new Stage();
         popUpStage.initModality(Modality.APPLICATION_MODAL);
         popUpStage.initOwner(primaryStage);
-        String title = "Email setup";
+        String title = resourceManager.getStringForKey("content_email_setup");
         TextField textField = new TextField();
 
-        Label label = new Label("Enter the email of " + participant.getName() + " :");
+        String enterEmail = resourceManager.getStringForKey("content_enter_email") + " ";
+        String enterIban = resourceManager.getStringForKey("content_enter_iban");
+        Label label = new Label(enterEmail + participant.getName() + " :");
         label.setAlignment(Pos.CENTER_LEFT);
 
         Button okButton = buttonE(participant, textField, popUpStage);
         if(hbox.getChildren().contains(imageViewBankG)){
             okButton = buttonB(participant, textField, popUpStage);
-            title = "IBAN setup";
-            label.setText("Enter the IBAN of " + participant.getName() + " :");
+            title = resourceManager.getStringForKey("content_iban_setup");
+            label.setText(enterIban + participant.getName() + " :");
         }
 
-        Button cancelButton = new Button("Cancel");
+        Button cancelButton = new Button(resourceManager.getStringForKey("cancel_button_text"));
         cancelButton.setOnAction(event -> popUpStage.close());
 
         VBox popUpLayout = new VBox(10);
@@ -277,7 +297,9 @@ public class OpenDebtsCtrl {
             participant.setIban(userInput);
             if (textField.getText().isEmpty() ||
                     !ParticipantsCtrl.isIbanValid(participant.getIban())) {
-                alert("Invalid IBAN");
+                ResourceManager resourceManager = new ResourceManager(mainCtrl);
+                String invalidIban = resourceManager.getStringForKey("content_participant_iban");
+                alert(invalidIban);
                 return;
             }
             server.addParticipant(participant);
@@ -294,7 +316,9 @@ public class OpenDebtsCtrl {
             participant.setEmail(userInput);
             if (textField.getText().isEmpty() ||
                     !ParticipantsCtrl.isEmailValid(participant.getEmail())) {
-                alert("Invalid e-mail");
+                ResourceManager resourceManager = new ResourceManager(mainCtrl);
+                String invalidEmail = resourceManager.getStringForKey("content_participant_email");
+                alert(invalidEmail);
                 return;
             }
             server.addParticipant(participant);
@@ -306,7 +330,9 @@ public class OpenDebtsCtrl {
 
 
     private Button createMarkReceivedButton(Debt debt) {
-        Button button = new Button("Mark Received");
+        resourceManager = new ResourceManager(mainCtrl);
+        String markrecieved = resourceManager.getStringForKey("content_mark_received");
+        Button button = new Button(markrecieved);
         button.setOnAction(event -> {
             server.removeExpensesDebts(e, debt);
             server.markDebtAsReceived(e.getInviteCode());
@@ -317,9 +343,13 @@ public class OpenDebtsCtrl {
     }
 
     private HBox createSendReminderContent(Debt debt) {
+        var resourceManager = new  ResourceManager(mainCtrl);
+        String emailAction = resourceManager.getStringForKey("content_email_action");
+        String sendReminder = resourceManager.getStringForKey("content_send_reminder");
         HBox hbox = new HBox(10);
-        Label actionLabel = new Label("Email action: ");
-        Button sendEmailButton = new Button("Send Reminder");
+        String enterIban = " " + resourceManager.getStringForKey("content_enter_iban")  + " ";
+        Label actionLabel = new Label(emailAction + enterIban);
+        Button sendEmailButton = new Button(sendReminder);
         StackPane buttonWrapper = new StackPane(sendEmailButton);
 
         setupSendEmailButton(sendEmailButton, buttonWrapper, debt);
@@ -329,30 +359,42 @@ public class OpenDebtsCtrl {
     }
 
     private void setupSendEmailButton(Button button, StackPane buttonWrapper, Debt debt) {
+        var resourceManager = new  ResourceManager(mainCtrl);
+        String emailCred = resourceManager.getStringForKey("content_email_cred");
+        String debtorEmail = resourceManager.getStringForKey("content_email_debtor");
+        String sendReminder = resourceManager.getStringForKey("content_send_reminder");
+        String paymentReminder = resourceManager.getStringForKey("content_payment_reminder");
+        String youOwe = resourceManager.getStringForKey("content_you_owe");
+        String sending = resourceManager.getStringForKey("content_sending");
+
+
         Tooltip tooltip = new Tooltip();
         tooltip.setShowDelay(javafx.util.Duration.ZERO);
         tooltip.setHideDelay(javafx.util.Duration.ZERO);
+        tooltip.setHideDelay(javafx.util.Duration.ZERO);
 
         if (!emailManager.areCredentialsValid()) {
-            tooltip.setText("Email credentials invalid");
+            tooltip.setText(emailCred);
             button.setDisable(true);
         } else if (debt.getDebtor().getEmail().isEmpty()) {
-            tooltip.setText("Debtor email missing");
+            tooltip.setText(debtorEmail);
             button.setDisable(true);
         } else {
-            tooltip.setText("Send payment reminder through email to " + debt.getDebtor().getName());
+            tooltip.setText(paymentReminder + " " + debt.getDebtor().getName());
             button.setDisable(false);
             button.setOnAction(event -> {
                 button.setDisable(true);
-                button.setText("Sending...");
-
+                button.setText(sending);
+                String payReminderFor = resourceManager.getStringForKey("content_pay_reminder_for");
+                String to = resourceManager.getStringForKey("content_to");
                 new Thread(() -> {
                     emailManager.sendEmail(debt.getDebtor().getEmail(),
-                        "Payment reminder for " + e.getName(),
-                        "You owe " + debt.getAmount() + " to " + debt.getCreditor().getName());
+                        payReminderFor + " " + e.getName(),
+                        youOwe + " " + debt.getAmount() + " "
+                                + to + " " + debt.getCreditor().getName());
 
                     Platform.runLater(() -> {
-                        button.setText("Send Reminder");
+                        button.setText(sendReminder);
                         button.setDisable(false);
                     });
                 }).start();

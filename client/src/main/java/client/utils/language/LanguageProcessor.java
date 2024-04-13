@@ -1,5 +1,6 @@
 package client.utils.language;
 
+import client.utils.ResourceManager;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -157,12 +158,17 @@ public class LanguageProcessor {
         imageView.setFitHeight(23);
         imageView.setPreserveRatio(true);
         titledPane.setGraphic(imageView);
-        VBox languageButtons = new VBox(10);
+        VBox languageButtons = new VBox(11);
         Button[] languageArray = toArray(languages);
         for (Button button : languageArray) {
-            if(button.getText().contains(currentLanguage.getText())) {
+            String buttonText = button.getText();
+            if(buttonText.contains(currentLanguage.getText())) {
                 button.setText(button.getText() + "\n (active)");
+            } else if (buttonText.contains("Download")) {
+                button.setText(ResourceManager.fromLocale(currentLocale)
+                        .getStringForKey("template_button"));
             }
+
         }
         languageButtons.getChildren().addAll(languageArray);
         titledPane.setContent(languageButtons);

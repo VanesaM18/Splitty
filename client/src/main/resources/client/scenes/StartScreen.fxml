@@ -83,7 +83,7 @@
       </GridPane>
       <TitledPane fx:id="languageNavigator" blendMode="SRC_ATOP" expanded="false" maxHeight="400.0" maxWidth="200.0" minHeight="29.0" prefHeight="29.0" prefWidth="116.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="11.0">
          <tooltip>
-            <Tooltip text="Change language"/>
+            <Tooltip text="%tooltip_change_language"/>
          </tooltip>
          <padding>
             <Insets left="5" right="5" />

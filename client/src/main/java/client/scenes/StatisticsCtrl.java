@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.ResourceManager;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
@@ -47,29 +48,34 @@ public class StatisticsCtrl {
     }
 
     private void initCost() {
+        ResourceManager resourceManager = new ResourceManager(mainCtrl);
+        String totalCost = resourceManager.getStringForKey("content_total_cost");
         Monetary expenseCost = new Monetary(0);
         for(Expense expense : event.getExpenses()) {
             expenseCost = Monetary.add(expenseCost, expense.getAmount());
         }
-        cost.setText("Total cost: " + expenseCost.toString()
+        cost.setText(totalCost + " " + expenseCost.toString()
                 + expenseCost.getCurrency().getSymbol());
     }
 
     private void initPieChart() {
         pie.setLegendVisible(false);
         Double total = 0.0;
-        for(Expense expense : server.getAllExpensesFromEvent(event)) {
-            total += Double.parseDouble(expense.getAmount().toString())*expense.getTags().size();
-        }
-        for(ExpenseType tag : event.getTags()) {
-            Double totalCost = getAmount(tag);
-            if(totalCost == 0.0) continue;
-            PieChart.Data slice = new PieChart.Data(tag.getName(), totalCost);
-            pie.getData().add(slice);
-            double percentage = (totalCost / total) * 100;
-            slice.setName(String.format("%s - %.1f%% (%.2f"+ "\u20AC)",
-                    slice.getName(), percentage, slice.getPieValue()));
-            slice.getNode().setStyle("-fx-pie-color: " + tag.getColor() +";");
+        if (server.getAllExpensesFromEvent(event) != null) {
+            for (Expense expense : server.getAllExpensesFromEvent(event)) {
+                total += Double.parseDouble(expense.getAmount().toString())
+                        * expense.getTags().size();
+            }
+            for (ExpenseType tag : event.getTags()) {
+                Double totalCost = getAmount(tag);
+                if (totalCost == 0.0) continue;
+                PieChart.Data slice = new PieChart.Data(tag.getName(), totalCost);
+                pie.getData().add(slice);
+                double percentage = (totalCost / total) * 100;
+                slice.setName(String.format("%s - %.1f%% (%.2f" + "\u20AC)",
+                        slice.getName(), percentage, slice.getPieValue()));
+                slice.getNode().setStyle("-fx-pie-color: " + tag.getColor() + ";");
+            }
         }
     }
 
