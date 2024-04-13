@@ -59,7 +59,7 @@ class DebtTest {
         Monetary monetary2 = new Monetary(10);
 
         Debt debt1 = new Debt(creditor1, monetary1, debtor1);
-        Debt debt2 = new Debt(creditor1, monetary2, debtor1);
+        Debt debt2 = new Debt(creditor2, monetary2, debtor2);
 
         assertEquals(debt1, debt2);
     }
@@ -86,7 +86,7 @@ class DebtTest {
         Monetary monetary2 = new Monetary(10);
 
         Debt debt1 = new Debt(creditor1, monetary1, debtor1);
-        Debt debt2 = new Debt(creditor1, monetary2, debtor1);
+        Debt debt2 = new Debt(creditor2, monetary2, debtor2);
 
         assertEquals(debt1.hashCode(), debt2.hashCode());
     }
