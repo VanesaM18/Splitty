@@ -4,6 +4,8 @@ import client.ConfigLoader;
 import client.MyWebSocketClient;
 import commons.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,6 +14,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -255,6 +259,71 @@ class ServerUtilsTest {
         assertEquals(-8000, participantsGet.get(claude), claude.getName().concat(" receives"));
         assertEquals(7000, participantsGet.get(derick), derick.getName().concat(" receives"));
         assertEquals(4000, participantsGet.get(eva), eva.getName().concat(" receives"));
+    }
+
+    /**
+     * Test many different permutations, and make sure the sum always adds up to
+     * zero. Use a parameterized test to get a lot of samples
+     *
+     * @param Event event from the random provideExpenses source
+     */
+    @ParameterizedTest
+    @MethodSource("provideExpenses")
+    void calculateDebts_noInfiniteMoneyGlitch(Event event) {
+        MyWebSocketClient wsc = mock(MyWebSocketClient.class);
+        ConfigLoader cnf = mock(ConfigLoader.class);
+        ServerUtils server = new ServerUtils(wsc, cnf);
+        List<Debt> debts = server.calculateDebts(event);
+
+        HashMap<Participant, Long> participantsGet = new HashMap<>();
+
+        for (Debt debt : debts) {
+            long creditorGets = participantsGet.getOrDefault(debt.getCreditor(), 0L);
+            long debtorGets = participantsGet.getOrDefault(debt.getDebtor(), 0L);
+
+            participantsGet.put(debt.getCreditor(), creditorGets + debt.getAmount().getInternalValue());
+            participantsGet.put(debt.getDebtor(), debtorGets - debt.getAmount().getInternalValue());
+        }
+
+        long sum = participantsGet.values().stream().mapToLong(x -> x /* unbox */).sum();
+
+        assertEquals(0, sum, "Net sum must always be zero");
+
+    }
+
+    private static Expense generateRandomExpense(Random rand, Event event) {
+        List<Participant> eventParticipants = event.getParticipants().stream()
+                .collect(Collectors.toList());
+        int amount = rand.nextInt(1, eventParticipants.size());
+        List<Integer> ints = IntStream.range(0, amount).boxed().collect(Collectors.toList());
+        Collections.shuffle(ints, rand);
+        Set<Participant> randomParticipants = ints.stream().map(index -> eventParticipants.get(index))
+                .collect(Collectors.toSet());
+
+        Expense exp = new Expense(event, "Random Expense",
+                eventParticipants.get(rand.nextInt(eventParticipants.size())),
+                new Monetary(rand.nextLong(1, 10000)), LocalDate.of(2022, 4, 1), randomParticipants);
+        return exp;
+    }
+
+    private static Stream<Event> provideExpenses() {
+        // Seed provided by dice throwing, very random indeed
+        Random random = new Random(35263245);
+        // 20 lists of 0-10 entries
+        return random.ints(0, 10).limit(20).mapToObj(amount -> {
+            Event ev = new Event("ABC123", "Test Debt Calculation",
+                    LocalDateTime.of(2022, 4, 1, 0, 0),
+                    Set.of(alice, bob, claude, derick, eva),
+                    Set.of());
+            Set<Expense> randomExpenses = LongStream.range(0, amount)
+                    .mapToObj(id -> {
+                        Expense exp = generateRandomExpense(random, ev);
+                        exp.setId(id);
+                        return exp;
+                    }).collect(Collectors.toSet());
+            ev.setExpenses(randomExpenses);
+            return ev;
+        });
     }
 
 }
