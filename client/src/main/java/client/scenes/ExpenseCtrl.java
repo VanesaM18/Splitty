@@ -23,13 +23,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -166,9 +160,6 @@ public class ExpenseCtrl {
      */
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
-            case ENTER:
-                ok();
-                break;
             case ESCAPE:
                 abort();
                 break;
@@ -217,14 +208,9 @@ public class ExpenseCtrl {
                 server.addExpense(expense);
             } else {
                 server.updateExpense(expense);
-                // do nothing for now
             }
         } catch (Exception err) {
-
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(err.getMessage());
-            alert.showAndWait();
+            alert(err.getMessage());
             return;
         }
 
@@ -413,6 +399,7 @@ public class ExpenseCtrl {
                     attachImage(deleteButton, "/assets/circle-xmark-solid.png", 15, 15);
                     deleteButton.setStyle("-fx-background-color: transparent; " +
                             "-fx-padding: 0; -fx-border: none;");
+                    deleteButton.setTooltip(new Tooltip("Remove tag"));
                     deleteButton.setOnMouseEntered(event -> {
                         deleteButton.setCursor(Cursor.HAND);
                     });

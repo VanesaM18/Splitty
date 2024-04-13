@@ -14,6 +14,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.image.Image;
 
@@ -440,5 +441,18 @@ public class OpenDebtsCtrl {
         alert.setContentText(content);
         alert.showAndWait();
     }
+    /**
+     * Event handler for pressing a key.
+     *
+     * @param e the key that is pressed
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ESCAPE:
+                back();
+                break;
+            default:
+                break;
+        }
+    }
 }
-

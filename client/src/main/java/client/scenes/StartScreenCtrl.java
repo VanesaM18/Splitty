@@ -113,9 +113,10 @@ public class StartScreenCtrl implements Initializable {
                                 deleteButton.setCursor(Cursor.HAND));
                             deleteButton.setOnMouseExited(event ->
                                 deleteButton.setCursor(Cursor.DEFAULT));
+                            deleteButton.setTooltip(new Tooltip("Remove event"));
+                            joinButton.setTooltip(new Tooltip("Show invite code"));
                             hBox.getChildren().addAll(text, joinButton, region, deleteButton);
-                            setGraphic(hBox);
-                        }
+                            setGraphic(hBox);}
                     }
                 };
             }
@@ -278,7 +279,11 @@ public class StartScreenCtrl implements Initializable {
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
             case ENTER:
-                createEvent();
+                if (joinEventField.isFocused()) {
+                    joinEvent();
+                } else if (createEventField.isFocused()) {
+                    createEvent();
+                }
                 break;
             default:
                 break;

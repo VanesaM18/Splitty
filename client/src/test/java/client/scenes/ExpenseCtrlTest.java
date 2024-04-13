@@ -8,6 +8,8 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+
+import javafx.scene.input.KeyEvent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +34,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import org.testfx.util.WaitForAsyncUtils;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(ApplicationExtension.class)
 class ExpenseCtrlTest {
@@ -133,8 +138,26 @@ class ExpenseCtrlTest {
     }
 
     @Test
+    void testEnter(FxRobot robot) throws InterruptedException, ExecutionException {
+        robot.interact(() -> {
+            KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ENTER, false, false, false, false);
+            controller.keyPressed(event);
+        });
+    }
+
+    @Test
     void abortButtonGoesBack(FxRobot robot) {
         robot.clickOn("Abort");
+
+        Mockito.verify(mainCtrl, Mockito.times(1)).showOverviewEvent(null);
+    }
+
+    @Test
+    void abortButtonGoesBackEscape(FxRobot robot) {
+        robot.interact(() -> {
+            KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ESCAPE, false, false, false, false);
+            controller.keyPressed(event);
+        });
 
         Mockito.verify(mainCtrl, Mockito.times(1)).showOverviewEvent(null);
     }

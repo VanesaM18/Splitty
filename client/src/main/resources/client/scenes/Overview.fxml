@@ -16,6 +16,9 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.text.Text?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OverviewCtrl">
@@ -31,6 +34,12 @@
                      </font>
                   </Label>
                   <Button fx:id="editTitleButton" mnemonicParsing="false" onAction="#editTitle">
+                     <tooltip>
+                        <Tooltip text="Edit title"/>
+                     </tooltip>
+                     <cursor>
+                        <Cursor fx:constant="HAND"/>
+                     </cursor>
                      <graphic>
                         <ImageView fitHeight="19.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -52,6 +61,12 @@
                   </Label>
                   <Region prefHeight="200.0" prefWidth="10.0" />
                   <Button fx:id="editParticipantButton" mnemonicParsing="false" onAction="#editParticipant" prefHeight="7.0" prefWidth="24.0">
+                     <tooltip>
+                        <Tooltip text="Edit participant"/>
+                     </tooltip>
+                     <cursor>
+                        <Cursor fx:constant="HAND"/>
+                     </cursor>
                      <graphic>
                         <ImageView fitHeight="19.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -62,6 +77,12 @@
                   </Button>
                   <Region prefHeight="200.0" prefWidth="10.0" />
                   <Button fx:id="addParticipantButton" mnemonicParsing="false" onAction="#addParticipant" prefHeight="7.0" prefWidth="24.0">
+                     <tooltip>
+                        <Tooltip text="Add participant"/>
+                     </tooltip>
+                     <cursor>
+                        <Cursor fx:constant="HAND"/>
+                     </cursor>
                      <graphic>
                         <ImageView fitHeight="25.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -72,6 +93,12 @@
                   </Button>
                   <Region prefHeight="200.0" prefWidth="10.0" />
                   <Button fx:id="deleteParticipantButton" layoutX="215.0" layoutY="103.0" mnemonicParsing="false" onAction="#deleteParticipant" prefHeight="7.0" prefWidth="24.0">
+                     <tooltip>
+                        <Tooltip text="Delete participant"/>
+                     </tooltip>
+                     <cursor>
+                        <Cursor fx:constant="HAND"/>
+                     </cursor>
                      <graphic>
                         <ImageView fitHeight="25.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -82,7 +109,11 @@
                   </Button>
                </children>
             </HBox>
-            <ListView fx:id="participantNames" minHeight="-Infinity" orientation="HORIZONTAL" prefHeight="50.0" prefWidth="421.0" />
+            <ListView fx:id="participantNames" minHeight="-Infinity" orientation="HORIZONTAL" prefHeight="50.0" prefWidth="421.0">
+               <cursor>
+                  <Cursor fx:constant="HAND"/>
+               </cursor>
+            </ListView>
             <Region prefHeight="5.0" />
             <Label prefHeight="27.0" text="%expenses">
                <font>
@@ -142,6 +173,12 @@
          </padding>
       </VBox>
       <TitledPane fx:id="languageNavigator" alignment="CENTER" blendMode="SRC_ATOP" expanded="false" layoutX="408.0" layoutY="5.666666666666667" maxHeight="400.0" maxWidth="200.0" minHeight="15.0" prefHeight="15.0" prefWidth="20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.666666666666667">
+         <tooltip>
+            <Tooltip text="Change language"/>
+         </tooltip>
+         <padding>
+            <Insets left="5" right="5" />
+         </padding>
       </TitledPane>
       <HBox layoutX="14.0" layoutY="1.0" prefHeight="50.0" prefWidth="212.0">
          <children>

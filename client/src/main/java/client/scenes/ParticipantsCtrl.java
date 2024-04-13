@@ -212,9 +212,6 @@ public class ParticipantsCtrl {
      */
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
-            case ENTER:
-                ok();
-                break;
             case ESCAPE:
                 abort();
                 break;

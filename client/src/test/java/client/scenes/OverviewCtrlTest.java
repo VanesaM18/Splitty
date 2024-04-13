@@ -12,6 +12,8 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import client.utils.language.LanguageProcessor;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -43,14 +45,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(ApplicationExtension.class)
 public class OverviewCtrlTest {
-    // private final Event event =
-    // new Event("testCode", "name", LocalDateTime.now(), Set.of(), new HashSet<>());
-    // private final List<Participant> participants = List.of(new Participant("Alice", "", "", ""),
-    // new Participant("Bob", "", "", ""), new Participant("Charlie", "", "", ""),
-    // new Participant("David", "", "", ""), new Participant("Eve", "", "", ""));
-    // private final Set<Expense> expenses =
-    // Set.of(new Expense(event, "McDonald's", participants.get(0), new Monetary(23),
-    // LocalDate.now(), Set.of(participants.get(0), participants.get(1))));
 
     private Event event;
 
@@ -146,6 +140,32 @@ public class OverviewCtrlTest {
         robot.interact(() -> {
             controller.back();
         });
+    }
+
+    @Test
+    void backEsc(FxRobot robot) {
+        robot.interact(() -> {
+            KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ESCAPE, false, false, false, false);
+            controller.keyPressed(event);
+        });
+    }
+
+    @Test
+    void ctrlS(FxRobot robot) {
+        robot.interact(() -> {
+            KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.S, false, true, false, false);
+            controller.keyPressed(event);
+        });
+        Mockito.verify(mainCtrl, Mockito.times(1)).showStatistics(event);
+    }
+
+    @Test
+    void ctrlE(FxRobot robot) {
+        robot.interact(() -> {
+            KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.E, false, true, false, false);
+            controller.keyPressed(event);
+        });
+        Mockito.verify(mainCtrl, Mockito.times(1)).showExpense(event, null);
     }
 
     @Test
