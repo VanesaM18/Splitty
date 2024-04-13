@@ -159,6 +159,7 @@ public class InviteScreenCtrl {
      * Refresh the current view
      */
     public void refresh() {
+        this.resourceManager = new ResourceManager(mainCtrl);
         if (event != null) {
             eventNameLabel.setText(event.getName());
             inviteCodeLabel.setText(
