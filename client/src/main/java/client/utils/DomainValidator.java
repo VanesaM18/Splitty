@@ -141,10 +141,13 @@ public class DomainValidator {
      * displays an alert indicating an invalid URL.
      */
     public void showAlert() {
+        ResourceManager resourceManager = new ResourceManager(mainCtrl);
+        String invalid = resourceManager.getStringForKey("content_invalid_url");
+        String valid = resourceManager.getStringForKey("content_enter_valid_url");
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Invalid URL");
-        alert.setHeaderText("Invalid URL");
-        alert.setContentText("Please enter a valid URL.");
+        alert.setTitle(invalid);
+        alert.setHeaderText(invalid);
+        alert.setContentText(valid);
         alert.showAndWait();
         alert.getOnCloseRequest();
     }

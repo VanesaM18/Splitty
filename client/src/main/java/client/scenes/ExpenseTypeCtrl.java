@@ -1,5 +1,7 @@
 package client.scenes;
 
+import client.utils.AlertBuilder;
+import client.utils.ResourceManager;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
@@ -32,6 +34,7 @@ public class ExpenseTypeCtrl {
     @FXML
     private ListView<ExpenseType> tags;
     private final ObservableList<ExpenseType> tagsObs = FXCollections.observableArrayList();
+    private ResourceManager resourceManager;
 
     /**
      * Controller responsible for handling the editing tags
@@ -45,6 +48,7 @@ public class ExpenseTypeCtrl {
     public ExpenseTypeCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
+        this.resourceManager = new ResourceManager(mainCtrl);
     }
 
     /**
@@ -115,14 +119,13 @@ public class ExpenseTypeCtrl {
                         String closestColor = (brightness <= 0.5) ? "#ffffff" : "#000000";
                         text.setFill(Color.web(closestColor));
                         Button deleteButton = new Button();
-                        deleteButton.setOnAction(e -> {
-                            deleteTag(listView, item);
-                        });
+                        deleteButton.setOnAction(e -> deleteTag(listView, item));
                         deleteButton.setAlignment(Pos.CENTER);
                         HBox.setHgrow(deleteButton, Priority.ALWAYS);
                         Region region = new Region();
                         HBox.setHgrow(region, Priority.ALWAYS);
-                        buttonStyle(deleteButton, "Delete expense type",
+                        buttonStyle(deleteButton,
+                                resourceManager.getStringForKey("content_delete_expense_type"),
                                 "/assets/circle-xmark-solid.png");
                         Button editButton = new Button();
                         editButton.setOnAction(event -> {
@@ -130,7 +133,9 @@ public class ExpenseTypeCtrl {
                         });
                         editButton.setAlignment(Pos.CENTER);
                         HBox.setHgrow(editButton, Priority.ALWAYS);
-                        buttonStyle(editButton, "Edit expense type", "/assets/pen-solid.png");
+                        buttonStyle(editButton,
+                                resourceManager.getStringForKey("content_edit_expense_type"),
+                                "/assets/pen-solid.png");
                         hBox.getChildren().addAll(text, editButton, region, deleteButton);
                         setGraphic(hBox);
                         setBackground(new Background(new BackgroundFill(Color.web(item.getColor()),
@@ -161,18 +166,21 @@ public class ExpenseTypeCtrl {
         attachImage(button, image, 15, 15);
     }
     private void deleteTag(ListView<ExpenseType> listView, ExpenseType item) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation required");
-        alert.setHeaderText("Deleting an expense type");
-        alert.setContentText(item.getName()
-                + " will de deleted.");
+        ResourceManager resourceManager = new ResourceManager(this.mainCtrl);
+        String confirmText = resourceManager.getStringForKey("confirm_button_text");
+        String cancelText = resourceManager.getStringForKey("cancel_button_text");
+        ButtonType confirm = new ButtonType(confirmText);
+        ButtonType cancel = new ButtonType(cancelText, ButtonBar.ButtonData.CANCEL_CLOSE);
+        AlertBuilder alertBuilder = new AlertBuilder(mainCtrl);
+        Optional<ButtonType> result = alertBuilder
+                .setAlertType(Alert.AlertType.CONFIRMATION)
+                .setTitleKey("confirmation_title")
+                .setHeaderKey("content_delete_tag")
+                .setContentKey("content_delete_tag_item")
+                .alterContentText(item.getName() + " %s")
+                .setCustomButtons(confirm, cancel)
+                .show();
 
-        ButtonType confirm = new ButtonType("Confirm");
-        ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-
-        alert.getButtonTypes().setAll(confirm, cancel);
-
-        Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == confirm){
             listView.getItems().remove(item);
             event.removeTag(item);
@@ -182,10 +190,8 @@ public class ExpenseTypeCtrl {
             }
             item.setEvent(null);
             server.deleteTag(item);
-            alert.close();
-        } else {
-            alert.close();
         }
+        alertBuilder.closeAlert();
     }
 
     /**

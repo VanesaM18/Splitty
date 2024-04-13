@@ -61,7 +61,7 @@ public class AppConfigurationCtrl {
                 .toList().get(0);
 
         comboBox.setValue(currentLanguage.getText());
-        comboBox.getItems().add(currentLanguage.getText());
+        //comboBox.getItems().add(currentLanguage.getText());
 
     }
 

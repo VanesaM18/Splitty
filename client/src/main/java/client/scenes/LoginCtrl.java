@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.AlertBuilder;
 import client.utils.ServerUtils;
 
 import com.google.inject.Inject;
@@ -45,10 +46,11 @@ public class LoginCtrl {
 
         String result = server.loginAdmin(admin);
         if (!Objects.equals(result, "Login successfully")) {
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(result);
-            alert.showAndWait();
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .alterContentText(result + "%s")
+                    .show();
             return;
         }
         // login successful redirect to where needed
