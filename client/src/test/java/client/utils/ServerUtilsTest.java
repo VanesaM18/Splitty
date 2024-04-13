@@ -112,6 +112,69 @@ class ServerUtilsTest {
         assertEquals(expected, severe.calculateDebts(event1));
     }
 
+    @Test
+    void testParticipantsNoInfluenceNull() {
+        MyWebSocketClient myWebSocketClient = mock(MyWebSocketClient.class);
+        ConfigLoader configLoader = mock(ConfigLoader.class);;
+        ServerUtils serverUtils = new ServerUtils(myWebSocketClient, configLoader);
+
+        List<Participant> result = serverUtils.participantsNoInfluence(null);
+        assertEquals(new ArrayList<>(), result);
+    }
+
+    @Test
+    void testParticipantsNoInfluenceEmptyList() {
+        MyWebSocketClient myWebSocketClient = mock(MyWebSocketClient.class);
+        ConfigLoader configLoader = mock(ConfigLoader.class);;
+        ServerUtils serverUtils = new ServerUtils(myWebSocketClient, configLoader);
+
+        List<Participant> result = serverUtils.participantsNoInfluence(List.of());
+        assertEquals(new ArrayList<>(), result);
+    }
+
+    @Test
+    void testParticipantsNoInfluenceSimple() {
+        MyWebSocketClient myWebSocketClient = mock(MyWebSocketClient.class);
+        ConfigLoader configLoader = mock(ConfigLoader.class);;
+        ServerUtils serverUtils = new ServerUtils(myWebSocketClient, configLoader);
+
+        Participant alice = new Participant("Alice", "alice@alice.com", "NLTEST", "ABCDEF12");
+        Participant bob = new Participant("Bob", "bob@bob.com", "DETEST", "FEDCBA21");
+        ArrayList<Participant> participants = new ArrayList<>(List.of(alice, bob));
+
+        List<Expense> expenses = List.of(
+            new Expense(null, "Event 1", alice, new Monetary(10), LocalDate.now(), Set.of(alice, bob)),
+            new Expense(null, "Event 2", bob, new Monetary(10), LocalDate.now(), Set.of(alice, bob))
+        );
+
+        ArrayList<Participant> result = new ArrayList<>(serverUtils.participantsNoInfluence(expenses));
+
+        // Sort the arrays since order of the arrays doesn't matter.
+        participants.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
+        result.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
+
+        assertEquals(participants, result, "equal debt should cancel out");
+    }
+
+    @Test
+    void testParticipantsNoInfluenceSimple2() {
+        MyWebSocketClient myWebSocketClient = mock(MyWebSocketClient.class);
+        ConfigLoader configLoader = mock(ConfigLoader.class);;
+        ServerUtils serverUtils = new ServerUtils(myWebSocketClient, configLoader);
+
+        Participant alice = new Participant("Alice", "alice@alice.com", "NLTEST", "ABCDEF12");
+        Participant bob = new Participant("Bob", "bob@bob.com", "DETEST", "FEDCBA21");
+
+        List<Expense> expenses = List.of(
+            new Expense(null, "Event 1", alice, new Monetary(20), LocalDate.now(), Set.of(alice, bob)),
+            new Expense(null, "Event 2", bob, new Monetary(10), LocalDate.now(), Set.of(alice, bob))
+        );
+
+        ArrayList<Participant> result = new ArrayList<>(serverUtils.participantsNoInfluence(expenses));
+
+        assertEquals(List.of(), result, "unsettled debt");
+    }
+
     private static String generateRandomIban() {
         return "IBAN" + UUID.randomUUID().toString().substring(0, 10);
     }

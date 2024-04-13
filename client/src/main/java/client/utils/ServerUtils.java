@@ -612,7 +612,7 @@ public class ServerUtils {
      * @param allExpenses all existing expenses
      * @return the list of participants that can be removed
      */
-    private List<Participant> participantsNoInfluence(List<Expense> allExpenses) {
+    protected List<Participant> participantsNoInfluence(List<Expense> allExpenses) {
         if (allExpenses == null) {
             return new ArrayList<>();
         }

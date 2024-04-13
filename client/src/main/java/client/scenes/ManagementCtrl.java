@@ -9,6 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.TableColumn.SortType;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import client.utils.ServerUtils;
@@ -96,6 +97,10 @@ public class ManagementCtrl {
         this.lastActivityColumn.setCellValueFactory(w ->
                 new SimpleStringProperty(formatDate.apply(w.getValue().getLastUpdateTime())));
         this.eventsTable.setContextMenu(createContextMenu());
+
+        // Sort by the creation date by default, in ascending order.
+        this.creationDateColumn.setSortType(SortType.DESCENDING);
+        this.eventsTable.getSortOrder().add(creationDateColumn);
     }
 
     private void downloadJsonDumpForEvent(Event event) {
