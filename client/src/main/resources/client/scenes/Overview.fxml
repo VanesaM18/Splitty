@@ -182,28 +182,7 @@
       </TitledPane>
       <HBox layoutX="14.0" layoutY="1.0" prefHeight="50.0" prefWidth="212.0">
          <children>
-            <Text fill="#ff7d00" fontSmoothingType="LCD" layoutX="12.0" layoutY="43.0" rotate="28.1" strokeType="OUTSIDE" strokeWidth="0.0" text="S p l i t t y" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <font>
-                  <Font size="20.0" />
-               </font>
-               <rotationAxis>
-                  <Point3D x="1.0" y="1.0" />
-               </rotationAxis>
-               <HBox.margin>
-                  <Insets bottom="10.0" top="10.0" />
-               </HBox.margin>
-            </Text>
-            <Text fill="#007dff" fontSmoothingType="LCD" layoutX="192.0" layoutY="43.0" rotate="28.1" strokeType="OUTSIDE" strokeWidth="0.0" text="S p l i t t y" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <font>
-                  <Font size="20.0" />
-               </font>
-               <rotationAxis>
-                  <Point3D x="1.0" y="-1.0" />
-               </rotationAxis>
-               <HBox.margin>
-                  <Insets bottom="10.0" top="10.0" />
-               </HBox.margin>
-            </Text>
+            <ImageView fx:id = "imageView" fitHeight="67.0" fitWidth="344.0" pickOnBounds="true" preserveRatio="true"/>
          </children>
       </HBox>
    </children>
