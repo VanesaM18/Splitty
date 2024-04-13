@@ -116,8 +116,11 @@ class ServerUtilsTest {
         Expense expense2 = new Expense(event1, "expense2", participant2, amount2, date, set2);
         Set<Expense> setExpense = new HashSet<>(List.of(expense1, expense2));
         event1.setExpenses(setExpense);
-        List<Debt> expected = new ArrayList<>();
-        assertEquals(expected, severe.calculateDebts(event1));
+        Set<Debt> expected = Set.of(
+                new Debt(participant3, new Monetary(500), participant2),
+                new Debt(participant4, new Monetary(1000), participant2));
+
+        assertEquals(expected, Set.copyOf(severe.calculateDebts(event1)));
     }
 
     @Test

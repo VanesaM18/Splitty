@@ -139,7 +139,7 @@ public class Participant {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(name, email, iban, bic);
+        return Objects.hash(id, name, email, iban, bic);
     }
 
     /**
