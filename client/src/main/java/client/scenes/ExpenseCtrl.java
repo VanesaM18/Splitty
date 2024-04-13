@@ -171,12 +171,13 @@ public class ExpenseCtrl {
     }
 
     private HashSet<Participant> validateSplitBetween() throws Exception {
+        ResourceManager resourceManager = new ResourceManager(mainCtrl);
         var newSplit = new HashSet<>(selectParticipantsObs);
         if (newSplit.size() < 1
                 || (newSplit.size() == 1 &&
                         newSplit.contains(receiver.getSelectionModel().getSelectedItem()))) {
             throw new Exception(
-                    "At least one participant that is not the receiver must be selected");
+                    resourceManager.getStringForKey("content_at_least"));
         }
         return newSplit;
     }
@@ -205,7 +206,7 @@ public class ExpenseCtrl {
             new AlertBuilder(mainCtrl)
                     .setAlertType(Alert.AlertType.ERROR)
                     .setModality(Modality.APPLICATION_MODAL)
-                    .setContentKey(ex.getMessage())
+                    .alterContentText(ex.getMessage() + " %s")
                     .show();
             return;
         }
@@ -331,38 +332,42 @@ public class ExpenseCtrl {
     }
 
     private LocalDate getDate() throws Exception {
+        ResourceManager resourceManager = new ResourceManager(mainCtrl);
         var newDate = date.getValue();
         if (newDate == null) {
-            throw new Exception("Date must be specified");
+            throw new Exception(resourceManager.getStringForKey("content_date_required"));
         }
         return newDate;
     }
 
     private Monetary getAmount() throws Exception {
+        ResourceManager resourceManager = new ResourceManager(mainCtrl);
         String textValue = amount.getText().strip();
         if ("".equals(textValue)) {
-            throw new Exception("Amount must be specified");
+            throw new Exception(resourceManager.getStringForKey("content_amount_required"));
         }
         var am = Monetary.fromString(amount.getText(), Currency.getInstance("EUR"));
         if (am.getInternalValue() == 0) {
-            throw new Exception("Amount must not be zero");
+            throw new Exception(resourceManager.getStringForKey("content_amount_zero"));
         }
 
         return am;
     }
 
     private String getName() throws Exception {
+        ResourceManager resourceManager = new ResourceManager(mainCtrl);
         String name = this.description.getText().strip();
         if ("".equals(name)) {
-            throw new Exception("Name must be specified");
+            throw new Exception(resourceManager.getStringForKey("content_name_required"));
         }
         return name;
     }
 
     private Participant validateReceiver() throws Exception {
+        ResourceManager resourceManager = new ResourceManager(mainCtrl);
         Participant selected = receiver.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            throw new Exception("Please select a receiver");
+            throw new Exception(resourceManager.getStringForKey("content_receiver_required"));
         }
         return selected;
     }
@@ -410,7 +415,7 @@ public class ExpenseCtrl {
                             "-fx-padding: 0; -fx-border: none;");
                     ResourceManager resourceManager = new ResourceManager(mainCtrl);
                     String removeTag = resourceManager.getStringForKey("content_remove_tag");
-                    deleteButton.setTooltip(new Tooltip("Remove tag"));
+                    deleteButton.setTooltip(new Tooltip(removeTag));
                     deleteButton.setOnMouseEntered(event -> deleteButton.setCursor(Cursor.HAND));
                     deleteButton.setOnMouseExited(event -> {
                         deleteButton.setCursor(Cursor.DEFAULT);
