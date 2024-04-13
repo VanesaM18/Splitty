@@ -54,7 +54,7 @@ public class OpenDebtsCtrl {
         this.mainCtrl = mainCtrl;
         this.server = server;
         this.emailManager = emailManager;
-        this.resourceManager = new ResourceManager(mainCtrl);
+        resourceManager = new ResourceManager(mainCtrl);
     }
 
     /**
@@ -93,6 +93,7 @@ public class OpenDebtsCtrl {
                 debtContainer.getChildren().add(hbox);
             }
         }
+        resourceManager = new ResourceManager(mainCtrl);
     }
 
     private TitledPane createDebtTitledPane(Debt debt) {
@@ -328,7 +329,8 @@ public class OpenDebtsCtrl {
 
 
     private Button createMarkReceivedButton(Debt debt) {
-        String markrecieved = resourceManager.getStringForKey("content_mark_recieved");
+        resourceManager = new ResourceManager(mainCtrl);
+        String markrecieved = resourceManager.getStringForKey("content_mark_received");
         Button button = new Button(markrecieved);
         button.setOnAction(event -> {
             server.removeExpensesDebts(e, debt);

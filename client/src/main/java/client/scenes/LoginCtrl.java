@@ -14,6 +14,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 public class LoginCtrl {
 
@@ -38,6 +39,15 @@ public class LoginCtrl {
         this.server = server;
     }
 
+    private final Function<String, String> mapAdminLoginKey = string -> switch (string) {
+        case "Missing credentials":
+            yield "admin_miss";
+        case "Login successfully":
+            yield "admin_ok";
+        default:
+            yield "admin_wrong";
+    };
+
     /**
      * Tries to log in with the credentials provided by the user in the UI
      */
@@ -49,7 +59,7 @@ public class LoginCtrl {
             new AlertBuilder(mainCtrl)
                     .setAlertType(Alert.AlertType.ERROR)
                     .setModality(Modality.APPLICATION_MODAL)
-                    .alterContentText(result + "%s")
+                    .setContentKey(mapAdminLoginKey.apply(result))
                     .show();
             return;
         }
