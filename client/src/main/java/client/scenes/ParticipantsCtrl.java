@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.AlertBuilder;
 import client.utils.ServerUtils;
 
 import com.google.inject.Inject;
@@ -78,36 +79,65 @@ public class ParticipantsCtrl {
         Participant p = participantToChange;
         try {
             p = getParticipant();
-            if (!uniqueName(ev, p)) {
-                alert("Not a unique name!");
-                return;
-            }
-            if (p.getName().equals("")) {
-                alert("Name cannot be empty!");
-                return;
-            }
-            if (!p.getEmail().equals("") && !isEmailValid(p.getEmail())) {
-                alert("Invalid email!");
-                return;
-            }
-            if (!p.getIban().equals("") && !isIbanValid(p.getIban())) {
-                alert("Invalid IBAN!");
-                return;
-            }
-            if (!p.getBic().equals("") && !isIBicValid(p.getBic())) {
-                alert("Invalid BIC!");
-                return;
-            }
-            p = server.addParticipant(p);
-            ev.addParticipant(p);
-            server.updateEvent(ev);
+            if (checkParticipantDetails(p)) return;
         } catch (WebApplicationException e) {
-            alert(e.getMessage());
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .alterContentText(e.getMessage() + "%s")
+                    .show();
             return;
         }
 
         clearFields();
         mainCtrl.showOverviewEvent(ev);
+    }
+
+    private boolean checkParticipantDetails(Participant p) {
+        if (!uniqueName(ev, p)) {
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey("content_participant_unique_name")
+                    .show();
+            return true;
+        }
+        if (p.getName().equals("")) {
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey("content_participant_name")
+                    .show();
+            return true;
+        }
+        if (!p.getEmail().equals("") && !isEmailValid(p.getEmail())) {
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey("content_participant_email")
+                    .show();
+            return true;
+        }
+        if (!p.getIban().equals("") && !isIbanValid(p.getIban())) {
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey("content_participant_iban")
+                    .show();
+            return true;
+        }
+        if (!p.getBic().equals("") && !isIBicValid(p.getBic())) {
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey("content_participant_bic")
+                    .show();
+            return true;
+        }
+        p = server.addParticipant(p);
+        ev.addParticipant(p);
+        server.updateEvent(ev);
+        return false;
     }
 
     /**

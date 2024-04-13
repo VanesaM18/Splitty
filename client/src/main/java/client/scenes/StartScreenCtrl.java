@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.ConfigLoader;
+import client.utils.AlertBuilder;
 import client.utils.ServerUtils;
 
 import client.utils.language.LanguageProcessor;
@@ -130,7 +131,11 @@ public class StartScreenCtrl implements Initializable {
     public void createEvent() {
         String eventName = createEventField.getText();
         if(eventName.equals("")) {
-            alert("You have to chose a name first.");
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey("content_event_name")
+                    .show();
             return;
         }
 
@@ -164,15 +169,20 @@ public class StartScreenCtrl implements Initializable {
     public void joinEvent() {
         String eventCode = joinEventField.getText();
         if(eventCode.equals("")) {
-            alert("Enter an event code first.");
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey("content_event_code")
+                    .show();
             return;
         }
         Event ev = server.getEventById(eventCode);
         if (ev == null) {
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText("This event does not exist");
-            alert.showAndWait();
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey("content_event")
+                    .show();
             clearFields();
             return;
         }
