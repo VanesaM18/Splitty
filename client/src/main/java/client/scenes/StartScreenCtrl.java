@@ -80,8 +80,6 @@ public class StartScreenCtrl implements Initializable {
         recentEvents.getItems().addAll(inviteCodes);
         Image image = new Image(getClass().getResourceAsStream(
                 "/assets/splitty-splitty.png"));
-
-        // Set the loaded image to the ImageView
         imageView.setImage(image);
         recentEvents.setCellFactory(new Callback<>() {
             @Override
@@ -108,18 +106,7 @@ public class StartScreenCtrl implements Initializable {
                             HBox.setHgrow(region, Priority.ALWAYS);
                             attachImage(joinButton, "/assets/up-right-arrow.png", 15, 15);
                             attachImage(deleteButton, "/assets/circle-xmark-solid.png", 15, 15);
-                            joinButton.setStyle("-fx-background-color: transparent; " +
-                                "-fx-padding: 0; -fx-border: none;");
-                            deleteButton.setStyle("-fx-background-color: transparent; " +
-                                "-fx-padding: 0; -fx-border: none;");
-                            joinButton.setOnMouseEntered(event ->
-                                joinButton.setCursor(Cursor.HAND));
-                            joinButton.setOnMouseExited(event ->
-                                joinButton.setCursor(Cursor.DEFAULT));
-                            deleteButton.setOnMouseEntered(event ->
-                                deleteButton.setCursor(Cursor.HAND));
-                            deleteButton.setOnMouseExited(event ->
-                                deleteButton.setCursor(Cursor.DEFAULT));
+                            joinDeleteButtons(joinButton, deleteButton);
                             deleteButton.setTooltip(new Tooltip("Remove event"));
                             joinButton.setTooltip(new Tooltip("Show invite code"));
                             hBox.getChildren().addAll(text, joinButton, region, deleteButton);
@@ -129,6 +116,21 @@ public class StartScreenCtrl implements Initializable {
             }
         });
         languageNavigator.setExpanded(false);
+    }
+
+    private static void joinDeleteButtons(Button joinButton, Button deleteButton) {
+        joinButton.setStyle("-fx-background-color: transparent; " +
+            "-fx-padding: 0; -fx-border: none;");
+        deleteButton.setStyle("-fx-background-color: transparent; " +
+            "-fx-padding: 0; -fx-border: none;");
+        joinButton.setOnMouseEntered(event ->
+            joinButton.setCursor(Cursor.HAND));
+        joinButton.setOnMouseExited(event ->
+            joinButton.setCursor(Cursor.DEFAULT));
+        deleteButton.setOnMouseEntered(event ->
+            deleteButton.setCursor(Cursor.HAND));
+        deleteButton.setOnMouseExited(event ->
+            deleteButton.setCursor(Cursor.DEFAULT));
     }
 
     /**
