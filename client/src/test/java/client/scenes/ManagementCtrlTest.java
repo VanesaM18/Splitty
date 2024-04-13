@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -116,6 +119,20 @@ class ManagementCtrlTest {
 
         // Close the dialog.
         robot.clickOn("OK");
+    }
+
+    @Test
+    void backEsc(FxRobot robot) {
+        SceneManager manager = Mockito.mock();
+        Mockito.when(mainCtrl.getSceneManager()).thenReturn(manager);
+
+        robot.interact(() -> {
+            KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ESCAPE, false, false, false, false);
+            controller.keyPressed(event);
+        });
+
+        Mockito.verify(manager, Mockito.times(1)).popScene();
+        Mockito.verify(mainCtrl, Mockito.times(1)).setIsInManagement(false);
     }
 
     @Test

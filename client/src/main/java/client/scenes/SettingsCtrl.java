@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 
 import java.util.Optional;
@@ -87,6 +88,12 @@ public class SettingsCtrl {
                 server.setServerUrl(url);
                 configLoader.updateProperty("address", url);
 
+                Alert alertSecond = new Alert(Alert.AlertType.WARNING);
+                alertSecond.setTitle("Restart");
+                alertSecond.setHeaderText("You should restart " +
+                    "the client for changes to take place!");
+                alertSecond.showAndWait();
+
                 goBack();
                 return true;
             }
@@ -95,5 +102,23 @@ public class SettingsCtrl {
         DomainValidator domain = new DomainValidator(this.mainCtrl, this.server);
         domain.validateUrl(url, onSuccessSupplier);
 
+    }
+
+    /**
+     * Event handler for pressing a key.
+     *
+     * @param e the key that is pressed
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ENTER:
+                saveURL();
+                break;
+            case ESCAPE:
+                goBack();
+                break;
+            default:
+                break;
+        }
     }
 }

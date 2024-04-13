@@ -167,9 +167,6 @@ public class ExpenseCtrl {
      */
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
-            case ENTER:
-                ok();
-                break;
             case ESCAPE:
                 abort();
                 break;
@@ -222,7 +219,6 @@ public class ExpenseCtrl {
                 server.addExpense(expense);
             } else {
                 server.updateExpense(expense);
-                // do nothing for now
             }
         } catch (Exception err) {
             new AlertBuilder(mainCtrl)
@@ -418,6 +414,7 @@ public class ExpenseCtrl {
                     attachImage(deleteButton, "/assets/circle-xmark-solid.png", 15, 15);
                     deleteButton.setStyle("-fx-background-color: transparent; " +
                             "-fx-padding: 0; -fx-border: none;");
+                    deleteButton.setTooltip(new Tooltip("Remove tag"));
                     deleteButton.setOnMouseEntered(event -> {
                         deleteButton.setCursor(Cursor.HAND);
                     });

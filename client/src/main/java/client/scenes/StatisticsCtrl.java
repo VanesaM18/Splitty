@@ -9,6 +9,7 @@ import commons.Monetary;
 import javafx.fxml.FXML;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyEvent;
 
 public class StatisticsCtrl {
     private Event event;
@@ -89,9 +90,6 @@ public class StatisticsCtrl {
     public void back() {
         mainCtrl.showOverviewEvent(event);
         pie.getData().clear();
-//        pie = new PieChart();
-//        pie.setData(FXCollections.observableArrayList());
-
     }
 
     /**
@@ -101,6 +99,24 @@ public class StatisticsCtrl {
         if (this.event != null) {
             this.event = server.getEventById(this.event.getInviteCode());
             setEvent(this.event);
+        }
+    }
+
+    /**
+     * Event handler for pressing a key.
+     *
+     * @param e the key that is pressed
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ENTER:
+                back();
+                break;
+            case ESCAPE:
+                back();
+                break;
+            default:
+                break;
         }
     }
 }

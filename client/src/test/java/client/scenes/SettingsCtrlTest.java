@@ -5,6 +5,8 @@ import commons.Event;
 import commons.Participant;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.BeforeAll;
@@ -22,6 +24,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import static com.google.inject.Guice.createInjector;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(ApplicationExtension.class)
 public class SettingsCtrlTest {
@@ -68,6 +71,22 @@ public class SettingsCtrlTest {
     void back(FxRobot robot) {
         robot.interact(() -> {
             controller.goBack();
+        });
+    }
+
+    @Test
+    void backEsc(FxRobot robot) {
+        robot.interact(() -> {
+            KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ESCAPE, false, false, false, false);
+            controller.keyPressed(event);
+        });
+    }
+
+    @Test
+    void saveUrlEnter(FxRobot robot) {
+        robot.interact(() -> {
+            KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ENTER, false, false, false, false);
+            controller.keyPressed(event);
         });
     }
 
