@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
+
+import javafx.scene.input.KeyEvent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -92,6 +94,20 @@ class LoginCtrlTest {
     }
 
     @Test
+    void backEsc(FxRobot robot) {
+        SceneManager manager = Mockito.mock();
+
+        Mockito.when(mainCtrl.getSceneManager()).thenReturn(manager);
+
+        robot.interact(() -> {
+            KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ESCAPE, false, false, false, false);
+            controller.keyPressed(event);
+        });
+
+        Mockito.verify(manager, Mockito.times(1)).goBack();
+    }
+
+    @Test
     void loginSuccessful(FxRobot robot) {
         Mockito.when(serverUtils.loginAdmin(new Admin("ab", "cd", "")))
                 .thenReturn("Login successfully");
@@ -102,6 +118,24 @@ class LoginCtrlTest {
 
         robot.interact(() -> {
             controller.logIn();
+        });
+
+        Mockito.verify(mainCtrl, Mockito.times(1)).showManagementOverview();
+        assertTrue(ServerUtils.isAuthenticated());
+    }
+
+    @Test
+    void loginSuccessfulEnter(FxRobot robot) {
+        Mockito.when(serverUtils.loginAdmin(new Admin("ab", "cd", "")))
+                .thenReturn("Login successfully");
+
+
+        robot.clickOn("#username").type(KeyCode.A, KeyCode.B);
+        robot.clickOn("#password").type(KeyCode.C, KeyCode.D);
+
+        robot.interact(() -> {
+            KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ENTER, false, false, false, false);
+            controller.keyPressed(event);
         });
 
         Mockito.verify(mainCtrl, Mockito.times(1)).showManagementOverview();

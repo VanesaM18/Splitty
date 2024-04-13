@@ -1,5 +1,7 @@
 package client.scenes;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.testfx.assertions.api.Assertions.assertThat;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -7,6 +9,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +22,7 @@ import org.testfx.assertions.api.Assertions;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
+import com.google.common.collect.Table;
 import client.utils.EmailManager;
 import client.utils.SceneManager;
 import client.utils.ServerUtils;
@@ -26,7 +32,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn.SortType;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -119,6 +127,20 @@ class ManagementCtrlTest {
     }
 
     @Test
+    void backEsc(FxRobot robot) {
+        SceneManager manager = Mockito.mock();
+        Mockito.when(mainCtrl.getSceneManager()).thenReturn(manager);
+
+        robot.interact(() -> {
+            KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ESCAPE, false, false, false, false);
+            controller.keyPressed(event);
+        });
+
+        Mockito.verify(manager, Mockito.times(1)).popScene();
+        Mockito.verify(mainCtrl, Mockito.times(1)).setIsInManagement(false);
+    }
+
+    @Test
     void clipboardDoesntThrow(FxRobot robot) {
         robot.clickOn(event.getName(), MouseButton.SECONDARY);
         TableView<Event> table = robot.lookup("#eventsTable").queryTableView();
@@ -127,5 +149,15 @@ class ManagementCtrlTest {
         robot.interact(() -> {
             item.fire();
         });
+    }
+
+    @Test
+    void defaultSorting(FxRobot robot) {
+        TableView<Event> table = robot.lookup("#eventsTable").queryTableView();
+        // The creation date column is the third column
+        TableColumn<Event, String> creationDateColumn = (TableColumn<Event, String>) table.getColumns().get(2);
+
+        assertEquals(SortType.DESCENDING, creationDateColumn.getSortType());
+        assertThat(table.getSortOrder()).contains(creationDateColumn);
     }
 }

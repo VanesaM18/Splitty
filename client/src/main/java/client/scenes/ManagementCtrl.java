@@ -9,9 +9,11 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.TableColumn.SortType;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import client.utils.ServerUtils;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 
 import com.google.inject.Inject;
@@ -95,6 +97,10 @@ public class ManagementCtrl {
         this.lastActivityColumn.setCellValueFactory(w ->
                 new SimpleStringProperty(formatDate.apply(w.getValue().getLastUpdateTime())));
         this.eventsTable.setContextMenu(createContextMenu());
+
+        // Sort by the creation date by default, in ascending order.
+        this.creationDateColumn.setSortType(SortType.DESCENDING);
+        this.eventsTable.getSortOrder().add(creationDateColumn);
     }
 
     private void downloadJsonDumpForEvent(Event event) {
@@ -323,5 +329,20 @@ public class ManagementCtrl {
     private Locale extractLocale() {
         var optionalLocale = this.mainCtrl.getCurrentLocale();
         return optionalLocale.orElse(null);
+    }
+
+    /**
+     * Event handler for pressing a key.
+     *
+     * @param e the key that is pressed
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ESCAPE:
+                home();
+                break;
+            default:
+                break;
+        }
     }
 }

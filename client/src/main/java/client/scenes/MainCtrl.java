@@ -136,6 +136,7 @@ public class MainCtrl {
     public void showSettings() {
         this.sceneManager.pushScene(SceneEnum.SETTINGS, null);
         primaryStage.setTitle("Settings");
+        settings.setOnKeyPressed(key -> settingsCtrl.keyPressed(key));
         primaryStage.setScene(settings);
         settingsCtrl.refresh();
     }
@@ -144,6 +145,7 @@ public class MainCtrl {
      * displays the management overview
      */
     public void showManagementOverview() {
+        management.setOnKeyPressed(key -> managementCtrl.keyPressed(key));
         isInManagement = true;
         this.sceneManager.pushScene(SceneEnum.MANAGEMENT, null);
         primaryStage.setTitle("Management Overview");
@@ -158,6 +160,7 @@ public class MainCtrl {
      * and sets the scene to the login scene.
      */
     public void showLogin() {
+        login.setOnKeyPressed(key -> loginCtrl.keyPressed(key));
         this.sceneManager.pushScene(SceneEnum.LOGIN, null);
         primaryStage.setTitle("Login: Admin");
         primaryStage.setScene(login);
@@ -221,9 +224,9 @@ public class MainCtrl {
         } else {
             primaryStage.setTitle("Event: Overview");
             overviewEventCtrl.setEvent(e);
-            primaryStage.setScene(overviewEvent);
             overviewEventCtrl.refresh();
             overviewEvent.setOnKeyPressed(key -> overviewEventCtrl.keyPressed(key));
+            primaryStage.setScene(overviewEvent);
         }
     }
 
@@ -279,17 +282,18 @@ public class MainCtrl {
     /**
      * Displays the open debts event
      *
-     * @param e the current event
+     * @param ev the current event
      */
-    public void showOpenDebts(Event e) {
+    public void showOpenDebts(Event ev) {
+        openDebt.setOnKeyPressed(e -> openDebtsCtrl.keyPressed(e));
         openDebtsCtrl.stopLongPolling();
-        if (e == null) {
+        if (ev == null) {
             primaryStage.setTitle("Open Debts");
             primaryStage.setScene(openDebt);
         } else {
             primaryStage.setTitle("Open Debt");
             primaryStage.setScene(openDebt);
-            openDebtsCtrl.initialize(e);
+            openDebtsCtrl.initialize(ev);
         }
         openDebtsCtrl.startLongPolling();
         isInOpenDebt = true;
@@ -317,16 +321,14 @@ public class MainCtrl {
      * Show expense view.
      *
      * @param ev           The event to show the expense view for
-     * @param selectedItem The selected participant to show the expense for, can be
-     *                     null
      * @param edit         The expense to edit. Pass null to create a new one
      */
-    public void showExpense(Event ev, Participant selectedItem, Expense edit) {
+    public void showExpense(Event ev, Expense edit) {
+        expense.setOnKeyPressed(e -> expenseCtrl.keyPressed(e));
         expenseCtrl.setEvent(ev);
         expenseCtrl.setUpdateExpense(edit);
         primaryStage.setTitle((edit == null ? "Add" : "Edit").concat(" Expense"));
         primaryStage.setScene(expense);
-        participants.setOnKeyPressed(e -> expenseCtrl.keyPressed(e));
     }
 
     /**
@@ -348,6 +350,7 @@ public class MainCtrl {
         expenseTypeCtrl.setEvent(ev);
         primaryStage.setScene(expenseType);
         expenseTypeCtrl.refresh();
+        expenseType.setOnKeyPressed(e -> expenseTypeCtrl.keyPressed(e));
     }
 
     /**
@@ -356,8 +359,8 @@ public class MainCtrl {
      * @param event event to which we want to add tags.
      */
     public void showAddTags(Event event) {
+        addEditTags.setOnKeyPressed(e -> addEditTagsCtrl.keyPressed(e));
         addEditTagsCtrl.setEvent(event);
-        addEditTagsCtrl.setTitle("Add expense type");
         primaryStage.setTitle("Add expense type");
         primaryStage.setScene(addEditTags);
     }
@@ -369,8 +372,8 @@ public class MainCtrl {
      * @param type  tag to be edited.
      */
     public void showUpdateTags(Event event, ExpenseType type) {
+        addEditTags.setOnKeyPressed(e -> addEditTagsCtrl.keyPressed(e));
         addEditTagsCtrl.setEvent(event);
-        addEditTagsCtrl.setTitle("Update expense type");
         addEditTagsCtrl.setExpenseType(type);
         primaryStage.setTitle("Update expense type");
         primaryStage.setScene(addEditTags);
@@ -390,6 +393,7 @@ public class MainCtrl {
      * @param ev event to be considered.
      */
     public void showStatistics(Event ev) {
+        statistics.setOnKeyPressed(e -> statisticsCtrl.keyPressed(e));
         statisticsCtrl.setEvent(ev);
         primaryStage.setTitle("Statistics");
         primaryStage.setScene(statistics);

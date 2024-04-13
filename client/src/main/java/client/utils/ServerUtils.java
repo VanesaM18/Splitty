@@ -77,23 +77,6 @@ public class ServerUtils {
     }
 
     /**
-     * gets the WebSocket client instance for communication with the server
-     * 
-     * @return WebSocket client instance
-     */
-    public MyWebSocketClient getWebSocketClient() {
-        return webSocketClient;
-    }
-
-    /**
-     * gets the server url
-     * @return server url
-     */
-    public String getServerUrl() {
-        return serverUrl;
-    }
-
-    /**
      * sets the server url
      * @param serverUrl server url
      */
@@ -155,49 +138,6 @@ public class ServerUtils {
         request.setEndpoint("api/expenses/id");
         request.setMethod("DELETE");
         request.setData(e.getId());
-        sendMessageWithoutResponse(request);
-    }
-
-    /**
-     * Deletes a participant.
-     * 
-     * @param p the participant to be deleted.
-     */
-    public void deleteParticipant(Participant p) {
-        WebSocketMessage request = new WebSocketMessage();
-        request.setEndpoint("api/participants/id");
-        request.setMethod("DELETE");
-        request.setData(p.getId());
-        sendMessageWithoutResponse(request);
-    }
-
-    /**
-     * Edits a participant.
-     * 
-     * @param newParticipant the updated participant.
-     * @param oldParticipant the participant to be edited.
-     */
-    public void editParticipant(Participant newParticipant, Participant oldParticipant) {
-        WebSocketMessage request = new WebSocketMessage();
-        request.setEndpoint("api/participants/id");
-        request.setMethod("PUT");
-        Participant[] p = new Participant[2];
-        p[0] = newParticipant;
-        p[1] = oldParticipant;
-        request.setData(p);
-        sendMessageWithoutResponse(request);
-    }
-
-    /**
-     * Adds an admin
-     * 
-     * @param admin to be added
-     */
-    public void addAdmin(Admin admin) {
-        WebSocketMessage request = new WebSocketMessage();
-        request.setEndpoint("api/admin");
-        request.setMethod("POST");
-        request.setData(admin);
         sendMessageWithoutResponse(request);
     }
 
@@ -382,25 +322,6 @@ public class ServerUtils {
      * @return an Optional containing the list of events if successful,
      * otherwise an empty Optional.
      */
-//    public Optional<List<Event>> getAllEvents() {
-//        if (isAuthenticated()) {
-//            try {
-//                WebSocketMessage requestMessage = new WebSocketMessage();
-//                requestMessage.setEndpoint("api/events");
-//                requestMessage.setMethod("GET");
-//                requestMessage.setAuthHeader(auth.get());
-//                WebSocketMessage response = sendMessageWithResponse(requestMessage);
-//                if (response.getData() != null) {
-//                    return Optional.of(getObjectMapper().convertValue(response.getData(),
-//                            new TypeReference<ArrayList<Event>>() {
-//                            }));
-//                }
-//            } catch (ExecutionException | InterruptedException e) {
-//                return Optional.empty();
-//            }
-//        }
-//        return Optional.empty();
-//    }
     public Optional<List<Event>> getAllEvents() {
         if (isAuthenticated()) {
             List<Event> events = client
@@ -691,7 +612,7 @@ public class ServerUtils {
      * @param allExpenses all existing expenses
      * @return the list of participants that can be removed
      */
-    private List<Participant> participantsNoInfluence(List<Expense> allExpenses) {
+    protected List<Participant> participantsNoInfluence(List<Expense> allExpenses) {
         if (allExpenses == null) {
             return new ArrayList<>();
         }
@@ -777,13 +698,6 @@ public class ServerUtils {
         sendMessageWithoutResponse(request);
     }
 
-    /**
-     * gets the UUID associated with this domain model.
-     * @return the UUID associated with this domain model.
-     */
-    public UUID getDomainUuid() {
-        return this.domainUuid;
-    }
 
     /**
      * sets the UUID associated with this domain model.

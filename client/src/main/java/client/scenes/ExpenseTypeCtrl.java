@@ -14,6 +14,7 @@ import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -121,16 +122,15 @@ public class ExpenseTypeCtrl {
                         HBox.setHgrow(deleteButton, Priority.ALWAYS);
                         Region region = new Region();
                         HBox.setHgrow(region, Priority.ALWAYS);
-                        attachImage(deleteButton, "/assets/circle-xmark-solid.png", 15, 15);
-                        buttonStyle(deleteButton);
+                        buttonStyle(deleteButton, "Delete expense type",
+                                "/assets/circle-xmark-solid.png");
                         Button editButton = new Button();
                         editButton.setOnAction(event -> {
                             updateTag(item);
                         });
                         editButton.setAlignment(Pos.CENTER);
                         HBox.setHgrow(editButton, Priority.ALWAYS);
-                        attachImage(editButton, "/assets/pen-solid.png", 15, 15);
-                        buttonStyle(editButton);
+                        buttonStyle(editButton, "Edit expense type", "/assets/pen-solid.png");
                         hBox.getChildren().addAll(text, editButton, region, deleteButton);
                         setGraphic(hBox);
                         setBackground(new Background(new BackgroundFill(Color.web(item.getColor()),
@@ -145,16 +145,20 @@ public class ExpenseTypeCtrl {
     }
 
     /**
-     * Styles a button.
-     * @param button button to be styled.
+     * Styles buttons with images.
+     * @param button button to be styled
+     * @param tooltip tooltip for the button
+     * @param image image to be attached
      */
-    public void buttonStyle(Button button) {
+    public void buttonStyle(Button button, String tooltip, String image) {
         button.setStyle("-fx-background-color: transparent; " +
                 "-fx-padding: 0; -fx-border: none;");
         button.setOnMouseEntered(event ->
                 button.setCursor(Cursor.HAND));
         button.setOnMouseExited(event ->
                 button.setCursor(Cursor.DEFAULT));
+        button.setTooltip(new Tooltip(tooltip));
+        attachImage(button, image, 15, 15);
     }
     private void deleteTag(ListView<ExpenseType> listView, ExpenseType item) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -218,5 +222,23 @@ public class ExpenseTypeCtrl {
      */
     private void updateTag(ExpenseType item) {
         mainCtrl.showUpdateTags(event, item);
+    }
+
+    /**
+     * Event handler for pressing a key.
+     *
+     * @param e the key that is pressed
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ENTER:
+                addTags();
+                break;
+            case ESCAPE:
+                back();
+                break;
+            default:
+                break;
+        }
     }
 }

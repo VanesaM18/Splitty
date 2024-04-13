@@ -12,6 +12,8 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import client.utils.language.LanguageProcessor;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -38,17 +40,11 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 @ExtendWith(ApplicationExtension.class)
 public class OverviewCtrlTest {
-    // private final Event event =
-    // new Event("testCode", "name", LocalDateTime.now(), Set.of(), new HashSet<>());
-    // private final List<Participant> participants = List.of(new Participant("Alice", "", "", ""),
-    // new Participant("Bob", "", "", ""), new Participant("Charlie", "", "", ""),
-    // new Participant("David", "", "", ""), new Participant("Eve", "", "", ""));
-    // private final Set<Expense> expenses =
-    // Set.of(new Expense(event, "McDonald's", participants.get(0), new Monetary(23),
-    // LocalDate.now(), Set.of(participants.get(0), participants.get(1))));
 
     private Event event;
 
@@ -147,40 +143,29 @@ public class OverviewCtrlTest {
     }
 
     @Test
-    void deleteParticipantNoParticipantSelected(FxRobot robot) {
+    void backEsc(FxRobot robot) {
         robot.interact(() -> {
-            controller.setEvent(event);
-            controller.refresh();
+            KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ESCAPE, false, false, false, false);
+            controller.keyPressed(event);
         });
-
-        robot.interact(() -> {
-            controller.deleteParticipant();
-        });
-
-        Label warning = robot.lookup("#warning").queryAs(Label.class);
-        Assertions.assertThat(warning).hasText("First chose a participant.");
     }
 
     @Test
-    @Timeout(value = 10)
-    void deleteParticipantUnpaidDebts(FxRobot robot) {
+    void ctrlS(FxRobot robot) {
         robot.interact(() -> {
-            controller.setEvent(event);
-            controller.refresh();
+            KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.S, false, true, false, false);
+            controller.keyPressed(event);
         });
+        Mockito.verify(mainCtrl, Mockito.times(1)).showStatistics(event);
+    }
 
-        ListView<Participant> participantsListView =
-                robot.lookup("#participantNames").queryListView();
-        Participant participant = new ArrayList<>(event.getParticipants()).stream()
-                .filter(p -> p.getName().equals("Alice")).findFirst().get();
-        participantsListView.getSelectionModel().select(participant);
-
+    @Test
+    void ctrlE(FxRobot robot) {
         robot.interact(() -> {
-            controller.deleteParticipant();
+            KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.E, false, true, false, false);
+            controller.keyPressed(event);
         });
-
-        Label warning = robot.lookup("#warning").queryAs(Label.class);
-        Assertions.assertThat(warning).hasText("Settle debt first!");
+        Mockito.verify(mainCtrl, Mockito.times(1)).showExpense(event, null);
     }
 
     @Test

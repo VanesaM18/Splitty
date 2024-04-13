@@ -75,6 +75,14 @@ public class Main extends Application {
     }
 
     /**
+     * Stop the application
+     */
+    @Override
+    public void stop() throws InterruptedException {
+        INJECTOR.getInstance(MyWebSocketClient.class).closeBlocking();
+    }
+
+    /**
      * Returns an instance of our main
      *
      * @return the main instance

@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import javafx.application.Platform;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +24,10 @@ import commons.Expense;
 import commons.Monetary;
 import commons.Participant;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.TitledPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -154,5 +159,13 @@ class OpenDebtsCtrlTest {
         robot.sleep(2000);
 
         verify(mainCtrl, times(2)).showOpenDebts(any(Event.class));
+    }
+
+    @Test
+    void backEsc(FxRobot robot) {
+        robot.interact(() -> {
+            KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ESCAPE, false, false, false, false);
+            controller.keyPressed(event);
+        });
     }
 }

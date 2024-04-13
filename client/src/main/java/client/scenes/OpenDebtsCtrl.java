@@ -14,6 +14,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.image.Image;
 
@@ -240,17 +241,17 @@ public class OpenDebtsCtrl {
         Stage popUpStage = new Stage();
         popUpStage.initModality(Modality.APPLICATION_MODAL);
         popUpStage.initOwner(primaryStage);
-        String title = "Set e-mail " + participant.getName();
+        String title = "Email setup";
         TextField textField = new TextField();
 
-        Label label = new Label("Enter e-mail:");
+        Label label = new Label("Enter the email of " + participant.getName() + " :");
         label.setAlignment(Pos.CENTER_LEFT);
 
         Button okButton = buttonE(participant, textField, popUpStage);
         if(hbox.getChildren().contains(imageViewBankG)){
             okButton = buttonB(participant, textField, popUpStage);
-            title = "Set IBAN " + participant.getName();
-            label.setText("Enter IBAN: ");
+            title = "IBAN setup";
+            label.setText("Enter the IBAN of " + participant.getName() + " :");
         }
 
         Button cancelButton = new Button("Cancel");
@@ -276,9 +277,7 @@ public class OpenDebtsCtrl {
             participant.setIban(userInput);
             if (textField.getText().isEmpty() ||
                     !ParticipantsCtrl.isIbanValid(participant.getIban())) {
-                textField.clear();
-                textField.setPromptText("Invalid IBAN");
-                textField.setStyle("-fx-prompt-text-fill: red;");
+                alert("Invalid IBAN");
                 return;
             }
             server.addParticipant(participant);
@@ -295,9 +294,7 @@ public class OpenDebtsCtrl {
             participant.setEmail(userInput);
             if (textField.getText().isEmpty() ||
                     !ParticipantsCtrl.isEmailValid(participant.getEmail())) {
-                textField.clear();
-                textField.setPromptText("Invalid e-mail");
-                textField.setStyle("-fx-prompt-text-fill: red;");
+                alert("Invalid e-mail");
                 return;
             }
             server.addParticipant(participant);
@@ -438,5 +435,24 @@ public class OpenDebtsCtrl {
     public Thread getLongPollingThread() {
         return longPollingThread;
     }
+    private void alert(String content) {
+        var alert = new Alert(Alert.AlertType.ERROR);
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+    /**
+     * Event handler for pressing a key.
+     *
+     * @param e the key that is pressed
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ESCAPE:
+                back();
+                break;
+            default:
+                break;
+        }
+    }
 }
-

@@ -5,6 +5,7 @@ import client.utils.language.LanguageProcessor;
 import com.google.inject.Inject;
 import commons.*;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -66,8 +67,6 @@ public class OverviewCtrl {
     private final ObservableList<Participant> participantsObs = FXCollections.observableArrayList();
     @FXML
     private ComboBox<Participant> participantComboBox;
-    @FXML
-    private Label warning;
 
     /**
      * Controller responsible for handling the quote overview functionality.
@@ -97,7 +96,6 @@ public class OverviewCtrl {
      * Method to refresh the current view.
      */
     public void refresh() {
-        warning.setText("");
         if (ev == null) {
             return;
         }
@@ -154,7 +152,6 @@ public class OverviewCtrl {
                 smallText.setFill(Color.GRAY.darker().darker());
                 tags.setFont(Font.font("System", FontWeight.NORMAL, 10));
                 tags.setFill(Color.GRAY.darker().darker());
-
                 VBox vbox = new VBox(mainTextFlow, smallText, tags);
                 vbox.setSpacing(5);
                 Text dateText = new Text(item.getDate().toString());
@@ -163,11 +160,10 @@ public class OverviewCtrl {
                 HBox.setHgrow(region, Priority.ALWAYS);
                 Button editButton = new Button();
                 Button deleteButton = new Button();
-                editButton.setOnAction(e -> mainCtrl.showExpense(item.getEvent(),
-                        participantComboBox.getSelectionModel().getSelectedItem(), item));
+                editButton.setOnAction(e -> mainCtrl.showExpense(item.getEvent(), item));
                 deleteButton.setOnAction(e -> deleteExpense(item));
-                attachImage(deleteButton, "/assets/bin.png");
-                attachImage(editButton, "/assets/pen-solid.png");
+                styleButton(deleteButton, "Delete expense", "/assets/bin.png");
+                styleButton(editButton, "Edit expense", "/assets/pen-solid.png");
                 HBox element = new HBox(dateText, vbox, region, deleteButton, editButton);
                 element.setSpacing(15);
                 setGraphic(element);
@@ -179,6 +175,12 @@ public class OverviewCtrl {
         expensesAll.setItems(expensesAllObs);
         expensesFrom.setItems(expensesFromObs);
         expensesIncluding.setItems(expensesIncludingObs);
+    }
+
+    private void styleButton(Button button, String tooltip, String image) {
+        attachImage(button, image);
+        button.setCursor(Cursor.cursor("HAND"));
+        button.setTooltip(new Tooltip(tooltip));
     }
 
     private static Text getTags(Expense item) {
@@ -317,13 +319,11 @@ public class OverviewCtrl {
      */
     public void addExpense() {
         if (ev.getParticipants().size() < 2) {
-            warning.setText("Not enough people!");
+            alert("At least two participants are required for an expense.");
             return;
         }
-        mainCtrl.showExpense(this.ev, participantComboBox.getSelectionModel().getSelectedItem(),
-                null);
+        mainCtrl.showExpense(this.ev, null);
         refresh();
-        warning.setText("");
     }
 
     /**
@@ -333,10 +333,9 @@ public class OverviewCtrl {
      */
     public void editParticipant() {
         if (participantNames.getSelectionModel().getSelectedItem() == null) {
-            warning.setText("First chose a participant.");
+            alert("You have to first chose a participant.");
             return;
         }
-        warning.setText("");
         mainCtrl.showParticipants(this.ev, false,
                 participantNames.getSelectionModel().getSelectedItem());
     }
@@ -360,7 +359,6 @@ public class OverviewCtrl {
 
         Optional<String> newNameOpt = dialog.showAndWait();
         if (!newNameOpt.isPresent()) {
-            warning.setText("");
             return;
         }
 
@@ -374,7 +372,6 @@ public class OverviewCtrl {
      */
     public void back() {
         mainCtrl.getSceneManager().goBack();
-        warning.setText("");
     }
 
     /**
@@ -382,11 +379,11 @@ public class OverviewCtrl {
      */
     public void deleteParticipant() {
         if (participantNames.getSelectionModel().getSelectedItem() == null) {
-            warning.setText("First chose a participant.");
+            alert("You have to first chose a participant.");
             return;
         }
         if (partOfExpense(participantNames.getSelectionModel().getSelectedItem())) {
-            warning.setText("Settle debt first!");
+            alert("Settle all debts with this person first.");
             return;
         }
 
@@ -403,7 +400,6 @@ public class OverviewCtrl {
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == confirm) {
-            warning.setText("");
             ev.removeParticipant(participantNames.getSelectionModel().getSelectedItem());
             server.updateEvent(ev);
             mainCtrl.showOverviewEvent(ev);
@@ -431,13 +427,9 @@ public class OverviewCtrl {
         try {
             server.deleteExpense(e);
         } catch (Exception err) {
-            var alert2 = new Alert(Alert.AlertType.ERROR);
-            alert2.initModality(Modality.APPLICATION_MODAL);
-            alert2.setContentText(err.getMessage());
-            alert2.showAndWait();
+            alert(err.getMessage());
             return;
         }
-
         refresh();
     }
 
@@ -492,6 +484,12 @@ public class OverviewCtrl {
             case ESCAPE:
                 back();
                 break;
+            case S:
+                if(e.isControlDown()) showStatistics();
+                break;
+            case E:
+                if(e.isControlDown()) addExpense();
+                break;
             default:
                 break;
         }
@@ -509,10 +507,15 @@ public class OverviewCtrl {
      */
     public void showStatistics() {
         if (ev.getExpenses() == null || ev.getExpenses().size() == 0) {
-            warning.setText("Create expenses first.");
+            alert("There are no statistics since there are no expenses.");
             return;
         }
         mainCtrl.showStatistics(ev);
-        warning.setText("");
+    }
+    private void alert(String content) {
+        var alert = new Alert(Alert.AlertType.ERROR);
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }
