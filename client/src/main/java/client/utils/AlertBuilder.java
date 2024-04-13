@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+
 public class AlertBuilder {
     private final MainCtrl mainCtrl;
     private final ResourceBundle resourceBundle;
@@ -17,6 +18,10 @@ public class AlertBuilder {
     private String header;
     private String content;
     private Modality modality;
+
+    private boolean customButtons = false;
+    private ButtonType[] customButtonsArray = new ButtonType[0];
+    private Optional<Alert> alert = Optional.empty();
 
     /**
      * constructs an AlertBuilder object.
@@ -112,16 +117,57 @@ public class AlertBuilder {
     }
 
     /**
+     * sets custom buttons for the alert.
+     * @param buttons the custom ButtonType array
+     * @return this AlertBuilder instance for method chaining
+     */
+    public AlertBuilder setCustomButtons(ButtonType... buttons) {
+        this.customButtonsArray = buttons;
+        this.customButtons = true;
+        return this;
+    }
+
+    /**
+     * alters the content text of the alert
+     * using the provided format string.
+     * @param formatString the format string
+     *                     to alter the content text
+     * @return this AlertBuilder
+     * instance for method chaining
+     */
+    public AlertBuilder alterContentText(String formatString) {
+        this.content = String.format(formatString, this.content);
+        return this;
+    }
+
+    /**
      * shows the alert with the configured properties.
      * @return an Optional<ButtonType> representing
      * the user's response to the alert.
      */
     public Optional<ButtonType> show() {
         Alert alert = new Alert(alertType);
+        if (customButtons)
+            alert.getButtonTypes().setAll(this.customButtonsArray);
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.initModality(modality);
         return alert.showAndWait();
+    }
+
+    /**
+     * closes the alert if it is currently open.
+     * @return true if the alert was closed
+     * successfully, false otherwise
+     */
+    public boolean closeAlert() {
+        if (alert.isEmpty())
+            return false;
+        else
+            alert.get().close();
+        return true;
+
+
     }
 }
