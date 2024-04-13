@@ -28,7 +28,7 @@ class ServerUtilsTest {
 
     @Test
     void getEvent() {
-        int eventCount = (int) ( Math.random() * 100);
+        int eventCount = (int) (Math.random() * 100);
 
         var pz = func.apply(1).get(0);
         var inviteCode = pz.getInviteCode();
@@ -39,7 +39,7 @@ class ServerUtilsTest {
         ConfigLoader cnf = mock(ConfigLoader.class);
         when(wap.addPendingRequests(any())).thenReturn(future);
         ServerUtils severe = new ServerUtils(wap, cnf);
-        ServerUtils.adminAuth(new Admin("","",""));
+        ServerUtils.adminAuth(new Admin("", "", ""));
         var response = severe.getEventById(inviteCode);
         assertNotNull(response);
         var responseId = response.getInviteCode();
@@ -49,6 +49,7 @@ class ServerUtilsTest {
 
     /**
      * method to create and send a random event.
+     * 
      * @return randomly generated event.
      */
     public static Event generateRandomEvent() {
@@ -57,7 +58,8 @@ class ServerUtilsTest {
         LocalDateTime randomDateTime = LocalDateTime.now().plusDays((long) (Math.random() * 30));
         Set<Participant> randomParticipants = generateRandomParticipants();
 
-        Event randomEvent = new Event(randomInviteCode, randomName, randomDateTime, randomParticipants, new HashSet<>());
+        Event randomEvent = new Event(randomInviteCode, randomName, randomDateTime, randomParticipants,
+                new HashSet<>());
         randomEvent.generateInviteCode();
         return randomEvent;
     }
@@ -72,7 +74,8 @@ class ServerUtilsTest {
             String randomParticipantIban = generateRandomIban();
             String randomParticipantBic = generateRandomBic();
 
-            participants.add(new Participant(randomParticipantName, randomParticipantEmail, randomParticipantIban, randomParticipantBic));
+            participants.add(new Participant(randomParticipantName, randomParticipantEmail, randomParticipantIban,
+                    randomParticipantBic));
         }
 
         return participants;
@@ -82,7 +85,8 @@ class ServerUtilsTest {
     void paymentsToDebt() {
         LocalDateTime dateTime = LocalDateTime.of(1, 1, 1, 1, 1, 1);
         MyWebSocketClient wap = mock(MyWebSocketClient.class);
-        ConfigLoader cnf = mock(ConfigLoader.class);;
+        ConfigLoader cnf = mock(ConfigLoader.class);
+        ;
         ServerUtils severe = new ServerUtils(wap, cnf);
         Event event1 = new Event("WDKFDLS", "Event1", dateTime, new HashSet<>(), new HashSet<>());
         Participant participant1 = new Participant("participant1", "email1", "iban1", "bic1");
@@ -115,7 +119,8 @@ class ServerUtilsTest {
     @Test
     void testParticipantsNoInfluenceNull() {
         MyWebSocketClient myWebSocketClient = mock(MyWebSocketClient.class);
-        ConfigLoader configLoader = mock(ConfigLoader.class);;
+        ConfigLoader configLoader = mock(ConfigLoader.class);
+        ;
         ServerUtils serverUtils = new ServerUtils(myWebSocketClient, configLoader);
 
         List<Participant> result = serverUtils.participantsNoInfluence(null);
@@ -125,7 +130,8 @@ class ServerUtilsTest {
     @Test
     void testParticipantsNoInfluenceEmptyList() {
         MyWebSocketClient myWebSocketClient = mock(MyWebSocketClient.class);
-        ConfigLoader configLoader = mock(ConfigLoader.class);;
+        ConfigLoader configLoader = mock(ConfigLoader.class);
+        ;
         ServerUtils serverUtils = new ServerUtils(myWebSocketClient, configLoader);
 
         List<Participant> result = serverUtils.participantsNoInfluence(List.of());
@@ -135,7 +141,8 @@ class ServerUtilsTest {
     @Test
     void testParticipantsNoInfluenceSimple() {
         MyWebSocketClient myWebSocketClient = mock(MyWebSocketClient.class);
-        ConfigLoader configLoader = mock(ConfigLoader.class);;
+        ConfigLoader configLoader = mock(ConfigLoader.class);
+        ;
         ServerUtils serverUtils = new ServerUtils(myWebSocketClient, configLoader);
 
         Participant alice = new Participant("Alice", "alice@alice.com", "NLTEST", "ABCDEF12");
@@ -143,9 +150,8 @@ class ServerUtilsTest {
         ArrayList<Participant> participants = new ArrayList<>(List.of(alice, bob));
 
         List<Expense> expenses = List.of(
-            new Expense(null, "Event 1", alice, new Monetary(10), LocalDate.now(), Set.of(alice, bob)),
-            new Expense(null, "Event 2", bob, new Monetary(10), LocalDate.now(), Set.of(alice, bob))
-        );
+                new Expense(null, "Event 1", alice, new Monetary(10), LocalDate.now(), Set.of(alice, bob)),
+                new Expense(null, "Event 2", bob, new Monetary(10), LocalDate.now(), Set.of(alice, bob)));
 
         ArrayList<Participant> result = new ArrayList<>(serverUtils.participantsNoInfluence(expenses));
 
@@ -159,16 +165,16 @@ class ServerUtilsTest {
     @Test
     void testParticipantsNoInfluenceSimple2() {
         MyWebSocketClient myWebSocketClient = mock(MyWebSocketClient.class);
-        ConfigLoader configLoader = mock(ConfigLoader.class);;
+        ConfigLoader configLoader = mock(ConfigLoader.class);
+        ;
         ServerUtils serverUtils = new ServerUtils(myWebSocketClient, configLoader);
 
         Participant alice = new Participant("Alice", "alice@alice.com", "NLTEST", "ABCDEF12");
         Participant bob = new Participant("Bob", "bob@bob.com", "DETEST", "FEDCBA21");
 
         List<Expense> expenses = List.of(
-            new Expense(null, "Event 1", alice, new Monetary(20), LocalDate.now(), Set.of(alice, bob)),
-            new Expense(null, "Event 2", bob, new Monetary(10), LocalDate.now(), Set.of(alice, bob))
-        );
+                new Expense(null, "Event 1", alice, new Monetary(20), LocalDate.now(), Set.of(alice, bob)),
+                new Expense(null, "Event 2", bob, new Monetary(10), LocalDate.now(), Set.of(alice, bob)));
 
         ArrayList<Participant> result = new ArrayList<>(serverUtils.participantsNoInfluence(expenses));
 
@@ -181,6 +187,74 @@ class ServerUtilsTest {
 
     private static String generateRandomBic() {
         return "BIC" + UUID.randomUUID().toString().substring(0, 8);
+    }
+
+    private static final Participant alice = new Participant("Alice", "alice@example.com", "NLTEST", "ABCDEF12");
+    private static final Participant bob = new Participant("Bob", "bob@example.com", "DETEST", "FEDCBA21");
+    private static final Participant claude = new Participant("Claude", "claude@example.com", "DETEST", "FEDCBA21");
+    private static final Participant derick = new Participant("Derick", "derick@example.com", "DETEST", "FEDCBA21");
+    private static final Participant eva = new Participant("Eva", "eva@example.com", "ITTEST", "FEDCBA21");
+    private static final Event ev = new Event("ABC123", "Test Debt Minimization", LocalDateTime.of(2022, 4, 1, 0, 0),
+            Set.of(alice, bob, claude, derick, eva), Set.of());
+
+    {
+        alice.setId(1);
+        bob.setId(2);
+        claude.setId(3);
+        derick.setId(4);
+        eva.setId(5);
+        Expense e1 = new Expense(ev,
+                "Expense 1",
+                alice,
+                new Monetary(1000),
+                LocalDate.of(2022, 4, 2), Set.of(bob, claude));
+        Expense e2 = new Expense(ev,
+                "Expense 2",
+                bob,
+                new Monetary(4000),
+                LocalDate.of(2022, 4, 2), Set.of(claude, derick));
+        Expense e3 = new Expense(ev,
+                "Expense 3",
+                derick,
+                new Monetary(9000),
+                LocalDate.of(2022, 4, 2), Set.of(alice, claude));
+        Expense e4 = new Expense(ev,
+                "Expense 4",
+                claude,
+                new Monetary(2000),
+                LocalDate.of(2022, 4, 2), Set.of(bob, claude));
+        Expense e5 = new Expense(ev,
+                "Expense 5",
+                eva,
+                new Monetary(4000),
+                LocalDate.of(2022, 4, 2), Set.of(bob, claude));
+        ev.setExpenses(Set.of(e1, e2, e3, e4, e5));
+    }
+
+    @Test
+    void calculateDebts_calculatesComplicatedExample() {
+
+        MyWebSocketClient wsc = mock(MyWebSocketClient.class);
+        ConfigLoader cnf = mock(ConfigLoader.class);
+        ServerUtils server = new ServerUtils(wsc, cnf);
+        List<Debt> debts = server.calculateDebts(ev);
+
+        HashMap<Participant, Long> participantsGet = new HashMap<>();
+
+        for (Debt debt : debts) {
+            long creditorGets = participantsGet.getOrDefault(debt.getCreditor(), 0L);
+            long debtorGets = participantsGet.getOrDefault(debt.getDebtor(), 0L);
+
+            participantsGet.put(debt.getCreditor(), creditorGets + debt.getAmount().getInternalValue());
+            participantsGet.put(debt.getDebtor(), debtorGets - debt.getAmount().getInternalValue());
+        }
+
+        // -3500 + 500 - 8000 + 7000 + 4000 = 0
+        assertEquals(-3500, participantsGet.get(alice), alice.getName().concat(" receives"));
+        assertEquals(500, participantsGet.get(bob), bob.getName().concat(" receives"));
+        assertEquals(-8000, participantsGet.get(claude), claude.getName().concat(" receives"));
+        assertEquals(7000, participantsGet.get(derick), derick.getName().concat(" receives"));
+        assertEquals(4000, participantsGet.get(eva), eva.getName().concat(" receives"));
     }
 
 }
