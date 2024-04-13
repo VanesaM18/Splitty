@@ -162,7 +162,7 @@ public class ParticipantsCtrl {
      * @return is the email valid or not.
      */
     public static boolean isEmailValid(String emailAddress) {
-        String regexPattern = "^(.+)@(\\S+)$";
+        String regexPattern = "^[^@]+@[^@.]+\\.[^@.]+$";
         return Pattern.compile(regexPattern)
                 .matcher(emailAddress)
                 .matches();

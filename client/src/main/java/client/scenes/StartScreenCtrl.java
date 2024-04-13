@@ -44,6 +44,8 @@ public class StartScreenCtrl implements Initializable {
     private HBox mainHBox;
     @FXML
     private TitledPane languageNavigator;
+    @FXML
+    private ImageView imageView;
     private String lastEvent;
     /**
      * Controller responsible for handling event creation and joining.
@@ -76,6 +78,10 @@ public class StartScreenCtrl implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         List<String> inviteCodes = (List<String>) config.getProperty("recentEvents");
         recentEvents.getItems().addAll(inviteCodes);
+        Image image = new Image(getClass().getResourceAsStream("/assets/splitty-splitty.png"));
+
+        // Set the loaded image to the ImageView
+        imageView.setImage(image);
         recentEvents.setCellFactory(new Callback<>() {
             @Override
             public ListCell<String> call(ListView<String> listView) {
