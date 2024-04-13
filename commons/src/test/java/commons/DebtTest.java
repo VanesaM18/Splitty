@@ -33,13 +33,63 @@ class DebtTest {
     }
 
     @Test
-    void testEquals() {
-        Participant debtor = new Participant("Tom", "tom23@gmail.com", "NL22345518923056", "LAUGH");
-        Participant creditor = new Participant("John", "crew@gmail.com", "NL99128381301324", "FUNNY");
-        Debt debt2 = new Debt(creditor, monetary, debtor);
-        assertNotEquals(debt, debt2);
+    void testEqualsDifferent() {
+        Participant debtor1 = new Participant("Tom", "tom23@gmail.com", "NL22345518923056", "LAUGH");
+        Participant creditor1 = new Participant("John", "crew@gmail.com", "NL99128381301324", "FUNNY");
+        Monetary monetary1 = new Monetary(10);
+
+        Participant debtor2 = new Participant("Bob", "tom23@gmail.com", "NL22345518923056", "LAUGH");
+        Participant creditor2 = new Participant("Alice", "crew@gmail.com", "NL99128381301324", "FUNNY");
+        Monetary monetary2 = new Monetary(10);
+
+        Debt debt1 = new Debt(creditor1, monetary1, debtor1);
+        Debt debt2 = new Debt(creditor2, monetary2, debtor2);
+
+        assertNotEquals(debt1, debt2);
     }
 
+    @Test
+    void testEqualsEqual() {
+        Participant debtor1 = new Participant("Tom", "tom23@gmail.com", "NL22345518923056", "LAUGH");
+        Participant creditor1 = new Participant("John", "crew@gmail.com", "NL99128381301324", "FUNNY");
+        Monetary monetary1 = new Monetary(10);
+
+        Participant debtor2 = new Participant("Tom", "tom23@gmail.com", "NL22345518923056", "LAUGH");
+        Participant creditor2 = new Participant("John", "crew@gmail.com", "NL99128381301324", "FUNNY");
+        Monetary monetary2 = new Monetary(10);
+
+        Debt debt1 = new Debt(creditor1, monetary1, debtor1);
+        Debt debt2 = new Debt(creditor1, monetary2, debtor1);
+
+        assertEquals(debt1, debt2);
+    }
+
+    @Test
+    void testEqualsSame() {
+        Participant debtor1 = new Participant("Tom", "tom23@gmail.com", "NL22345518923056", "LAUGH");
+        Participant creditor1 = new Participant("John", "crew@gmail.com", "NL99128381301324", "FUNNY");
+        Monetary monetary1 = new Monetary(10);
+
+        Debt debt1 = new Debt(creditor1, monetary1, debtor1);
+
+        assertEquals(debt1, debt1);
+    }
+
+    @Test
+    void testHashcode() {
+        Participant debtor1 = new Participant("Tom", "tom23@gmail.com", "NL22345518923056", "LAUGH");
+        Participant creditor1 = new Participant("John", "crew@gmail.com", "NL99128381301324", "FUNNY");
+        Monetary monetary1 = new Monetary(10);
+
+        Participant debtor2 = new Participant("Tom", "tom23@gmail.com", "NL22345518923056", "LAUGH");
+        Participant creditor2 = new Participant("John", "crew@gmail.com", "NL99128381301324", "FUNNY");
+        Monetary monetary2 = new Monetary(10);
+
+        Debt debt1 = new Debt(creditor1, monetary1, debtor1);
+        Debt debt2 = new Debt(creditor1, monetary2, debtor1);
+
+        assertEquals(debt1.hashCode(), debt2.hashCode());
+    }
 
     @Test
     void testToString() {
