@@ -14,6 +14,7 @@
 package client.scenes;
 
 import client.InitializationData;
+import client.utils.ResourceManager;
 import client.utils.SceneEnum;
 import client.utils.SceneManager;
 import commons.Event;
@@ -58,6 +59,7 @@ public class MainCtrl {
     private Scene statistics;
     private Optional<Locale> currentLocale = Optional.empty();
     private boolean isInOpenDebt = false;
+    private ResourceManager resourceManager = new ResourceManager(this);
 
     /**
      * Initializes the app with the specified primary stage and scenes for various
@@ -110,9 +112,8 @@ public class MainCtrl {
         this.statisticsCtrl = data.getStatistics().getKey();
         this.statistics = new Scene(data.getStatistics().getValue());
 
-        primaryStage.setOnCloseRequest(event -> {
-            startPageCtrl.updateConfig();
-        });
+        this.resourceManager = new ResourceManager(this);
+        primaryStage.setOnCloseRequest(event -> startPageCtrl.updateConfig());
         settingsCtrl.make();
         sceneManager.showCurrentScene();
         primaryStage.show();
@@ -123,7 +124,7 @@ public class MainCtrl {
      */
     public void showAppConfiguration() {
         this.sceneManager.pushScene(SceneEnum.STARTUP, null);
-        primaryStage.setTitle("Application Setup");
+        primaryStage.setTitle(this.resourceManager.getStringForKey("content_app_setup"));
         primaryStage.setScene(appConfiguration);
 
         appConfigurationCtrl.refresh();
@@ -135,7 +136,7 @@ public class MainCtrl {
      */
     public void showSettings() {
         this.sceneManager.pushScene(SceneEnum.SETTINGS, null);
-        primaryStage.setTitle("Settings");
+        primaryStage.setTitle(this.resourceManager.getStringForKey("content_settings"));
         settings.setOnKeyPressed(key -> settingsCtrl.keyPressed(key));
         primaryStage.setScene(settings);
         settingsCtrl.refresh();
@@ -148,7 +149,7 @@ public class MainCtrl {
         management.setOnKeyPressed(key -> managementCtrl.keyPressed(key));
         isInManagement = true;
         this.sceneManager.pushScene(SceneEnum.MANAGEMENT, null);
-        primaryStage.setTitle("Management Overview");
+        primaryStage.setTitle(this.resourceManager.getStringForKey("content_management"));
         primaryStage.setScene(management);
         managementCtrl.refresh();
 
@@ -162,7 +163,7 @@ public class MainCtrl {
     public void showLogin() {
         login.setOnKeyPressed(key -> loginCtrl.keyPressed(key));
         this.sceneManager.pushScene(SceneEnum.LOGIN, null);
-        primaryStage.setTitle("Login: Admin");
+        primaryStage.setTitle(this.resourceManager.getStringForKey("content_login"));
         primaryStage.setScene(login);
         loginCtrl.clearFields();
     }
@@ -174,7 +175,7 @@ public class MainCtrl {
      */
     public void showStartScreen() {
         this.sceneManager.pushScene(SceneEnum.START, null);
-        primaryStage.setTitle("Start page");
+        primaryStage.setTitle(this.resourceManager.getStringForKey("content_start"));
         primaryStage.setScene(startPage);
         startPageCtrl.clearFields();
         startPage.setOnKeyPressed(e -> startPageCtrl.keyPressed(e));
@@ -196,7 +197,10 @@ public class MainCtrl {
         participantsCtrl.setParticipantToChange(null);
         if (!add)
             editParticipant(ev, change);
-        primaryStage.setTitle((add ? "Add" : "Edit").concat(" participant"));
+        primaryStage.setTitle((add
+                ? this.resourceManager.getStringForKey("content_add")
+                : this.resourceManager.getStringForKey("content_edit"))
+                .concat(" " + this.resourceManager.getStringForKey("content_participant")));
         participantsCtrl.setEvent(ev);
         primaryStage.setScene(participants);
         participants.setOnKeyPressed(e -> participantsCtrl.keyPressed(e));
@@ -219,10 +223,10 @@ public class MainCtrl {
     public void showOverviewEvent(Event e) {
         this.sceneManager.pushScene(SceneEnum.OVERVIEW, e);
         if (e == null) {
-            primaryStage.setTitle("Event: Overview");
+            primaryStage.setTitle(this.resourceManager.getStringForKey("content_overview"));
             primaryStage.setScene(overviewEvent);
         } else {
-            primaryStage.setTitle("Event: Overview");
+            primaryStage.setTitle(this.resourceManager.getStringForKey("content_overview"));
             overviewEventCtrl.setEvent(e);
             overviewEventCtrl.refresh();
             overviewEvent.setOnKeyPressed(key -> overviewEventCtrl.keyPressed(key));
@@ -237,9 +241,10 @@ public class MainCtrl {
      */
     public void showInviteScreen(Event ev) {
         if (ev == null)
-            throw new IllegalArgumentException("Event may not be null");
+            throw new IllegalArgumentException(this.resourceManager
+                    .getStringForKey("content_event_null"));
         this.sceneManager.pushScene(SceneEnum.INVITE, ev);
-        primaryStage.setTitle("Invite participants");
+        primaryStage.setTitle(this.resourceManager.getStringForKey("content_invite_participants"));
         inviteScreenCtrl.setEvent(ev);
         primaryStage.setScene(invite);
         inviteScreenCtrl.refresh();
@@ -288,10 +293,10 @@ public class MainCtrl {
         openDebt.setOnKeyPressed(e -> openDebtsCtrl.keyPressed(e));
         openDebtsCtrl.stopLongPolling();
         if (ev == null) {
-            primaryStage.setTitle("Open Debts");
+            primaryStage.setTitle(this.resourceManager.getStringForKey("content_open_debts"));
             primaryStage.setScene(openDebt);
         } else {
-            primaryStage.setTitle("Open Debt");
+            primaryStage.setTitle(this.resourceManager.getStringForKey("content_open_debt"));
             primaryStage.setScene(openDebt);
             openDebtsCtrl.initialize(ev);
         }
@@ -327,7 +332,10 @@ public class MainCtrl {
         expense.setOnKeyPressed(e -> expenseCtrl.keyPressed(e));
         expenseCtrl.setEvent(ev);
         expenseCtrl.setUpdateExpense(edit);
-        primaryStage.setTitle((edit == null ? "Add" : "Edit").concat(" Expense"));
+        primaryStage.setTitle((edit == null
+                ? this.resourceManager.getStringForKey("content_add")
+                : this.resourceManager.getStringForKey("content_edit"))
+                .concat(" " + this.resourceManager.getStringForKey("content_expense")));
         primaryStage.setScene(expense);
     }
 
@@ -346,7 +354,7 @@ public class MainCtrl {
      * @param ev event to be considered.
      */
     public void showExpenseTypes(Event ev) {
-        primaryStage.setTitle("Expense types");
+        primaryStage.setTitle(this.resourceManager.getStringForKey("content_expense_types"));
         expenseTypeCtrl.setEvent(ev);
         primaryStage.setScene(expenseType);
         expenseTypeCtrl.refresh();
@@ -361,7 +369,7 @@ public class MainCtrl {
     public void showAddTags(Event event) {
         addEditTags.setOnKeyPressed(e -> addEditTagsCtrl.keyPressed(e));
         addEditTagsCtrl.setEvent(event);
-        primaryStage.setTitle("Add expense type");
+        primaryStage.setTitle(this.resourceManager.getStringForKey("content_add_expense_types"));
         primaryStage.setScene(addEditTags);
     }
 
@@ -375,7 +383,7 @@ public class MainCtrl {
         addEditTags.setOnKeyPressed(e -> addEditTagsCtrl.keyPressed(e));
         addEditTagsCtrl.setEvent(event);
         addEditTagsCtrl.setExpenseType(type);
-        primaryStage.setTitle("Update expense type");
+        primaryStage.setTitle(this.resourceManager.getStringForKey("content_update_expense_types"));
         primaryStage.setScene(addEditTags);
     }
 
@@ -395,7 +403,7 @@ public class MainCtrl {
     public void showStatistics(Event ev) {
         statistics.setOnKeyPressed(e -> statisticsCtrl.keyPressed(e));
         statisticsCtrl.setEvent(ev);
-        primaryStage.setTitle("Statistics");
+        primaryStage.setTitle(this.resourceManager.getStringForKey("content_statistics"));
         primaryStage.setScene(statistics);
     }
 }

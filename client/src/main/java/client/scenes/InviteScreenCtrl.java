@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.ConfigLoader;
 import client.utils.EmailManager;
+import client.utils.ResourceManager;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
@@ -38,6 +39,7 @@ public class InviteScreenCtrl {
     private final Tooltip sendInvitesTooltip = new Tooltip();
     private boolean isSendingEmail = false;
     private boolean existingName = false;
+    private ResourceManager resourceManager;
 
     /**
      * Controller responsible for showing the invite code.
@@ -56,6 +58,7 @@ public class InviteScreenCtrl {
         this.configLoader = configLoader;
         sendInvitesTooltip.setShowDelay(javafx.util.Duration.ZERO);
         sendInvitesTooltip.setHideDelay(javafx.util.Duration.ZERO);
+        this.resourceManager = new ResourceManager(mainCtrl);
     }
 
     /**
@@ -91,16 +94,17 @@ public class InviteScreenCtrl {
      */
     private void updateSendInvitesButtonState() {
         if (!emailManager.areCredentialsValid()) {
-            sendInvitesTooltip.setText("Email credentials invalid");
+            sendInvitesTooltip.setText(this.resourceManager.getStringForKey("content_email_cred"));
             sendInvitesButton.setDisable(true);
         } else if (emailTextArea.getText().trim().isEmpty()) {
-            sendInvitesTooltip.setText("Email field is empty");
+            sendInvitesTooltip.setText(this.resourceManager.getStringForKey("content_email_empty"));
             sendInvitesButton.setDisable(true);
         } else if(existingName) {
-            sendInvitesTooltip.setText("Participant already invited");
+            sendInvitesTooltip.setText(this.resourceManager
+                    .getStringForKey("content_invited_participant"));
             sendInvitesButton.setDisable(true);
         } else {
-            sendInvitesTooltip.setText("Invite to join the event");
+            sendInvitesTooltip.setText(this.resourceManager.getStringForKey("content_invite"));
             sendInvitesButton.setDisable(isSendingEmail);
         }
     }
@@ -115,7 +119,7 @@ public class InviteScreenCtrl {
 
         isSendingEmail = true;
         updateSendInvitesButtonState();
-        sendInvitesButton.setText("Sending...");
+        sendInvitesButton.setText(this.resourceManager.getStringForKey("content_sending"));
 
         new Thread(() -> {
             String address = (String) configLoader.getProperty("address");
@@ -135,7 +139,8 @@ public class InviteScreenCtrl {
             }
 
             Platform.runLater(() -> {
-                sendInvitesButton.setText("Send invites");
+                sendInvitesButton.setText(this.resourceManager
+                        .getStringForKey("content_send_invites"));
                 isSendingEmail = false;
                 updateSendInvitesButtonState();
                 refresh();
@@ -154,10 +159,12 @@ public class InviteScreenCtrl {
      * Refresh the current view
      */
     public void refresh() {
+        this.resourceManager = new ResourceManager(mainCtrl);
         if (event != null) {
             eventNameLabel.setText(event.getName());
             inviteCodeLabel.setText(
-                "Give people the following invite code: " + event.getInviteCode());
+                this.resourceManager.getStringForKey("content_give_invite_code")
+                        + " " + event.getInviteCode());
             emailTextArea.setText("");
             event = serverUtils.getEventById(event.getInviteCode());
         }

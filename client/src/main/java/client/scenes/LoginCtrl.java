@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.AlertBuilder;
 import client.utils.ServerUtils;
 
 import com.google.inject.Inject;
@@ -13,6 +14,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 public class LoginCtrl {
 
@@ -37,6 +39,15 @@ public class LoginCtrl {
         this.server = server;
     }
 
+    private final Function<String, String> mapAdminLoginKey = string -> switch (string) {
+        case "Missing credentials":
+            yield "admin_miss";
+        case "Login successfully":
+            yield "admin_ok";
+        default:
+            yield "admin_wrong";
+    };
+
     /**
      * Tries to log in with the credentials provided by the user in the UI
      */
@@ -45,10 +56,11 @@ public class LoginCtrl {
 
         String result = server.loginAdmin(admin);
         if (!Objects.equals(result, "Login successfully")) {
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(result);
-            alert.showAndWait();
+            new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.ERROR)
+                    .setModality(Modality.APPLICATION_MODAL)
+                    .setContentKey(mapAdminLoginKey.apply(result))
+                    .show();
             return;
         }
         // login successful redirect to where needed

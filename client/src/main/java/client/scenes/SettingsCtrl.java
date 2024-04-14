@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.ConfigLoader;
+import client.utils.AlertBuilder;
 import client.utils.DomainValidator;
 import client.utils.ServerUtils;
 import client.utils.language.LanguageProcessor;
@@ -71,28 +72,29 @@ public class SettingsCtrl {
     public void saveURL() {
         String url = urlTextField.getText();
         Supplier<Boolean> onSuccessSupplier = () -> {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirmation");
-            alert.setHeaderText("Are you sure you want to proceed?");
-            alert.setContentText("Do you want to save these settings and proceed?");
+            Optional<ButtonType> result = new AlertBuilder(mainCtrl)
+                    .setAlertType(Alert.AlertType.CONFIRMATION)
+                    .setTitleKey("confirmation_title")
+                    .setHeaderKey("confirmation_header")
+                    .setContentKey("content_save_settings")
+                    .show();
 
-            Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
 
-                Alert confirmationAlert = new Alert(Alert.AlertType.INFORMATION);
-                confirmationAlert.setTitle("URL Saved");
-                confirmationAlert.setHeaderText(null);
-                confirmationAlert.setContentText("URL has been saved.");
+                new AlertBuilder(mainCtrl)
+                        .setAlertType(Alert.AlertType.INFORMATION)
+                        .setTitleKey("content_url")
+                        .setContentKey("content_url_saved")
+                        .show();
 
-                confirmationAlert.showAndWait();
                 server.setServerUrl(url);
                 configLoader.updateProperty("address", url);
 
-                Alert alertSecond = new Alert(Alert.AlertType.WARNING);
-                alertSecond.setTitle("Restart");
-                alertSecond.setHeaderText("You should restart " +
-                    "the client for changes to take place!");
-                alertSecond.showAndWait();
+                new AlertBuilder(mainCtrl)
+                        .setAlertType(Alert.AlertType.WARNING)
+                        .setTitleKey("content_restart")
+                        .setContentKey("content_restart_client")
+                        .show();
 
                 goBack();
                 return true;

@@ -35,7 +35,7 @@
                   </Label>
                   <Button fx:id="editTitleButton" mnemonicParsing="false" onAction="#editTitle">
                      <tooltip>
-                        <Tooltip text="Edit title"/>
+                        <Tooltip text="%tooltip_edit_title"/>
                      </tooltip>
                      <cursor>
                         <Cursor fx:constant="HAND"/>
@@ -62,7 +62,7 @@
                   <Region prefHeight="200.0" prefWidth="10.0" />
                   <Button fx:id="editParticipantButton" mnemonicParsing="false" onAction="#editParticipant" prefHeight="7.0" prefWidth="24.0">
                      <tooltip>
-                        <Tooltip text="Edit participant"/>
+                        <Tooltip text="%tooltip_edit_participant"/>
                      </tooltip>
                      <cursor>
                         <Cursor fx:constant="HAND"/>
@@ -78,7 +78,7 @@
                   <Region prefHeight="200.0" prefWidth="10.0" />
                   <Button fx:id="addParticipantButton" mnemonicParsing="false" onAction="#addParticipant" prefHeight="7.0" prefWidth="24.0">
                      <tooltip>
-                        <Tooltip text="Add participant"/>
+                        <Tooltip text="%tooltip_add_participant"/>
                      </tooltip>
                      <cursor>
                         <Cursor fx:constant="HAND"/>
@@ -94,7 +94,7 @@
                   <Region prefHeight="200.0" prefWidth="10.0" />
                   <Button fx:id="deleteParticipantButton" layoutX="215.0" layoutY="103.0" mnemonicParsing="false" onAction="#deleteParticipant" prefHeight="7.0" prefWidth="24.0">
                      <tooltip>
-                        <Tooltip text="Delete participant"/>
+                        <Tooltip text="%tooltip_delete_participant"/>
                      </tooltip>
                      <cursor>
                         <Cursor fx:constant="HAND"/>
@@ -174,7 +174,7 @@
       </VBox>
       <TitledPane fx:id="languageNavigator" alignment="CENTER" blendMode="SRC_ATOP" expanded="false" layoutX="408.0" layoutY="5.666666666666667" maxHeight="400.0" maxWidth="200.0" minHeight="15.0" prefHeight="15.0" prefWidth="20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.666666666666667">
          <tooltip>
-            <Tooltip text="Change language"/>
+            <Tooltip text="%tooltip_change_language"/>
          </tooltip>
          <padding>
             <Insets left="5" right="5" />

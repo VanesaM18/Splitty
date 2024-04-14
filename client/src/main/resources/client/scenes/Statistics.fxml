@@ -12,7 +12,7 @@
    <children>
       <VBox layoutX="35.0" layoutY="41.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label text="Statistics">
+            <Label text="%label_statistics">
                <font>
                   <Font name="System Bold" size="32.0" />
                </font>
@@ -23,7 +23,7 @@
                </font>
             </Label>
             <PieChart fx:id="pie" prefHeight="243.0" prefWidth="532.0" VBox.vgrow="ALWAYS" />
-            <Button mnemonicParsing="false" onAction="#back" text="Back">
+            <Button mnemonicParsing="false" onAction="#back" text="%back">
                <font>
                   <Font size="14.0" />
                </font>
