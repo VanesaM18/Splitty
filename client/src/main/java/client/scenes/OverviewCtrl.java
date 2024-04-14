@@ -53,6 +53,9 @@ public class OverviewCtrl {
     private Event ev;
 
     @FXML
+    private ImageView imageView;
+
+    @FXML
     private Label title;
     @FXML
     private Button editTitleButton;
@@ -128,6 +131,10 @@ public class OverviewCtrl {
      */
     @FXML
     public void initialize() {
+        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(
+                "/assets/splitty-splitty.png")));
+        imageView.setImage(image);
+
         initExpenses();
         initParticipants();
         languageNavigator.setExpanded(false);

@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
@@ -48,30 +49,10 @@
                <children>
                   <HBox>
                      <children>
-                        <Text fill="#ff7d00" fontSmoothingType="LCD" layoutX="12.0" layoutY="43.0" rotate="28.1" strokeType="OUTSIDE" strokeWidth="0.0" text="S p l i t t y">
-                           <font>
-                              <Font name="TeXGyreScholaMath-Regular" size="36.0" />
-                           </font>
-                           <rotationAxis>
-                              <Point3D x="1.0" y="1.0" />
-                           </rotationAxis>
-                           <HBox.margin>
-                              <Insets bottom="10.0" top="10.0" />
-                           </HBox.margin>
-                        </Text>
-                        <Text fill="#007dff" fontSmoothingType="LCD" layoutX="192.0" layoutY="43.0" rotate="28.1" strokeType="OUTSIDE" strokeWidth="0.0" text="S p l i t t y">
-                           <font>
-                              <Font name="TeXGyreScholaMath-Regular" size="36.0" />
-                           </font>
-                           <rotationAxis>
-                              <Point3D x="1.0" y="-1.0" />
-                           </rotationAxis>
-                           <HBox.margin>
-                              <Insets bottom="10.0" top="10.0" />
-                           </HBox.margin>
-                        </Text>
+                        <ImageView fx:id = "imageView" fitHeight="67.0" fitWidth="344.0" pickOnBounds="true" preserveRatio="true"/>
                      </children>
                   </HBox>
+                  <Region prefHeight="10.0" />
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%create_new_event">
                      <font>
                         <Font name="System Bold" size="22.0" />
