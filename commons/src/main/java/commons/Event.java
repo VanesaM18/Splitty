@@ -287,58 +287,65 @@ public class Event {
     }
 
     /**
+     * A debt.
+     * The debtor ows the amount to the creditor
+     *
+     * @param debtor   The debtor
+     * @param creditor The creditor
+     */
+    public record DebtPair(Participant debtor, Participant creditor) {
+    }
+
+    /**
      * maps and calculates the payments
+     * 
      * @param event the current event
      * @return a map that maps the debtor, amount owed and creditor to each other
      */
-    public static Map<Map<Participant, Participant>, Monetary> calculatePayments(Event event){
+    public static Map<DebtPair, Monetary> calculatePayments(Event event) {
         Set<Expense> eventExpenses = event.getExpenses();
         Iterator<Expense> iteratorExpense = eventExpenses.iterator();
-        Map<Map<Participant, Participant>, Monetary> allDebts = new HashMap<>();
+        Map<DebtPair, Monetary> allDebts = new HashMap<>();
 
-        while(iteratorExpense.hasNext()){
+        while (iteratorExpense.hasNext()) {
             Expense expense = iteratorExpense.next();
             Set<Participant> debtors = expense.getSplitBetween();
             long amount = expense.getAmount().getInternalValue() / (debtors.size());
             Participant creditor = expense.getCreator();
             Iterator<Participant> iteratorDebtors = debtors.iterator();
 
-            while(iteratorDebtors.hasNext()){
-                Map<Participant, Participant> currentMap = new HashMap<Participant, Participant>();
-                currentMap.put(iteratorDebtors.next(), creditor);
+            while (iteratorDebtors.hasNext()) {
+                DebtPair currentPair = new DebtPair(iteratorDebtors.next(), creditor);
                 Monetary currentMonetary = new Monetary(amount);
-                if (allDebts.get(currentMap) == null) {
-                    allDebts.put(currentMap, currentMonetary);
-                }else {
-                    Monetary newMonetary = allDebts.get(currentMap);
-                    allDebts.put(currentMap, Monetary.add(currentMonetary, newMonetary));
+                if (!allDebts.containsKey(currentPair)) {
+                    allDebts.put(currentPair, currentMonetary);
+                } else {
+                    Monetary newMonetary = allDebts.get(currentPair);
+                    allDebts.put(currentPair, Monetary.add(currentMonetary, newMonetary));
                 }
 
             }
         }
-        return  allDebts;
+        return allDebts;
     }
 
     /**
      * converts the map into a list of debts
+     * 
      * @param event the current event
      * @return list of all debts
      */
     public List<Debt> paymentsToDebt(Event event) {
-        Map<Map<Participant, Participant>, Monetary> allDebts = calculatePayments(event);
-        Map<String, Long> netDebts = new HashMap<>();
+        Map<DebtPair, Monetary> allDebts = calculatePayments(event);
+        Map<DebtPair, Long> netDebts = new HashMap<>();
 
-        HashMap<Long, Participant> mapping = new HashMap<>();
-        for (Participant p: event.getParticipants()) {
-            mapping.put(p.getId(), p);
-        }
-        allDebts.forEach((key, value) -> key.forEach((debtor, creditor) -> {
-            if (debtor.getId() == creditor.getId()) {
+        allDebts.forEach((key, value) -> {
+            if (Objects.equals(key.debtor(), key.creditor())) {
                 return;
             }
             long amount = value.getInternalValue();
-            String forwardKey = debtor.getId() + "->" + creditor.getId();
-            String backwardKey = creditor.getId() + "->" + debtor.getId();
+            DebtPair forwardKey = new DebtPair(key.debtor(), key.creditor());
+            DebtPair backwardKey = new DebtPair(key.creditor(), key.debtor());
             if (netDebts.containsKey(backwardKey)) {
                 Long existingAmount = netDebts.get(backwardKey);
                 long comparison = existingAmount - amount;
@@ -353,14 +360,11 @@ public class Event {
             } else {
                 netDebts.put(forwardKey, amount);
             }
-        }));
+        });
 
         List<Debt> simplifiedDebts = new ArrayList<>();
         netDebts.forEach((key, value) -> {
-            String[] participants = key.split("->");
-            Participant debtor = mapping.get(Long.valueOf(participants[0]));
-            Participant creditor = mapping.get(Long.valueOf(participants[1]));
-            simplifiedDebts.add(new Debt(debtor, new Monetary(value), creditor));
+            simplifiedDebts.add(new Debt(key.debtor(), new Monetary(value), key.creditor()));
         });
 
         return simplifiedDebts;

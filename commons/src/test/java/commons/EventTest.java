@@ -3,6 +3,8 @@ package commons;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import commons.Event.DebtPair;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -16,7 +18,7 @@ class EventTest {
 
     @BeforeEach
     void setup() {
-        event = new Event("ABCDEF","Test Event", dateTime, new HashSet<>(), new HashSet<>());
+        event = new Event("ABCDEF", "Test Event", dateTime, new HashSet<>(), new HashSet<>());
         event.setExpenses(new HashSet<>());
     }
 
@@ -143,6 +145,7 @@ class EventTest {
         assertNotNull(event.getCreationTime());
         assertNotNull(event.getLastUpdateTime());
     }
+
     @Test
     void setLastUpdateTime() {
         LocalDateTime newUpdateTime = LocalDateTime.now().plusDays(1);
@@ -157,23 +160,24 @@ class EventTest {
         HashSet<Participant> participants = new HashSet<>();
         participants.add(participant1);
         participants.add(participant2);
-        Event event = new Event("INVITECODE", "Sample Event", LocalDate.now().atStartOfDay(), participants, new HashSet<>());
+        Event event = new Event("INVITECODE", "Sample Event", LocalDate.now().atStartOfDay(), participants,
+                new HashSet<>());
         event.setExpenses(new HashSet<>());
         Monetary amount = new Monetary(10000);
         Expense expense = new Expense(event, "Dinner", participant1, amount, LocalDate.now(), participants);
         event.getExpenses().add(expense);
-        Map<Map<Participant, Participant>, Monetary> payments = Event.calculatePayments(event);
+        Map<DebtPair, Monetary> payments = Event.calculatePayments(event);
         assertFalse(payments.isEmpty(), "Payments map should contain entries.");
 
-        payments.forEach((participantsMap, monetaryAmount) -> {
-            participantsMap.forEach((debtor, creditor) -> {
-                if (debtor.equals(participant2) && creditor.equals(participant1)) {
-                    assertEquals(5000, monetaryAmount.getInternalValue(),
+        payments.forEach((pair, monetaryAmount) -> {
+            if (pair.debtor().equals(participant2) && pair.creditor().equals(participant1)) {
+                assertEquals(5000, monetaryAmount.getInternalValue(),
                         "Participant 2 should owe Participant 1 half the expense.");
-                }
-            });
+            }
         });
+
     }
+
     @Test
     void populateDebts() {
         List<Map.Entry<Participant, Long>> sortedEntries = new ArrayList<>();
@@ -203,14 +207,16 @@ class EventTest {
         Set<Participant> participants = new HashSet<>(Arrays.asList(participant1, participant2, participant3));
         event = new Event("123456", "Weekend Trip", LocalDate.now().atStartOfDay(), participants, new HashSet<>());
         event.setExpenses(new HashSet<>());
-        Expense dinner = new Expense(event, "Dinner", participant1, new Monetary(6000), LocalDate.now(), new HashSet<>(Arrays.asList(participant1, participant2, participant3)));
-        Expense taxi = new Expense(event, "Taxi Ride", participant2, new Monetary(3000), LocalDate.now(), new HashSet<>(Arrays.asList(participant1, participant3)));
+        Expense dinner = new Expense(event, "Dinner", participant1, new Monetary(6000), LocalDate.now(),
+                new HashSet<>(Arrays.asList(participant1, participant2, participant3)));
+        Expense taxi = new Expense(event, "Taxi Ride", participant2, new Monetary(3000), LocalDate.now(),
+                new HashSet<>(Arrays.asList(participant1, participant3)));
         event.getExpenses().addAll(Arrays.asList(dinner, taxi));
 
         List<Debt> debts = event.paymentsToDebt(event);
 
         assertNotNull(debts, "Debts list should not be null.");
         assertFalse(debts.isEmpty(), "Debts list should not be empty.");
-        assertEquals(1, debts.size(), "There should be one debt entry.");
+        assertEquals(3, debts.size(), "There should be three debt entries.");
     }
 }
