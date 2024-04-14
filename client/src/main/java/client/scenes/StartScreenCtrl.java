@@ -80,8 +80,8 @@ public class StartScreenCtrl implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         List<String> inviteCodes = (List<String>) config.getProperty("recentEvents");
         recentEvents.getItems().addAll(inviteCodes);
-        Image image = new Image(getClass().getResourceAsStream(
-                "/assets/splitty-splitty.png"));
+        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(
+                "/assets/splitty-splitty.png")));
         imageView.setImage(image);
         recentEvents.setCellFactory(new Callback<>() {
             @Override
