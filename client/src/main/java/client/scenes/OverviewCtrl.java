@@ -134,6 +134,7 @@ public class OverviewCtrl {
         Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(
                 "/assets/splitty-splitty.png")));
         imageView.setImage(image);
+
         initExpenses();
         initParticipants();
         languageNavigator.setExpanded(false);
