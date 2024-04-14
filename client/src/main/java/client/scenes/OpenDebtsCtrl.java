@@ -72,6 +72,10 @@ public class OpenDebtsCtrl {
         if (e == null) {
             return;
         }
+        Event newEvent = server.getEventById(e.getInviteCode());
+        if (newEvent != null) {
+            e = newEvent;
+        }
         List<Debt> list = server.calculateDebts(e);
 
         for (Debt debt : list) {
@@ -117,7 +121,7 @@ public class OpenDebtsCtrl {
         String accountHolder = resourceManager.getStringForKey("content_account_holder");
         Label debtLabel = new Label(debt.getCreditor().getIban().isEmpty()
             ? bankInfo :
-            bankInfoOk + "\n" + accountHolder
+            bankInfoOk + "\n" + accountHolder + " "
                 + debt.getCreditor().getName() +
                 "\nIBAN: " + debt.getCreditor().getIban() +
                 "\nBIC: " + debt.getCreditor().getBic());
@@ -263,7 +267,7 @@ public class OpenDebtsCtrl {
         TextField textField = new TextField();
 
         String enterEmail = resourceManager.getStringForKey("content_enter_email") + " ";
-        String enterIban = resourceManager.getStringForKey("content_enter_iban");
+        String enterIban = resourceManager.getStringForKey("content_enter_iban") + " ";
         Label label = new Label(enterEmail + participant.getName() + " :");
         label.setAlignment(Pos.CENTER_LEFT);
 
@@ -347,8 +351,7 @@ public class OpenDebtsCtrl {
         String emailAction = resourceManager.getStringForKey("content_email_action");
         String sendReminder = resourceManager.getStringForKey("content_send_reminder");
         HBox hbox = new HBox(10);
-        String enterIban = " " + resourceManager.getStringForKey("content_enter_iban")  + " ";
-        Label actionLabel = new Label(emailAction + enterIban);
+        Label actionLabel = new Label(emailAction);
         Button sendEmailButton = new Button(sendReminder);
         StackPane buttonWrapper = new StackPane(sendEmailButton);
 
