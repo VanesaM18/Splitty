@@ -33,8 +33,7 @@ import javafx.stage.Stage;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(ApplicationExtension.class)
 class OpenDebtsCtrlTest {
@@ -121,6 +120,7 @@ class OpenDebtsCtrlTest {
         e1.setTags(new HashSet<>());
         expenses.add(e1);
         event.setExpenses(new HashSet<>(expenses));
+        when(serverUtils.getEventById("test")).thenReturn(event);
     }
 
     @Test

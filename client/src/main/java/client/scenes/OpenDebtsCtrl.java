@@ -72,7 +72,10 @@ public class OpenDebtsCtrl {
         if (e == null) {
             return;
         }
-        e = server.getEventById(e.getInviteCode());
+        Event newEvent = server.getEventById(e.getInviteCode());
+        if (newEvent != null) {
+            e = newEvent;
+        }
         List<Debt> list = server.calculateDebts(e);
 
         for (Debt debt : list) {
