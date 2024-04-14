@@ -51,8 +51,8 @@
                      <children>
                         <ImageView fx:id = "imageView" fitHeight="67.0" fitWidth="344.0" pickOnBounds="true" preserveRatio="true"/>
                      </children>
-                     <Region prefHeight="15.0" />
                   </HBox>
+                  <Region prefHeight="10.0" />
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%create_new_event">
                      <font>
                         <Font name="System Bold" size="22.0" />
